@@ -64,8 +64,8 @@ class FirebaseAuthRepository @Inject constructor(
                 auth.removeAuthStateListener(listener)
             }
         }.stateIn(
-            scope = CoroutineScope(Dispatchers.Main + SupervisorJob()),
-            started = SharingStarted.Lazily,
+            scope = CoroutineScope(Dispatchers.Default + SupervisorJob()),
+            started = SharingStarted.Eagerly,
             initialValue = AuthStatus.Unknown
         )
     } ?: MutableStateFlow(AuthStatus.SignedOut).asStateFlow()

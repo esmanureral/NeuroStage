@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.UserProfileChangeRequest
 import com.esmanureral.neurostage.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
@@ -90,5 +91,22 @@ class FirebaseAuthRepository @Inject constructor(
 
     override suspend fun signOut() {
         firebaseAuth?.signOut()
+    }
+
+    override suspend fun updateDisplayName(displayName: String): Result<Unit> {
+        val auth = firebaseAuth ?: return Result.failure(
+            IllegalStateException(context.getString(R.string.error_firebase_config), initException)
+        )
+        val user = auth.currentUser ?: return Result.failure(
+            IllegalStateException(context.getString(R.string.error_auth_no_current_user))
+        )
+        val trimmed = displayName.trim()
+        if (trimmed.isEmpty()) return Result.success(Unit)
+        return runCatching {
+            val req = UserProfileChangeRequest.Builder()
+                .setDisplayName(trimmed)
+                .build()
+            user.updateProfile(req).await()
+        }.map { }
     }
 }

@@ -47,12 +47,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.esmanureral.neurostage.R
 import com.esmanureral.neurostage.data.MrScanRecord
 import com.esmanureral.neurostage.ui.theme.NeurostageBrandBlue
+import com.esmanureral.neurostage.ui.theme.NsDoctorScaffoldBg
 import com.esmanureral.neurostage.ui.theme.NsTextMid
+import com.esmanureral.neurostage.util.Constants
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-
-private val DoctorHistoryBackground = Color(0xFFF5F6FA)
 
 private val WaveBottomShape: Shape = object : Shape {
     override fun createOutline(
@@ -72,8 +72,10 @@ private val WaveBottomShape: Shape = object : Shape {
     }
 }
 
-private val scanDateFormat =
-    SimpleDateFormat("d MMM yyyy · HH:mm", Locale("tr", "TR"))
+private val scanDateFormat = SimpleDateFormat(
+    Constants.Format.SCAN_DATETIME,
+    Locale(Constants.LocaleConfig.LANG_TR, Constants.LocaleConfig.REGION_TR),
+)
 
 @Composable
 fun DoctorHistoryScreen(
@@ -83,7 +85,7 @@ fun DoctorHistoryScreen(
 ) {
     val history by viewModel.history.collectAsStateWithLifecycle()
 
-    Surface(modifier = Modifier.fillMaxSize(), color = DoctorHistoryBackground) {
+    Surface(modifier = Modifier.fillMaxSize(), color = NsDoctorScaffoldBg) {
         Column(modifier = Modifier.fillMaxSize()) {
             Box(
                 modifier = Modifier

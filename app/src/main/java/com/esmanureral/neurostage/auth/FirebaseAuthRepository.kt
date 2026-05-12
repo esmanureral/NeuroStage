@@ -36,6 +36,17 @@ class FirebaseAuthRepository @Inject constructor(
         Log.e("FirebaseAuthRepo", "Firebase başlatılamadı: ${it.message}", it)
     }.getOrNull()
 
+    override fun currentUserUid(): String? = firebaseAuth?.currentUser?.uid
+
+    override fun localAuthSnapshot(): LocalAuthSnapshot? {
+        val u = firebaseAuth?.currentUser ?: return null
+        return LocalAuthSnapshot(
+            uid = u.uid,
+            email = u.email,
+            displayName = u.displayName,
+        )
+    }
+
     override val status: StateFlow<AuthStatus> = firebaseAuth?.let { auth ->
         callbackFlow {
             val initialUser = auth.currentUser

@@ -122,7 +122,8 @@ class AnalysisViewModel @Inject constructor(
         _state.value = AnalysisState.Idle
         val heuristic = ImageValidator.validate(bitmap)
         if (!heuristic.isValid) {
-            _validationError.value = heuristic.reason
+            val errorRes = heuristic.reasonResId ?: R.string.error_invalid_mri
+            _validationError.value = appContext.getString(errorRes)
             _isMriValidated.value = false
             return
         }

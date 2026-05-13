@@ -789,7 +789,8 @@ private fun ResultStep(
             }
             xaiState.geminiReport?.let { report ->
                 val summaryKeyword = stringResource(R.string.home_screen_xai_summary_keyword)
-                val aiBlocks = parseAiReportBlocks(report.text)
+                val knownHeadings = stringArrayResource(R.array.xai_report_headings).toList()
+                val aiBlocks = parseAiReportBlocks(report.text, knownHeadings)
                 val summaryBlock = aiBlocks.firstOrNull {
                     it.first?.contains(
                         summaryKeyword,

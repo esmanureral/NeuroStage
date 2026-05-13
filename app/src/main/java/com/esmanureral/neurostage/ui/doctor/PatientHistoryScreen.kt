@@ -648,8 +648,9 @@ private fun ScanDetailBottomSheet(scan: ScanRecord, onDismiss: () -> Unit) {
     val clinical = clinicalSnapshot(scan.stageIndex)
 
     val scoreLabels = stringArrayResource(R.array.patient_history_model_class_labels)
+    val knownHeadings = stringArrayResource(R.array.xai_report_headings).toList()
 
-    val aiBlocks = scan.aiReport?.let { parseAiReportBlocks(it) }
+    val aiBlocks = scan.aiReport?.let { parseAiReportBlocks(it, knownHeadings) }
     val summaryHint = stringResource(R.string.home_screen_xai_summary_keyword)
     val summaryBlock =
         aiBlocks?.firstOrNull { it.first?.contains(summaryHint, ignoreCase = true) == true }

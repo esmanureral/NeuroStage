@@ -25,9 +25,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.AutoAwesome
-import androidx.compose.material.icons.outlined.CompareArrows
+import androidx.compose.material.icons.automirrored.outlined.CompareArrows
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Upload
 import androidx.compose.material3.AlertDialog
@@ -70,7 +70,6 @@ import androidx.compose.ui.geometry.Size as GeometrySize
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.esmanureral.neurostage.R
-import com.esmanureral.neurostage.data.MrScanRecord
 import com.esmanureral.neurostage.scans.ScanRecord
 import com.esmanureral.neurostage.ui.theme.NeurostageBrandBlue
 import com.esmanureral.neurostage.ui.theme.NsBlue50
@@ -84,7 +83,6 @@ import com.esmanureral.neurostage.ui.theme.NsCompareGold
 import com.esmanureral.neurostage.ui.theme.NsDoctorAccentBlue
 import com.esmanureral.neurostage.ui.theme.NsDoctorScaffoldBg
 import com.esmanureral.neurostage.ui.theme.NsGray400
-import com.esmanureral.neurostage.ui.theme.NsGray450
 import com.esmanureral.neurostage.ui.theme.NsGray600
 import com.esmanureral.neurostage.ui.theme.NsGray700
 import com.esmanureral.neurostage.ui.theme.NsGray800
@@ -107,6 +105,7 @@ import java.util.Date
 import java.util.Locale
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
+import com.esmanureral.neurostage.ui.theme.NsChipIndigoBg
 
 private val waveBottomShape: Shape = object : Shape {
     override fun createOutline(
@@ -119,7 +118,7 @@ private val waveBottomShape: Shape = object : Shape {
             moveTo(0f, 0f)
             lineTo(size.width, 0f)
             lineTo(size.width, size.height - waveDepth)
-            quadraticBezierTo(size.width / 2f, size.height + waveDepth, 0f, size.height - waveDepth)
+            quadraticTo(size.width / 2f, size.height + waveDepth, 0f, size.height - waveDepth)
             close()
         }
         return Outline.Generic(path)
@@ -161,7 +160,12 @@ fun PatientHistoryScreen(
             if (canCompare) {
                 ExtendedFloatingActionButton(
                     onClick = { showCompareDialog = true },
-                    icon = { Icon(Icons.Outlined.CompareArrows, contentDescription = null) },
+                    icon = {
+                        Icon(
+                            Icons.AutoMirrored.Outlined.CompareArrows,
+                            contentDescription = null
+                        )
+                    },
                     text = { Text(stringResource(R.string.patient_history_compare)) },
                 )
             }
@@ -172,7 +176,6 @@ fun PatientHistoryScreen(
                 .fillMaxSize()
                 .padding(innerPadding),
         ) {
-            // Header
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -185,12 +188,14 @@ fun PatientHistoryScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         IconButton(onClick = onBack) {
                             Icon(
-                                Icons.Outlined.ArrowBack,
+                                Icons.AutoMirrored.Outlined.ArrowBack,
                                 contentDescription = stringResource(R.string.doctor_history_cd_back),
                                 tint = NsWhite,
                             )
                         }
-                        Column(modifier = Modifier.weight(1f).padding(start = 4.dp)) {
+                        Column(modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 4.dp)) {
                             Text(
                                 text = ui.patient?.fullName ?: patientNameFallback,
                                 style = MaterialTheme.typography.titleMedium,
@@ -203,9 +208,13 @@ fun PatientHistoryScreen(
                                         stringResource(R.string.patient_age_years_format, it)
                                     },
                                     p.gender,
-                                ).joinToString(" · ")
+                                ).joinToString(stringResource(R.string.patient_history_meta_separator))
                                 if (meta.isNotEmpty()) {
-                                    Text(meta, style = MaterialTheme.typography.bodySmall, color = NsWhite.copy(alpha = 0.75f))
+                                    Text(
+                                        meta,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = NsWhite.copy(alpha = 0.75f)
+                                    )
                                 }
                             }
                         }
@@ -218,7 +227,7 @@ fun PatientHistoryScreen(
                         }
                         IconButton(onClick = viewModel::toggleCompareMode) {
                             Icon(
-                                imageVector = Icons.Outlined.CompareArrows,
+                                imageVector = Icons.AutoMirrored.Outlined.CompareArrows,
                                 contentDescription = stringResource(R.string.patient_history_cd_compare),
                                 tint = if (ui.compareMode) NsCompareGold else NsWhite.copy(alpha = 0.8f),
                             )
@@ -243,7 +252,10 @@ fun PatientHistoryScreen(
                         ) {
                             Text(
                                 text = if (ui.selectedForCompare.size < 2) {
-                                    stringResource(R.string.patient_history_compare_select_two, ui.selectedForCompare.size)
+                                    stringResource(
+                                        R.string.patient_history_compare_select_two,
+                                        ui.selectedForCompare.size
+                                    )
                                 } else {
                                     stringResource(R.string.patient_history_compare_ready)
                                 },
@@ -255,7 +267,6 @@ fun PatientHistoryScreen(
                 }
             }
 
-            // Stats row
             if (ui.scans.isNotEmpty()) {
                 Row(
                     modifier = Modifier
@@ -282,23 +293,41 @@ fun PatientHistoryScreen(
             }
 
             if (ui.isLoading) {
-                Box(modifier = Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp),
+                    contentAlignment = Alignment.Center
+                ) {
                     CircularProgressIndicator(color = NsDoctorAccentBlue)
                 }
             }
 
             ui.error?.let {
-                Text(it, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp), style = MaterialTheme.typography.bodySmall)
+                Text(
+                    it,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
 
             ui.scanError?.let {
                 Card(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 4.dp),
                     colors = CardDefaults.cardColors(containerColor = NsRose50),
                     shape = RoundedCornerShape(10.dp),
                 ) {
-                    Row(modifier = Modifier.padding(12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text(stringResource(R.string.patient_history_scan_error_icon), style = MaterialTheme.typography.bodySmall)
+                    Row(
+                        modifier = Modifier.padding(12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            stringResource(R.string.patient_history_scan_error_icon),
+                            style = MaterialTheme.typography.bodySmall
+                        )
                         Column {
                             Text(
                                 stringResource(R.string.patient_history_scan_error_title),
@@ -315,7 +344,9 @@ fun PatientHistoryScreen(
             if (ui.scans.isEmpty() && !ui.isLoading) {
                 Spacer(Modifier.weight(1f))
                 Column(
-                    modifier = Modifier.fillMaxWidth().padding(32.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(32.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
@@ -360,12 +391,12 @@ fun PatientHistoryScreen(
     if (showCompareDialog) {
         val pair = viewModel.getSelectedScans()
         if (pair != null) {
-            CompareDialog(a = pair.first, b = pair.second, onDismiss = { showCompareDialog = false })
+            CompareDialog(a = pair.first, b = pair.second, onDismiss = { })
         }
     }
 
     detailScan?.let { scan ->
-        ScanDetailBottomSheet(scan = scan, onDismiss = { detailScan = null })
+        ScanDetailBottomSheet(scan = scan, onDismiss = { })
     }
 }
 
@@ -385,7 +416,12 @@ private fun StatPill(
     ) {
         Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
             Text(label, style = MaterialTheme.typography.labelSmall, color = NsGray400)
-            Text(value, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = valueColor)
+            Text(
+                value,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = valueColor
+            )
         }
     }
 }
@@ -412,10 +448,11 @@ private fun TimelineRow(
             ),
         verticalAlignment = Alignment.Top,
     ) {
-        // Timeline line + dot
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.width(28.dp).padding(top = 6.dp),
+            modifier = Modifier
+                .width(28.dp)
+                .padding(top = 6.dp),
         ) {
             Box(
                 modifier = Modifier
@@ -449,8 +486,10 @@ private fun TimelineRow(
                     .padding(12.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    // Stage badge
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(6.dp))
@@ -512,7 +551,10 @@ private fun CompareDialog(a: ScanRecord, b: ScanRecord, onDismiss: () -> Unit) {
                     scan = older,
                     modifier = Modifier.weight(1f),
                 )
-                Box(modifier = Modifier.width(1.dp).height(160.dp).background(NsGray300))
+                Box(modifier = Modifier
+                    .width(1.dp)
+                    .height(160.dp)
+                    .background(NsGray300))
                 CompareSide(
                     label = stringResource(R.string.patient_history_compare_next),
                     scan = newer,
@@ -529,14 +571,23 @@ private fun CompareSide(label: String, scan: ScanRecord, modifier: Modifier = Mo
     val (bg, fg) = stageBadgeColor(scan.label)
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Text(label, style = MaterialTheme.typography.labelMedium, color = NsGray600)
-        Text(df.format(Date(scan.timestampMs)), style = MaterialTheme.typography.bodySmall, color = NsGray400)
+        Text(
+            df.format(Date(scan.timestampMs)),
+            style = MaterialTheme.typography.bodySmall,
+            color = NsGray400
+        )
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(6.dp))
                 .background(bg)
                 .padding(horizontal = 6.dp, vertical = 3.dp),
         ) {
-            Text(scan.label, style = MaterialTheme.typography.labelSmall, color = fg, fontWeight = FontWeight.Bold)
+            Text(
+                scan.label,
+                style = MaterialTheme.typography.labelSmall,
+                color = fg,
+                fontWeight = FontWeight.Bold
+            )
         }
         Text(
             stringResource(R.string.doctor_history_confidence, pct),
@@ -546,7 +597,6 @@ private fun CompareSide(label: String, scan: ScanRecord, modifier: Modifier = Mo
     }
 }
 
-// ─── Klinik bilgi veri sınıfı ───────────────────────────────────────────────
 
 private data class ClinicalInfo(
     val cdrScore: String,
@@ -588,7 +638,6 @@ private fun clinicalSnapshot(stageIndex: Int): ClinicalInfo {
     )
 }
 
-// ─── Bottom Sheet ────────────────────────────────────────────────────────────
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -623,7 +672,6 @@ private fun ScanDetailBottomSheet(scan: ScanRecord, onDismiss: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
 
-            // ── Başlık ──────────────────────────────────────────────────────
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -657,18 +705,19 @@ private fun ScanDetailBottomSheet(scan: ScanRecord, onDismiss: () -> Unit) {
                 }
             }
 
-            // ── Tanı kartı ──────────────────────────────────────────────────
             Card(
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = NsWhite),
                 elevation = CardDefaults.cardElevation(2.dp),
             ) {
-                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
-                        // Circular confidence
                         Box(
                             modifier = Modifier.size(72.dp),
                             contentAlignment = Alignment.Center,
@@ -695,7 +744,12 @@ private fun ScanDetailBottomSheet(scan: ScanRecord, onDismiss: () -> Unit) {
                                     .background(badgeBg)
                                     .padding(horizontal = 10.dp, vertical = 4.dp),
                             ) {
-                                Text(scan.label, style = MaterialTheme.typography.labelMedium, color = badgeFg, fontWeight = FontWeight.Bold)
+                                Text(
+                                    scan.label,
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = badgeFg,
+                                    fontWeight = FontWeight.Bold
+                                )
                             }
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 InfoChip(clinical.cdrScore)
@@ -726,7 +780,10 @@ private fun ScanDetailBottomSheet(scan: ScanRecord, onDismiss: () -> Unit) {
                             )
                         }
                         Text(
-                            summaryBlock.second.replace("**", ""),
+                            summaryBlock.second.replace(
+                                stringResource(R.string.patient_history_markdown_bold),
+                                ""
+                            ),
                             style = MaterialTheme.typography.bodyMedium,
                             color = NsGray700,
                             lineHeight = 22.sp,
@@ -748,14 +805,16 @@ private fun ScanDetailBottomSheet(scan: ScanRecord, onDismiss: () -> Unit) {
                 }
             }
 
-            // ── Sınıflandırma dağılımı ───────────────────────────────────────
             if (scan.scores.isNotEmpty()) {
                 Card(
                     shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(containerColor = NsWhite),
                     elevation = CardDefaults.cardElevation(2.dp),
                 ) {
-                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
                         Text(
                             stringResource(R.string.patient_history_sheet_model_title),
                             style = MaterialTheme.typography.labelMedium,
@@ -768,7 +827,6 @@ private fun ScanDetailBottomSheet(scan: ScanRecord, onDismiss: () -> Unit) {
                             color = NsGray400,
                         )
                         scan.scores.forEachIndexed { i, score ->
-                            val pct = (score * 100).toInt().coerceIn(0, 100)
                             val isSelected = i == scan.stageIndex
                             val barColor = if (isSelected) {
                                 NsPatientScoreBarColors.getOrElse(i) { badgeFg }
@@ -789,14 +847,19 @@ private fun ScanDetailBottomSheet(scan: ScanRecord, onDismiss: () -> Unit) {
                                     Spacer(Modifier.width(6.dp))
                                     Text(
                                         scoreLabels.getOrNull(i)
-                                            ?: stringResource(R.string.patient_history_model_class_fallback, i),
+                                            ?: stringResource(
+                                                R.string.patient_history_model_class_fallback,
+                                                i
+                                            ),
                                         style = MaterialTheme.typography.bodySmall,
                                         modifier = Modifier.weight(1f),
                                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                                         color = if (isSelected) NsGray900 else NsGray600,
                                     )
                                     Text(
-                                        "%.1f%%".format(score * 100),
+                                        stringResource(R.string.patient_history_score_decimal).format(
+                                            score * 100
+                                        ),
                                         style = MaterialTheme.typography.labelSmall,
                                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                                         color = if (isSelected) barColor else NsGray400,
@@ -823,17 +886,22 @@ private fun ScanDetailBottomSheet(scan: ScanRecord, onDismiss: () -> Unit) {
                 }
             }
 
-            // ── AI Raporunun Geri Kalanı (Özet Dışındaki Kartlar) ─────────────
             if (otherBlocks != null && otherBlocks.isNotEmpty()) {
                 otherBlocks.forEach { (title, content) ->
-                    val cleanContent = content.replace("**", "").replace(Regex("(?m)^- "), "• ").replace(Regex("(?m)^\\* "), "• ")
+                    val markdownBold = stringResource(R.string.patient_history_markdown_bold)
+                    val cleanContent =
+                        content.replace(markdownBold, "").replace(Regex("(?m)^- "), "• ")
+                            .replace(Regex("(?m)^\\* "), "• ")
                     Card(
                         shape = RoundedCornerShape(16.dp),
                         colors = CardDefaults.cardColors(containerColor = NsSlate50),
                         elevation = CardDefaults.cardElevation(0.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
                             Text(
                                 title?.uppercase()
                                     ?: stringResource(R.string.patient_history_sheet_block_fallback).uppercase(),
@@ -855,14 +923,16 @@ private fun ScanDetailBottomSheet(scan: ScanRecord, onDismiss: () -> Unit) {
                 }
             }
 
-            // ── Patoloji notu ve Takip (Eğer yapay zeka raporu yoksa) ───────
             if (scan.aiReport == null) {
                 Card(
                     shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(containerColor = NsAmber50),
                     elevation = CardDefaults.cardElevation(0.dp),
                 ) {
-                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
                         Text(
                             stringResource(R.string.patient_history_sheet_neuropath_title),
                             style = MaterialTheme.typography.labelMedium,
@@ -883,7 +953,10 @@ private fun ScanDetailBottomSheet(scan: ScanRecord, onDismiss: () -> Unit) {
                     colors = CardDefaults.cardColors(containerColor = NsBlue50),
                     elevation = CardDefaults.cardElevation(0.dp),
                 ) {
-                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalAlignment = Alignment.CenterVertically,

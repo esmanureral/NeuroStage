@@ -79,7 +79,8 @@ class DoctorAuthViewModel @Inject constructor(
 
         if (isSignUp) {
             if (first.isBlank() || last.isBlank()) {
-                _ui.value = _ui.value.copy(error = context.getString(R.string.doctor_auth_error_name_required))
+                _ui.value =
+                    _ui.value.copy(error = context.getString(R.string.doctor_auth_error_name_required))
                 return
             }
         }
@@ -91,7 +92,8 @@ class DoctorAuthViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            _ui.value = _ui.value.copy(isLoading = true, error = null, info = null, justSignedUp = false)
+            _ui.value =
+                _ui.value.copy(isLoading = true, error = null, info = null, justSignedUp = false)
             val res = if (isSignUp) auth.signUp(email, password) else auth.signIn(email, password)
             if (!res.isSuccess) {
                 _ui.value = _ui.value.copy(
@@ -155,18 +157,25 @@ class DoctorAuthViewModel @Inject constructor(
             return when (fe.errorCode) {
                 fc.EMAIL_ALREADY_IN_USE, fc.CREDENTIAL_ALREADY_IN_USE ->
                     context.getString(R.string.doctor_auth_error_email_in_use)
+
                 fc.INVALID_EMAIL, fc.MISSING_EMAIL, fc.INVALID_PROVIDER_ID ->
                     context.getString(R.string.doctor_auth_error_invalid_email)
+
                 fc.USER_NOT_FOUND, fc.USER_MISMATCH ->
                     context.getString(R.string.doctor_auth_error_user_not_found)
+
                 fc.WRONG_PASSWORD, fc.INVALID_CREDENTIAL, fc.INVALID_USER_TOKEN ->
                     context.getString(R.string.doctor_auth_error_wrong_credentials)
+
                 fc.NETWORK_REQUEST_FAILED ->
                     context.getString(R.string.doctor_auth_error_network)
+
                 fc.TOO_MANY_REQUESTS ->
                     context.getString(R.string.doctor_auth_error_too_many_requests)
+
                 fc.WEAK_PASSWORD ->
                     context.getString(R.string.doctor_auth_error_weak_password)
+
                 else -> messageFallbackAuthError(fe.localizedMessage)
             }
         }
@@ -181,33 +190,27 @@ class DoctorAuthViewModel @Inject constructor(
             lowerMsg.contains(p.ALREADY_IN_USE) -> context.getString(R.string.doctor_auth_error_email_in_use)
             lowerMsg.contains(p.BADLY_FORMATTED) || lowerMsg.contains(p.INVALID_EMAIL) ->
                 context.getString(R.string.doctor_auth_error_invalid_email)
+
             lowerMsg.contains(p.NO_USER_RECORD) || lowerMsg.contains(p.USER_NOT_FOUND) ->
                 context.getString(R.string.doctor_auth_error_user_not_found)
+
             lowerMsg.contains(p.INVALID_LOGIN_CREDENTIALS) ||
-                lowerMsg.contains(p.AUTH_CREDENTIAL) ||
-                lowerMsg.contains(p.WRONG_PASSWORD) ||
-                lowerMsg.contains(p.INVALID_PASSWORD) ->
+                    lowerMsg.contains(p.AUTH_CREDENTIAL) ||
+                    lowerMsg.contains(p.WRONG_PASSWORD) ||
+                    lowerMsg.contains(p.INVALID_PASSWORD) ->
                 context.getString(R.string.doctor_auth_error_wrong_credentials)
+
             lowerMsg.contains(p.NETWORK_ERROR) ->
                 context.getString(R.string.doctor_auth_error_network)
+
             lowerMsg.contains(p.TOO_MANY_REQUESTS) ->
                 context.getString(R.string.doctor_auth_error_too_many_requests)
+
             else -> context.getString(R.string.doctor_auth_error_generic)
         }
     }
 
-    private fun findFirebaseAuthException(e: Throwable): FirebaseAuthException? {
-        var t: Throwable? = e
-        while (t != null) {
-            if (t is FirebaseAuthException) return t
-            t = t.cause
-        }
-        return null
-    }
+    private fun findFirebaseAuthException(e: Throwable): FirebaseAuthException? =
+        generateSequence(e) { it.cause }.filterIsInstance<FirebaseAuthException>().firstOrNull()
 
-    fun signOut() {
-        viewModelScope.launch {
-            auth.signOut()
-        }
-    }
 }

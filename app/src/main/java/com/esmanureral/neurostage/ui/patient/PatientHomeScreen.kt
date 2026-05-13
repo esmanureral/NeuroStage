@@ -15,10 +15,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.esmanureral.neurostage.R
 import com.esmanureral.neurostage.ui.onboarding.RolePickViewModel
 
 @Composable
@@ -35,14 +37,14 @@ fun PatientHomeScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
-                text = "Hasta",
+                text = stringResource(R.string.patient_home_title),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
             )
             Spacer(Modifier.height(10.dp))
             Text(
-                text = "Bu tarafın ekranlarını bir sonraki adımda inşa edeceğiz.\nŞimdilik altyapı hazır.",
+                text = stringResource(R.string.patient_home_subtitle),
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
             )
@@ -55,9 +57,8 @@ fun PatientHomeScreen(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(14.dp),
             ) {
-                Text("Rol Seçimine Dön")
+                Text(stringResource(R.string.patient_home_back_to_role))
             }
         }
     }
 }
-

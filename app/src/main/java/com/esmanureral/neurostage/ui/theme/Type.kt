@@ -16,6 +16,13 @@ val Typography = Typography(
         lineHeight = 44.sp,
         letterSpacing = (-0.75).sp,
     ),
+    displayMedium = TextStyle(
+        fontFamily = NeuroText,
+        fontWeight = FontWeight.Bold,
+        fontSize = 32.sp,
+        lineHeight = 40.sp,
+        letterSpacing = (-0.5).sp,
+    ),
     displaySmall = TextStyle(
         fontFamily = NeuroText,
         fontWeight = FontWeight.Bold,
@@ -57,6 +64,13 @@ val Typography = Typography(
         fontSize = 18.sp,
         lineHeight = 26.sp,
         letterSpacing = (-0.1).sp,
+    ),
+    titleSmall = TextStyle(
+        fontFamily = NeuroText,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 15.sp,
+        lineHeight = 22.sp,
+        letterSpacing = 0.sp,
     ),
     bodyLarge = TextStyle(
         fontFamily = NeuroText,

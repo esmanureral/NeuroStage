@@ -60,11 +60,9 @@ object Constants {
     object Model {
         const val ALZHEIMER_FILE_NAME = "alzheimer_preprocessed.tflite"
         const val ALZHEIMER_INPUT_SIZE = 260
-        const val ALZHEIMER_NUM_CLASSES = 4
 
         const val MRI_FILTER_FILE_NAME = "mri_filter_v2_noquant.tflite"
         const val MRI_FILTER_INPUT_SIZE = 224
-        const val MRI_FILTER_NUM_CLASSES = 2
     }
 
     object Firestore {

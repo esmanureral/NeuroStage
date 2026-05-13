@@ -2,6 +2,7 @@ package com.esmanureral.neurostage
 
 import android.content.Context
 import android.graphics.Bitmap
+import androidx.core.graphics.scale
 import org.tensorflow.lite.Interpreter
 import java.io.FileInputStream
 import java.nio.ByteBuffer
@@ -13,8 +14,7 @@ class TFLiteClassifier(
     private val context: Context,
     private val modelFileName: String,
     private val inputSize: Int,
-    private val numClasses: Int,
-    private val normalize: Boolean = false   // true → piksel/255f, false → ham [0,255]
+    private val normalize: Boolean = false
 ) {
 
     private var interpreter: Interpreter = createInterpreter()
@@ -44,9 +44,8 @@ class TFLiteClassifier(
         ensureOpen()
         val inputBuffer = preprocessBitmap(bitmap)
 
-        // Modelin gerçek çıktı şeklini oku; numClasses yanlışsa çökmez
-        val outputShape = interpreter.getOutputTensor(0).shape() // örn. [1,2] veya [1,1]
-        val outputSize = outputShape[outputShape.size - 1]
+        val outputShape = interpreter.getOutputTensor(0).shape()
+        val outputSize = outputShape.last()
 
         val output = Array(1) { FloatArray(outputSize) }
         interpreter.run(inputBuffer, output)
@@ -54,7 +53,7 @@ class TFLiteClassifier(
     }
 
     private fun preprocessBitmap(bitmap: Bitmap): ByteBuffer {
-        val scaled = Bitmap.createScaledBitmap(bitmap, inputSize, inputSize, true)
+        val scaled = bitmap.scale(inputSize, inputSize, filter = true)
         val buffer = ByteBuffer.allocateDirect(1 * inputSize * inputSize * 3 * FLOAT_SIZE)
         buffer.order(ByteOrder.nativeOrder())
 

@@ -28,8 +28,7 @@ object AppModule {
         TFLiteClassifier(
             context = context,
             modelFileName = Constants.Model.ALZHEIMER_FILE_NAME,
-            inputSize = Constants.Model.ALZHEIMER_INPUT_SIZE,
-            numClasses = Constants.Model.ALZHEIMER_NUM_CLASSES
+            inputSize = Constants.Model.ALZHEIMER_INPUT_SIZE
         )
 
     @Provides
@@ -40,7 +39,6 @@ object AppModule {
             context = context,
             modelFileName = Constants.Model.MRI_FILTER_FILE_NAME,
             inputSize = Constants.Model.MRI_FILTER_INPUT_SIZE,
-            numClasses = Constants.Model.MRI_FILTER_NUM_CLASSES,
             normalize = true
         )
 }

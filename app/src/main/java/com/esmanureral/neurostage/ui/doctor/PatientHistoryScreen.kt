@@ -650,7 +650,7 @@ private fun ScanDetailBottomSheet(scan: ScanRecord, onDismiss: () -> Unit) {
     val scoreLabels = stringArrayResource(R.array.patient_history_model_class_labels)
 
     val aiBlocks = scan.aiReport?.let { parseAiReportBlocks(it) }
-    val summaryHint = Constants.AiReportParse.SUMMARY_HEADER_HINT
+    val summaryHint = stringResource(R.string.home_screen_xai_summary_keyword)
     val summaryBlock =
         aiBlocks?.firstOrNull { it.first?.contains(summaryHint, ignoreCase = true) == true }
             ?: aiBlocks?.firstOrNull()

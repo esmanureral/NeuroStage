@@ -14,6 +14,7 @@ object Routes {
     const val DOCTOR_PATIENT_HISTORY = "doctor_patient_history"
 
     const val PATIENT_HOME = "patient_home"
+    const val PATIENT_SCAN = "patient_scan"
 }
 
 object RouteArgs {

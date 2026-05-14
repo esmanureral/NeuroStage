@@ -94,6 +94,7 @@ private fun stageTone(i: Int): StageTone {
 fun MainScreen(
     viewModel: AnalysisViewModel = hiltViewModel(),
     patientId: String? = null,
+    isPatient: Boolean = false,
     onBack: (() -> Unit)? = null,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -160,6 +161,7 @@ fun MainScreen(
                 result = state as AnalysisState.Success,
                 xaiState = xaiState,
                 saveError = saveError,
+                isPatient = isPatient,
                 onBack = onBack,
                 onNewScan = { bitmapState.value = null; viewModel.reset() }
             )
@@ -582,6 +584,7 @@ private fun ResultStep(
     result: AnalysisState.Success,
     xaiState: XaiUiState,
     saveError: String?,
+    isPatient: Boolean = false,
     onBack: (() -> Unit)?,
     onNewScan: () -> Unit,
 ) {
@@ -743,7 +746,7 @@ private fun ResultStep(
                                 )
                             }
                             Text(
-                                "%$scorePct",
+                                "$scorePct%",
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
                                 color = NsNavy,
@@ -755,92 +758,56 @@ private fun ResultStep(
                 }
             }
 
-            val isXaiLoading =
-                xaiState.isMcLoading || xaiState.isGradCamLoading || xaiState.isGeminiLoading
-            if (isXaiLoading) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Color(0xFFF3E8FF))
-                        .border(1.dp, Color(0xFFD8B4FE), RoundedCornerShape(12.dp))
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(20.dp),
-                        strokeWidth = 2.dp,
-                        color = Color(0xFF9333EA)
-                    )
-                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                        Text(
-                            stringResource(R.string.home_screen_xai_loading_title),
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF6B21A8)
-                        )
-                        Text(
-                            stringResource(R.string.home_screen_xai_loading_subtitle),
-                            style = MaterialTheme.typography.bodySmall, color = Color(0xFF7E22CE)
-                        )
-                    }
-                }
-            }
-            xaiState.geminiReport?.let { report ->
-                val summaryKeyword = stringResource(R.string.home_screen_xai_summary_keyword)
-                val knownHeadings = stringArrayResource(R.array.xai_report_headings).toList()
-                val aiBlocks = parseAiReportBlocks(report.text, knownHeadings)
-                val summaryBlock = aiBlocks.firstOrNull {
-                    it.first?.contains(
-                        summaryKeyword,
-                        ignoreCase = true
-                    ) == true
-                } ?: aiBlocks.firstOrNull()
-                val otherBlocks = aiBlocks.filter { it != summaryBlock }
-
-                val summaryFallback = stringResource(R.string.home_screen_xai_summary_fallback)
-                val clinicFallback = stringResource(R.string.home_screen_xai_clinic_fallback)
-
-                if (summaryBlock != null) {
-                    Column(
+            if (!isPatient) {
+                val isXaiLoading =
+                    xaiState.isMcLoading || xaiState.isGradCamLoading || xaiState.isGeminiLoading
+                if (isXaiLoading) {
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(RoundedCornerShape(14.dp))
-                            .background(NsWhite)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color(0xFFF3E8FF))
+                            .border(1.dp, Color(0xFFD8B4FE), RoundedCornerShape(12.dp))
                             .padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        ) {
-                            Icon(
-                                Icons.Outlined.AutoAwesome,
-                                null,
-                                tint = Color(0xFF7C3AED),
-                                modifier = Modifier.size(16.dp)
-                            )
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            strokeWidth = 2.dp,
+                            color = Color(0xFF9333EA)
+                        )
+                        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                             Text(
-                                summaryBlock.first ?: summaryFallback,
+                                stringResource(R.string.home_screen_xai_loading_title),
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF7C3AED)
+                                color = Color(0xFF6B21A8)
+                            )
+                            Text(
+                                stringResource(R.string.home_screen_xai_loading_subtitle),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color(0xFF7E22CE)
                             )
                         }
-                        Text(
-                            summaryBlock.second.replace("**", ""),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = NsGray800,
-                            lineHeight = 22.sp,
-                        )
                     }
                 }
+                xaiState.geminiReport?.let { report ->
+                    val summaryKeyword = stringResource(R.string.home_screen_xai_summary_keyword)
+                    val knownHeadings = stringArrayResource(R.array.xai_report_headings).toList()
+                    val aiBlocks = parseAiReportBlocks(report.text, knownHeadings)
+                    val summaryBlock = aiBlocks.firstOrNull {
+                        it.first?.contains(
+                            summaryKeyword,
+                            ignoreCase = true
+                        ) == true
+                    } ?: aiBlocks.firstOrNull()
+                    val otherBlocks = aiBlocks.filter { it != summaryBlock }
 
-                if (otherBlocks.isNotEmpty()) {
-                    otherBlocks.forEach { (title, content) ->
-                        val cleanContent = content.replace("**", "").replace(Regex("(?m)^- "), "• ")
-                            .replace(Regex("(?m)^\\* "), "• ")
+                    val summaryFallback = stringResource(R.string.home_screen_xai_summary_fallback)
+                    val clinicFallback = stringResource(R.string.home_screen_xai_clinic_fallback)
+
+                    if (summaryBlock != null) {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -849,51 +816,96 @@ private fun ResultStep(
                                 .padding(16.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
-                            Text(
-                                title?.uppercase() ?: clinicFallback,
-                                style = MaterialTheme.typography.labelMedium,
-                                color = NsIndigo500,
-                                fontWeight = FontWeight.ExtraBold,
-                                letterSpacing = 0.5.sp
-                            )
-                            if (cleanContent.isNotBlank()) {
-                                Text(
-                                    cleanContent,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = NsGray800,
-                                    lineHeight = 20.sp
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            ) {
+                                Icon(
+                                    Icons.Outlined.AutoAwesome,
+                                    null,
+                                    tint = Color(0xFF7C3AED),
+                                    modifier = Modifier.size(16.dp)
                                 )
+                                Text(
+                                    summaryBlock.first ?: summaryFallback,
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF7C3AED)
+                                )
+                            }
+                            Text(
+                                summaryBlock.second.replace("**", ""),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = NsGray800,
+                                lineHeight = 22.sp,
+                            )
+                        }
+                    }
+
+                    if (otherBlocks.isNotEmpty()) {
+                        otherBlocks.forEach { (title, content) ->
+                            val cleanContent =
+                                content.replace("**", "").replace(Regex("(?m)^- "), "• ")
+                                    .replace(Regex("(?m)^\\* "), "• ")
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(14.dp))
+                                    .background(NsWhite)
+                                    .padding(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                            ) {
+                                Text(
+                                    title?.uppercase() ?: clinicFallback,
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = NsIndigo500,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    letterSpacing = 0.5.sp
+                                )
+                                if (cleanContent.isNotBlank()) {
+                                    Text(
+                                        cleanContent,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = NsGray800,
+                                        lineHeight = 20.sp
+                                    )
+                                }
                             }
                         }
                     }
+
+                    Text(
+                        stringResource(R.string.home_screen_result_disclaimer),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = NsGray400,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 4.dp, bottom = 12.dp)
+                    )
                 }
 
-                Text(
-                    stringResource(R.string.home_screen_result_disclaimer),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = NsGray400,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 4.dp, bottom = 12.dp)
-                )
-            }
+                xaiState.geminiError?.let { err ->
+                    ErrorBanner(
+                        String.format(
+                            stringResource(R.string.home_screen_gemini_error),
+                            err
+                        )
+                    )
+                }
 
-            xaiState.geminiError?.let { err ->
-                ErrorBanner(String.format(stringResource(R.string.home_screen_gemini_error), err))
-            }
-
-            saveError?.let { err ->
-                Text(
-                    err,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = NsStatusError,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(NsRose50)
-                        .padding(12.dp),
-                )
+                saveError?.let { err ->
+                    Text(
+                        err,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = NsStatusError,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(NsRose50)
+                            .padding(12.dp),
+                    )
+                }
             }
 
             Button(

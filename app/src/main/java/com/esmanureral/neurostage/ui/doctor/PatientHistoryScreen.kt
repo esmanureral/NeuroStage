@@ -1,0 +1,1029 @@
+package com.esmanureral.neurostage.ui.doctor
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.AutoAwesome
+import androidx.compose.material.icons.automirrored.outlined.CompareArrows
+import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material.icons.outlined.Upload
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.geometry.Size as GeometrySize
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.esmanureral.neurostage.R
+import com.esmanureral.neurostage.scans.ScanRecord
+import com.esmanureral.neurostage.ui.theme.NeurostageBrandBlue
+import com.esmanureral.neurostage.ui.theme.NsBlue50
+import com.esmanureral.neurostage.ui.theme.NsBlue100
+import com.esmanureral.neurostage.ui.theme.NsBlue700
+import com.esmanureral.neurostage.ui.theme.NsBlue800
+import com.esmanureral.neurostage.ui.theme.NsAmber800
+import com.esmanureral.neurostage.ui.theme.NsAmber900
+import com.esmanureral.neurostage.ui.theme.NsAmber50
+import com.esmanureral.neurostage.ui.theme.NsCompareGold
+import com.esmanureral.neurostage.ui.theme.NsDoctorAccentBlue
+import com.esmanureral.neurostage.ui.theme.NsDoctorScaffoldBg
+import com.esmanureral.neurostage.ui.theme.NsGray400
+import com.esmanureral.neurostage.ui.theme.NsGray600
+import com.esmanureral.neurostage.ui.theme.NsGray700
+import com.esmanureral.neurostage.ui.theme.NsGray800
+import com.esmanureral.neurostage.ui.theme.NsGray900
+import com.esmanureral.neurostage.ui.theme.NsGray300
+import com.esmanureral.neurostage.ui.theme.NsGraySlateBar
+import com.esmanureral.neurostage.ui.theme.NsIndigo500
+import com.esmanureral.neurostage.ui.theme.NsPatientScoreBarColors
+import com.esmanureral.neurostage.ui.theme.NsPatientStageBadge
+import com.esmanureral.neurostage.ui.theme.NsRose50
+import com.esmanureral.neurostage.ui.theme.NsSlate50
+import com.esmanureral.neurostage.ui.theme.NsSlate100
+import com.esmanureral.neurostage.ui.theme.NsStatusError
+import com.esmanureral.neurostage.ui.theme.NsViolet500
+import com.esmanureral.neurostage.ui.theme.NsWhite
+import com.esmanureral.neurostage.util.Constants
+import com.esmanureral.neurostage.xai.parseAiReportBlocks
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
+import com.esmanureral.neurostage.ui.theme.NsChipIndigoBg
+
+private val waveBottomShape: Shape = object : Shape {
+    override fun createOutline(
+        size: GeometrySize,
+        layoutDirection: LayoutDirection,
+        density: Density,
+    ): Outline {
+        val waveDepth = with(density) { 20.dp.toPx() }
+        val path = Path().apply {
+            moveTo(0f, 0f)
+            lineTo(size.width, 0f)
+            lineTo(size.width, size.height - waveDepth)
+            quadraticTo(size.width / 2f, size.height + waveDepth, 0f, size.height - waveDepth)
+            close()
+        }
+        return Outline.Generic(path)
+    }
+}
+
+private val df = SimpleDateFormat(
+    Constants.Format.SCAN_DATETIME,
+    Locale(Constants.LocaleConfig.LANG_TR, Constants.LocaleConfig.REGION_TR),
+)
+
+private fun stageBadgeColor(label: String): Pair<Color, Color> = when (label) {
+    Constants.MriStageLabel.HEALTHY -> NsPatientStageBadge.healthy
+    Constants.MriStageLabel.VERY_MILD -> NsPatientStageBadge.veryMild
+    Constants.MriStageLabel.MILD -> NsPatientStageBadge.mild
+    Constants.MriStageLabel.MODERATE -> NsPatientStageBadge.moderateOrUnknown
+    else -> NsPatientStageBadge.moderateOrUnknown
+}
+
+@Composable
+fun PatientHistoryScreen(
+    onBack: () -> Unit,
+    onStartScan: (patientId: String) -> Unit,
+    viewModel: PatientHistoryViewModel = hiltViewModel(),
+) {
+    val ui by viewModel.ui.collectAsStateWithLifecycle()
+    var showCompareDialog by remember { mutableStateOf(false) }
+    var detailScan by remember { mutableStateOf<ScanRecord?>(null) }
+
+    val patientNameFallback = stringResource(R.string.patient_history_fallback_name)
+
+    LaunchedEffect(Unit) { viewModel.load() }
+
+    val canCompare = ui.compareMode && ui.selectedForCompare.size == 2
+
+    Scaffold(
+        containerColor = NsDoctorScaffoldBg,
+        floatingActionButton = {
+            if (canCompare) {
+                ExtendedFloatingActionButton(
+                    onClick = { showCompareDialog = true },
+                    icon = {
+                        Icon(
+                            Icons.AutoMirrored.Outlined.CompareArrows,
+                            contentDescription = null
+                        )
+                    },
+                    text = { Text(stringResource(R.string.patient_history_compare)) },
+                )
+            }
+        },
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(waveBottomShape)
+                    .background(NeurostageBrandBlue)
+                    .statusBarsPadding()
+                    .padding(horizontal = 8.dp, vertical = 20.dp),
+            ) {
+                Column {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(onClick = onBack) {
+                            Icon(
+                                Icons.AutoMirrored.Outlined.ArrowBack,
+                                contentDescription = stringResource(R.string.doctor_history_cd_back),
+                                tint = NsWhite,
+                            )
+                        }
+                        Column(modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 4.dp)) {
+                            Text(
+                                text = ui.patient?.fullName ?: patientNameFallback,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = NsWhite,
+                            )
+                            ui.patient?.let { p ->
+                                val meta = listOfNotNull(
+                                    p.age?.let {
+                                        stringResource(R.string.patient_age_years_format, it)
+                                    },
+                                    p.gender,
+                                ).joinToString(stringResource(R.string.patient_history_meta_separator))
+                                if (meta.isNotEmpty()) {
+                                    Text(
+                                        meta,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = NsWhite.copy(alpha = 0.75f)
+                                    )
+                                }
+                            }
+                        }
+                        IconButton(onClick = { viewModel.load() }) {
+                            Icon(
+                                Icons.Outlined.Refresh,
+                                contentDescription = stringResource(R.string.patient_history_cd_refresh),
+                                tint = NsWhite.copy(alpha = 0.8f),
+                            )
+                        }
+                        IconButton(onClick = viewModel::toggleCompareMode) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Outlined.CompareArrows,
+                                contentDescription = stringResource(R.string.patient_history_cd_compare),
+                                tint = if (ui.compareMode) NsCompareGold else NsWhite.copy(alpha = 0.8f),
+                            )
+                        }
+                        IconButton(onClick = { ui.patient?.id?.let(onStartScan) }) {
+                            Icon(
+                                Icons.Outlined.Upload,
+                                contentDescription = stringResource(R.string.patient_history_cd_new_mr),
+                                tint = NsWhite.copy(alpha = 0.8f),
+                            )
+                        }
+                    }
+
+                    if (ui.compareMode) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 6.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(NsWhite.copy(alpha = 0.15f))
+                                .padding(horizontal = 12.dp, vertical = 6.dp),
+                        ) {
+                            Text(
+                                text = if (ui.selectedForCompare.size < 2) {
+                                    stringResource(
+                                        R.string.patient_history_compare_select_two,
+                                        ui.selectedForCompare.size
+                                    )
+                                } else {
+                                    stringResource(R.string.patient_history_compare_ready)
+                                },
+                                style = MaterialTheme.typography.bodySmall,
+                                color = NsWhite,
+                            )
+                        }
+                    }
+                }
+            }
+
+            if (ui.scans.isNotEmpty()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    StatPill(
+                        label = stringResource(R.string.patient_history_stat_total),
+                        value = "${ui.scans.size}",
+                        modifier = Modifier.weight(1f),
+                    )
+                    ui.scans.firstOrNull()?.let { latest ->
+                        val (bg, fg) = stageBadgeColor(latest.label)
+                        StatPill(
+                            label = stringResource(R.string.patient_history_stat_last),
+                            value = latest.label,
+                            valueColor = fg,
+                            bgColor = bg,
+                            modifier = Modifier.weight(2f),
+                        )
+                    }
+                }
+            }
+
+            if (ui.isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = NsDoctorAccentBlue)
+                }
+            }
+
+            ui.error?.let {
+                Text(
+                    it,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+
+            ui.scanError?.let {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                    colors = CardDefaults.cardColors(containerColor = NsRose50),
+                    shape = RoundedCornerShape(10.dp),
+                ) {
+                    Row(
+                        modifier = Modifier.padding(12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            stringResource(R.string.patient_history_scan_error_icon),
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                        Column {
+                            Text(
+                                stringResource(R.string.patient_history_scan_error_title),
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = NsStatusError,
+                            )
+                            Text(it, style = MaterialTheme.typography.bodySmall, color = NsGray400)
+                        }
+                    }
+                }
+            }
+
+            if (ui.scans.isEmpty() && !ui.isLoading) {
+                Spacer(Modifier.weight(1f))
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(32.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Text(
+                        stringResource(R.string.patient_history_empty_title),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                    Text(
+                        stringResource(R.string.patient_history_empty_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = NsGray400,
+                    )
+                }
+                Spacer(Modifier.weight(1f))
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(
+                        start = 16.dp,
+                        end = 16.dp,
+                        top = 4.dp,
+                        bottom = 100.dp,
+                    ),
+                    verticalArrangement = Arrangement.spacedBy(0.dp),
+                ) {
+                    items(ui.scans, key = { it.id }) { scan ->
+                        TimelineRow(
+                            scan = scan,
+                            isLast = scan == ui.scans.last(),
+                            compareMode = ui.compareMode,
+                            isSelected = scan.id in ui.selectedForCompare,
+                            onToggleSelect = { viewModel.toggleScanSelection(scan.id) },
+                            onTap = { detailScan = scan },
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    if (showCompareDialog) {
+        val pair = viewModel.getSelectedScans()
+        if (pair != null) {
+            CompareDialog(a = pair.first, b = pair.second, onDismiss = { })
+        }
+    }
+
+    detailScan?.let { scan ->
+        ScanDetailBottomSheet(scan = scan, onDismiss = { })
+    }
+}
+
+@Composable
+private fun StatPill(
+    label: String,
+    value: String,
+    modifier: Modifier = Modifier,
+    valueColor: Color = NeurostageBrandBlue,
+    bgColor: Color = NsWhite,
+) {
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = bgColor),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
+            Text(label, style = MaterialTheme.typography.labelSmall, color = NsGray400)
+            Text(
+                value,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = valueColor
+            )
+        }
+    }
+}
+
+@Composable
+private fun TimelineRow(
+    scan: ScanRecord,
+    isLast: Boolean,
+    compareMode: Boolean,
+    isSelected: Boolean,
+    onToggleSelect: () -> Unit,
+    onTap: () -> Unit,
+) {
+    val confidencePct = (scan.confidence * 100).toInt().coerceIn(0, 100)
+    val (badgeBg, badgeFg) = stageBadgeColor(scan.label)
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min)
+            .then(
+                if (compareMode) Modifier.clickable(onClick = onToggleSelect)
+                else Modifier.clickable(onClick = onTap)
+            ),
+        verticalAlignment = Alignment.Top,
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .width(28.dp)
+                .padding(top = 6.dp),
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(12.dp)
+                    .clip(CircleShape)
+                    .background(if (isSelected) MaterialTheme.colorScheme.primary else badgeFg),
+            )
+            if (!isLast) {
+                Box(
+                    modifier = Modifier
+                        .width(2.dp)
+                        .weight(1f)
+                        .background(NsGray300),
+                )
+            }
+        }
+
+        Card(
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 10.dp, bottom = if (isLast) 4.dp else 14.dp),
+            shape = RoundedCornerShape(14.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = if (isSelected) NsChipIndigoBg else NsWhite,
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = if (isSelected) 0.dp else 2.dp),
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(badgeBg)
+                            .padding(horizontal = 8.dp, vertical = 3.dp),
+                    ) {
+                        Text(
+                            text = scan.label,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = badgeFg,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+                    Text(
+                        text = df.format(Date(scan.timestampMs)),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = NsGray400,
+                    )
+                    Text(
+                        text = stringResource(R.string.doctor_history_confidence, confidencePct),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = NsGray600,
+                        fontWeight = FontWeight.Medium,
+                    )
+                }
+                if (compareMode) {
+                    Checkbox(checked = isSelected, onCheckedChange = { onToggleSelect() })
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CompareDialog(a: ScanRecord, b: ScanRecord, onDismiss: () -> Unit) {
+    val older = if (a.timestampMs < b.timestampMs) a else b
+    val newer = if (a.timestampMs > b.timestampMs) a else b
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.patient_history_close))
+            }
+        },
+        title = {
+            Text(
+                stringResource(R.string.patient_history_compare_dialog_title),
+                fontWeight = FontWeight.Bold,
+            )
+        },
+        text = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                CompareSide(
+                    label = stringResource(R.string.patient_history_compare_previous),
+                    scan = older,
+                    modifier = Modifier.weight(1f),
+                )
+                Box(modifier = Modifier
+                    .width(1.dp)
+                    .height(160.dp)
+                    .background(NsGray300))
+                CompareSide(
+                    label = stringResource(R.string.patient_history_compare_next),
+                    scan = newer,
+                    modifier = Modifier.weight(1f),
+                )
+            }
+        },
+    )
+}
+
+@Composable
+private fun CompareSide(label: String, scan: ScanRecord, modifier: Modifier = Modifier) {
+    val pct = (scan.confidence * 100).toInt().coerceIn(0, 100)
+    val (bg, fg) = stageBadgeColor(scan.label)
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Text(label, style = MaterialTheme.typography.labelMedium, color = NsGray600)
+        Text(
+            df.format(Date(scan.timestampMs)),
+            style = MaterialTheme.typography.bodySmall,
+            color = NsGray400
+        )
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(6.dp))
+                .background(bg)
+                .padding(horizontal = 6.dp, vertical = 3.dp),
+        ) {
+            Text(
+                scan.label,
+                style = MaterialTheme.typography.labelSmall,
+                color = fg,
+                fontWeight = FontWeight.Bold
+            )
+        }
+        Text(
+            stringResource(R.string.doctor_history_confidence, pct),
+            style = MaterialTheme.typography.bodySmall,
+            fontWeight = FontWeight.SemiBold,
+        )
+    }
+}
+
+
+private data class ClinicalInfo(
+    val cdrScore: String,
+    val mmseRange: String,
+    val clinicalDescription: String,
+    val pathology: String,
+    val followUp: String,
+    val recommendation: String,
+    val urgency: String,
+    val urgencyColor: Color,
+)
+
+@Composable
+private fun clinicalSnapshot(stageIndex: Int): ClinicalInfo {
+    val lines = stringArrayResource(
+        when (stageIndex) {
+            2 -> R.array.patient_hist_clinic_idx2
+            3 -> R.array.patient_hist_clinic_idx3
+            0 -> R.array.patient_hist_clinic_idx0
+            else -> R.array.patient_hist_clinic_else
+        },
+    )
+    require(lines.size >= 7)
+    val urgencyColor = when (stageIndex) {
+        2 -> NsPatientStageBadge.healthy.second
+        3 -> NsPatientStageBadge.veryMild.second
+        0 -> NsPatientStageBadge.mild.second
+        else -> NsPatientStageBadge.moderateOrUnknown.second
+    }
+    return ClinicalInfo(
+        cdrScore = lines[0],
+        mmseRange = lines[1],
+        clinicalDescription = lines[2],
+        pathology = lines[3],
+        followUp = lines[4],
+        recommendation = lines[5],
+        urgency = lines[6],
+        urgencyColor = urgencyColor,
+    )
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ScanDetailBottomSheet(scan: ScanRecord, onDismiss: () -> Unit) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val confidence = (scan.confidence * 100).toInt().coerceIn(0, 100)
+    val (badgeBg, badgeFg) = stageBadgeColor(scan.label)
+    val clinical = clinicalSnapshot(scan.stageIndex)
+
+    val scoreLabels = stringArrayResource(R.array.patient_history_model_class_labels)
+    val knownHeadings = stringArrayResource(R.array.xai_report_headings).toList()
+
+    val aiBlocks = scan.aiReport?.let { parseAiReportBlocks(it, knownHeadings) }
+    val summaryHint = stringResource(R.string.home_screen_xai_summary_keyword)
+    val summaryBlock =
+        aiBlocks?.firstOrNull { it.first?.contains(summaryHint, ignoreCase = true) == true }
+            ?: aiBlocks?.firstOrNull()
+    val otherBlocks = aiBlocks?.filter { it != summaryBlock }
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        containerColor = NsSlate50,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxHeight(0.9f)
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 20.dp)
+                .navigationBarsPadding()
+                .padding(bottom = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        stringResource(R.string.patient_history_sheet_title),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = NsGray900,
+                    )
+                    Text(
+                        df.format(Date(scan.timestampMs)),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = NsGray400,
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(clinical.urgencyColor.copy(alpha = 0.12f))
+                        .padding(horizontal = 10.dp, vertical = 6.dp),
+                ) {
+                    Text(
+                        clinical.urgency,
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = clinical.urgencyColor,
+                    )
+                }
+            }
+
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = NsWhite),
+                elevation = CardDefaults.cardElevation(2.dp),
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        Box(
+                            modifier = Modifier.size(72.dp),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            CircularProgressIndicator(
+                                progress = { scan.confidence.coerceIn(0f, 1f) },
+                                modifier = Modifier.size(72.dp),
+                                strokeWidth = 7.dp,
+                                color = badgeFg,
+                                trackColor = badgeBg,
+                                strokeCap = StrokeCap.Round,
+                            )
+                            Text(
+                                stringResource(R.string.doctor_result_score_percent, confidence),
+                                fontWeight = FontWeight.ExtraBold,
+                                fontSize = 15.sp,
+                                color = badgeFg,
+                            )
+                        }
+                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(badgeBg)
+                                    .padding(horizontal = 10.dp, vertical = 4.dp),
+                            ) {
+                                Text(
+                                    scan.label,
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = badgeFg,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                InfoChip(clinical.cdrScore)
+                                InfoChip(clinical.mmseRange)
+                            }
+                        }
+                    }
+
+                    HorizontalDivider(color = NsSlate100)
+
+                    if (summaryBlock != null) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        ) {
+                            Icon(
+                                Icons.Outlined.AutoAwesome,
+                                contentDescription = null,
+                                tint = NsViolet500,
+                                modifier = Modifier.size(16.dp),
+                            )
+                            Text(
+                                summaryBlock.first
+                                    ?: stringResource(R.string.patient_history_sheet_ai_fallback),
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = NsViolet500,
+                            )
+                        }
+                        Text(
+                            summaryBlock.second.replace(
+                                stringResource(R.string.patient_history_markdown_bold),
+                                ""
+                            ),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = NsGray700,
+                            lineHeight = 22.sp,
+                        )
+                    } else {
+                        Text(
+                            stringResource(R.string.patient_history_sheet_clinic_comment),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = NsGray600,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                        Text(
+                            clinical.clinicalDescription,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = NsGray700,
+                            lineHeight = 22.sp,
+                        )
+                    }
+                }
+            }
+
+            if (scan.scores.isNotEmpty()) {
+                Card(
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = NsWhite),
+                    elevation = CardDefaults.cardElevation(2.dp),
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Text(
+                            stringResource(R.string.patient_history_sheet_model_title),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = NsGray600,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                        Text(
+                            stringResource(R.string.patient_history_sheet_model_subtitle),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = NsGray400,
+                        )
+                        scan.scores.forEachIndexed { i, score ->
+                            val isSelected = i == scan.stageIndex
+                            val barColor = if (isSelected) {
+                                NsPatientScoreBarColors.getOrElse(i) { badgeFg }
+                            } else {
+                                NsGraySlateBar
+                            }
+                            Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(8.dp)
+                                            .clip(CircleShape)
+                                            .background(barColor),
+                                    )
+                                    Spacer(Modifier.width(6.dp))
+                                    Text(
+                                        scoreLabels.getOrNull(i)
+                                            ?: stringResource(
+                                                R.string.patient_history_model_class_fallback,
+                                                i
+                                            ),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        modifier = Modifier.weight(1f),
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                        color = if (isSelected) NsGray900 else NsGray600,
+                                    )
+                                    Text(
+                                        stringResource(R.string.patient_history_score_decimal).format(
+                                            score * 100
+                                        ),
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                        color = if (isSelected) barColor else NsGray400,
+                                    )
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(8.dp)
+                                        .clip(RoundedCornerShape(99.dp))
+                                        .background(NsSlate100),
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth(score.coerceIn(0f, 1f))
+                                            .fillMaxHeight()
+                                            .clip(RoundedCornerShape(99.dp))
+                                            .background(barColor),
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (otherBlocks != null && otherBlocks.isNotEmpty()) {
+                otherBlocks.forEach { (title, content) ->
+                    val markdownBold = stringResource(R.string.patient_history_markdown_bold)
+                    val cleanContent =
+                        content.replace(markdownBold, "").replace(Regex("(?m)^- "), "• ")
+                            .replace(Regex("(?m)^\\* "), "• ")
+                    Card(
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = NsSlate50),
+                        elevation = CardDefaults.cardElevation(0.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                title?.uppercase()
+                                    ?: stringResource(R.string.patient_history_sheet_block_fallback).uppercase(),
+                                style = MaterialTheme.typography.labelMedium,
+                                color = NsIndigo500,
+                                fontWeight = FontWeight.ExtraBold,
+                                letterSpacing = 0.5.sp
+                            )
+                            if (cleanContent.isNotBlank()) {
+                                Text(
+                                    cleanContent,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = NsGray800,
+                                    lineHeight = 20.sp
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (scan.aiReport == null) {
+                Card(
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = NsAmber50),
+                    elevation = CardDefaults.cardElevation(0.dp),
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            stringResource(R.string.patient_history_sheet_neuropath_title),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = NsAmber800,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                        Text(
+                            clinical.pathology,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = NsAmber900,
+                            lineHeight = 20.sp,
+                        )
+                    }
+                }
+
+                Card(
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = NsBlue50),
+                    elevation = CardDefaults.cardElevation(0.dp),
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(NsBlue700.copy(alpha = 0.12f))
+                                    .padding(horizontal = 6.dp, vertical = 3.dp),
+                            ) {
+                                Text(
+                                    stringResource(R.string.patient_history_sheet_follow_tag).uppercase(),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = NsBlue700,
+                                    fontWeight = FontWeight.Bold,
+                                )
+                            }
+                            Text(
+                                clinical.followUp,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = NsBlue800,
+                                fontWeight = FontWeight.Medium,
+                            )
+                        }
+                        HorizontalDivider(color = NsBlue100)
+                        Text(
+                            stringResource(R.string.patient_history_sheet_clinic_advice),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = NsBlue800,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                        Text(
+                            clinical.recommendation,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = NsBlue700,
+                            lineHeight = 20.sp,
+                        )
+                    }
+                }
+            }
+
+            Text(
+                stringResource(R.string.patient_history_sheet_footer_disclaimer),
+                style = MaterialTheme.typography.bodySmall,
+                color = NsGray400,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth(),
+                lineHeight = 18.sp,
+            )
+        }
+    }
+}
+
+@Composable
+private fun InfoChip(text: String) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(6.dp))
+            .background(NsSlate100)
+            .padding(horizontal = 8.dp, vertical = 3.dp),
+    ) {
+        Text(
+            text,
+            style = MaterialTheme.typography.labelSmall,
+            color = NsGray700,
+            fontWeight = FontWeight.Medium,
+        )
+    }
+}

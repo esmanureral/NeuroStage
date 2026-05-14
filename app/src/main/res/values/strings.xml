@@ -1,4 +1,316 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">NeuroStage</string>
+    <string name="error_firebase_config">Firebase yapılandırması bulunamadı. google-services.json ekleyin.</string>
+    <string name="error_auth_no_current_user">Oturum açık kullanıcı bulunamadı.</string>
+
+    <!-- Role pick -->
+    <string name="role_pick_title">NeuroStage</string>
+    <string name="role_pick_subtitle">Yapay zeka destekli Alzheimer teşhis\nve takip asistanınız.</string>
+    <string name="role_pick_doctor_button">Doktor / Klinik Girişi</string>
+    <string name="role_pick_patient_button">Hasta (Kişisel Tarama)</string>
+
+    <!-- Patient home -->
+    <string name="patient_home_title">Hasta</string>
+    <string name="patient_home_subtitle">Bu tarafın ekranlarını bir sonraki adımda inşa edeceğiz.\nŞimdilik altyapı hazır.</string>
+    <string name="patient_home_back_to_role">Rol Seçimine Dön</string>
+
+    <string name="doctor_auth_error_name_required">Ad ve soyad girin.</string>
+    <string name="doctor_auth_error_email_password">E-posta ve en az %1$d karakter şifre girin.</string>
+    <string name="doctor_auth_error_signup_session">Kayıt tamamlandı ancak oturum bilgisi alınamadı. Lütfen giriş yapmayı deneyin.</string>
+    <string name="doctor_auth_error_profile_save">Profil kaydedilirken hata oluştu.</string>
+    <string name="doctor_auth_info_signup_success">Kayıt başarılı. Şimdi giriş yapabilirsiniz.</string>
+    <string name="doctor_auth_error_unknown">Bilinmeyen bir hata oluştu.</string>
+    <string name="doctor_auth_error_email_in_use">Bu e-posta adresi zaten kullanımda.</string>
+    <string name="doctor_auth_error_invalid_email">Lütfen geçerli bir e-posta adresi girin.</string>
+    <string name="doctor_auth_error_user_not_found">Bu e-posta adresi ile kayıtlı bir kullanıcı bulunamadı.</string>
+    <string name="doctor_auth_error_wrong_credentials">E-posta veya şifre hatalı. Lütfen tekrar deneyin.</string>
+    <string name="doctor_auth_error_network">İnternet bağlantınızı kontrol edin.</string>
+    <string name="doctor_auth_error_too_many_requests">Çok fazla başarısız deneme yaptınız. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="doctor_auth_error_weak_password">Şifre çok zayıf. Daha güçlü bir şifre seçin.</string>
+    <string name="doctor_auth_error_generic">Giriş işlemi başarısız oldu. Lütfen bilgilerinizi kontrol edin.</string>
+
+    <string name="doctor_history_title">Analiz Sonuçları</string>
+    <string name="doctor_history_cd_back">Geri</string>
+    <string name="doctor_history_empty">Henüz kayıt yok.\nBir MR analizi yaptığınızda burada listelenecek.</string>
+    <string name="doctor_history_confidence">Güven: %1$d%%</string>
+    <string name="doctor_history_open_detail_cd">Sonuç detayını aç</string>
+
+    <string name="doctor_home_profile_error">Profil bilgisi yüklenemedi.</string>
+
+    <string name="doctor_login_headline_sign_up">Hesap Oluştur</string>
+    <string name="doctor_login_headline_sign_in">Tekrar Hoşgeldiniz</string>
+    <string name="doctor_login_subtitle_sign_up">Bugün hesabınızı oluşturun ve\nNeuroStage kullanmaya başlayın.</string>
+    <string name="doctor_login_subtitle_sign_in">Hesabınıza erişmek için\nlütfen bilgilerinizi girin.</string>
+    <string name="doctor_login_tab_sign_in">Giriş Yap</string>
+    <string name="doctor_login_tab_sign_up">Kayıt Ol</string>
+    <string name="doctor_login_label_first_name">Ad</string>
+    <string name="doctor_login_label_last_name">Soyad</string>
+    <string name="doctor_login_label_email">E-posta</string>
+    <string name="doctor_login_label_password">Şifre</string>
+    <string name="doctor_login_cd_password_hide">Şifreyi gizle</string>
+    <string name="doctor_login_cd_password_show">Şifreyi göster</string>
+    <string name="doctor_login_button_sign_in">Giriş Yap</string>
+    <string name="doctor_login_button_sign_up">Kayıt Ol</string>
+    <string name="doctor_login_footer_has_account">Zaten bir hesabınız var mı?\u0020</string>
+    <string name="doctor_login_footer_no_account">Hesabınız yok mu?\u0020</string>
+    <string name="doctor_login_back_to_role_pick">Rol seçimine geri dön</string>
+    <string name="doctor_login_loading_cd">Yükleniyor</string>
+
+    <string name="doctor_result_detail_title">Teknik Detay</string>
+    <string name="doctor_result_not_found">Kayıt bulunamadı.</string>
+    <string name="doctor_result_confidence_score">Güven skoru: %1$d%%</string>
+    <string name="doctor_result_class_scores_title">Sınıf Skorları</string>
+    <string name="doctor_result_scores_legacy">Bu kayıt eski formatta tutulmuş. Yeni analizlerde skor dağılımı da saklanır.</string>
+    <string name="doctor_result_score_percent">%1$d%%</string>
+    <string name="doctor_result_class_fallback">Sınıf %1$d</string>
+
+    <string-array name="doctor_result_class_labels">
+        <item>Hafif evre</item>
+        <item>Orta evre</item>
+        <item>Sağlıklı</item>
+        <item>Çok hafif evre</item>
+    </string-array>
+
+    <string name="error_session_required">Oturum bulunamadı.</string>
+
+    <!-- Doctor shell -->
+    <string name="doctor_shell_welcome">Hoşgeldiniz</string>
+    <string name="doctor_shell_product_line">Alzheimer evre analiz sistemi</string>
+    <string name="doctor_shell_quick_access">Hızlı erişim</string>
+    <string name="doctor_shell_action_mri_title">MR yükle ve analiz et</string>
+    <string name="doctor_shell_action_mri_subtitle">Yeni bir beyin MR görüntüsü yükle</string>
+    <string name="doctor_shell_patients_title">Hastalar</string>
+    <string name="doctor_shell_patients_subtitle">Kayıtlı hastaları görüntüle</string>
+    <string name="doctor_shell_history_title">Geçmiş</string>
+    <string name="doctor_shell_history_subtitle">Tüm analizler</string>
+    <string name="doctor_shell_sign_out">Oturumu kapat</string>
+    <string name="doctor_shell_sign_out_confirm">Oturumu kapatmak istediğinize emin misiniz?</string>
+    <string name="doctor_shell_yes">Evet</string>
+    <string name="doctor_shell_cancel">Vazgeç</string>
+    <string name="doctor_shell_cd_close">Kapat</string>
+    <string name="doctor_drawer_patients">Hastalar</string>
+    <string name="doctor_drawer_history">Geçmiş analizler</string>
+    <string name="doctor_drawer_mri">MR yükle</string>
+    <string name="doctor_drawer_sign_out">Oturumu kapat</string>
+    <string name="doctor_ui_initials_unknown">\u003F</string>
+
+    <!-- Patient intake -->
+    <string name="patient_intake_title">Yeni hasta kaydı</string>
+    <string name="patient_intake_subtitle">MR yüklemeden önce hasta bilgilerini kaydedelim. Analiz bu hastaya bağlanacak.</string>
+    <string name="patient_intake_name_label">Hasta ad soyad</string>
+    <string name="patient_intake_age_label">Yaş (opsiyonel)</string>
+    <string name="patient_intake_gender_label">Cinsiyet</string>
+    <string name="gender_male">Erkek</string>
+    <string name="gender_female">Kadın</string>
+    <string name="gender_other">Diğer</string>
+    <string name="patient_intake_continue">Devam et</string>
+    <string name="patient_intake_error_name">Hasta adını girin.</string>
+    <string name="patient_intake_save_failed">Kayıt kaydedilemedi.</string>
+
+    <!-- Patient list -->
+    <string name="patient_list_title">Hastalar</string>
+    <string name="patient_list_registered_count">%1$d kayıtlı hasta</string>
+    <string name="patient_list_empty_title">Henüz hasta yok</string>
+    <string name="patient_list_empty_hint">MR yüklemeden önce hasta bilgilerini kaydedebilirsiniz.</string>
+    <string name="patient_list_last_scan_format">Son analiz: %1$s</string>
+    <string name="patient_list_cd_open_patient">Hasta detayı</string>
+    <string name="patient_age_years_format">%1$d yaş</string>
+    <string name="patient_trend_improving">İlerliyor</string>
+    <string name="patient_trend_stable">Stabil</string>
+    <string name="patient_list_load_failed">Hastalar yüklenemedi.</string>
+
+    <!-- Patient history -->
+    <string name="patient_history_fallback_name">Hasta</string>
+    <string name="patient_history_cd_refresh">Yenile</string>
+    <string name="patient_history_cd_compare">Karşılaştırma modu</string>
+    <string name="patient_history_cd_new_mr">Yeni MR yükle</string>
+    <string name="patient_history_compare">Karşılaştır</string>
+    <string name="patient_history_compare_select_two">Karşılaştırmak için 2 analiz seçin (%1$d/2)</string>
+    <string name="patient_history_compare_ready">2 analiz seçildi — Karşılaştır butonuna basın</string>
+    <string name="patient_history_stat_total">Toplam analiz</string>
+    <string name="patient_history_stat_last">Son durum</string>
+    <string name="patient_history_scan_error_title">Taramalar yüklenemedi</string>
+    <string name="patient_history_scan_error_icon">Uyarı</string>
+    <string name="patient_history_empty_title">Henüz analiz yok</string>
+    <string name="patient_history_empty_hint">Sağ üstteki yükleme ikonuna dokunarak MR ekleyebilirsiniz.</string>
+    <string name="patient_history_compare_dialog_title">Karşılaştırma</string>
+    <string name="patient_history_close">Kapat</string>
+    <string name="patient_history_compare_previous">Önceki</string>
+    <string name="patient_history_compare_next">Sonraki</string>
+    <string name="patient_history_sheet_title">Klinik analiz raporu</string>
+    <string name="patient_history_sheet_ai_fallback">Yapay zeka klinik özeti</string>
+    <string name="patient_history_sheet_clinic_comment">Klinik yorum</string>
+    <string name="patient_history_sheet_model_title">Model çıktı dağılımı</string>
+    <string name="patient_history_sheet_model_subtitle">TFLite sınıflandırıcısının 4 kategori için ürettiği olasılık değerleri</string>
+    <string name="patient_history_sheet_block_fallback">Klinik bilgi</string>
+    <string name="patient_history_sheet_neuropath_title">Nöropatolojik bulgular</string>
+    <string name="patient_history_sheet_follow_tag">Takip</string>
+    <string name="patient_history_sheet_clinic_advice">Klinik öneri</string>
+    <string name="patient_history_sheet_footer_disclaimer">Bu rapor yapay zeka destekli görüntü analizi sonucudur. Kesin tanı için nöroloji uzmanı değerlendirmesi gereklidir.</string>
+    <string name="patient_history_model_class_fallback">Sınıf %1$d</string>
+    <string name="patient_history_score_decimal">%.1f%%</string>
+    <string name="patient_history_meta_separator"> · </string>
+    <string name="patient_history_markdown_bold">**</string>
+
+    <!-- Sıra: Mild(0), Moderate(1), Healthy(2), Very Mild(3) — model çıktı indeksleri -->
+    <string-array name="patient_history_model_class_labels">
+        <item>Hafif evre</item>
+        <item>Orta evre</item>
+        <item>Sağlıklı</item>
+        <item>Çok hafif evre</item>
+    </string-array>
+
+    <!-- Fallback klinik metin blokları [cdr, MMSE, klinik, patoloji, takip, öneri, aciliyet yazısı] -->
+    <string-array name="patient_hist_clinic_idx2" tools:ignore="TypographyDashes">
+        <item>CDR 0</item>
+        <item>MMSE: 27–30</item>
+        <item>Beyin yapısı ve fonksiyonları normal sınırlar içindedir. Belirgin kognitif gerileme bulgusu saptanmamıştır. Günlük yaşam aktiviteleri bağımsız olarak sürdürülmektedir.</item>
+        <item>Hipokampal hacim normal. Amiloid plak birikimine ilişkin belirgin bulgu yok. Kortikal atrofi izlenmiyor.</item>
+        <item>Rutin yıllık kontrol yeterlidir.</item>
+        <item>Düzenli aerobik egzersiz, Akdeniz diyeti ve bilişsel aktivite (okuma, bulmaca) uygulanması önerilir.</item>
+        <item>Rutin Takip</item>
+    </string-array>
+    <string-array name="patient_hist_clinic_idx3" tools:ignore="TypographyDashes">
+        <item>CDR 0.5</item>
+        <item>MMSE: 24–26</item>
+        <item>Çok hafif bilişsel değişiklikler mevcuttur. Subjektif bellek şikayetleri başlamış olabilir. Kompleks günlük aktiviteler hafif bozulmuş, ancak bağımsızlık korunmaktadır.</item>
+        <item>Erken hipokampal atrofi olasılığı. Entorinal korteks tutulumu değerlendirilmeli. MCI (Hafif Kognitif Bozukluk) eşiği.</item>
+        <item>6 ayda bir nöropsikolojik değerlendirme önerilir.</item>
+        <item>Kognitif rezervi artırıcı aktiviteler, kardiyovasküler risk faktörlerinin kontrolü, uyku düzeninin optimize edilmesi.</item>
+        <item>Yakın Takip</item>
+    </string-array>
+    <string-array name="patient_hist_clinic_idx0" tools:ignore="TypographyDashes">
+        <item>CDR 1</item>
+        <item>MMSE: 20–23</item>
+        <item>Hafif kognitif gerileme tespit edilmiştir. Bellek, dil ve yürütücü işlev etkilenmiştir. Karmaşık görevlerde yardım gerektirebilir; ancak temel öz bakım bağımsızdır.</item>
+        <item>Hipokampal ve entorhinal korteks atrofisi belirginleşmiştir. Amiloid ve tau patolojisi ilerlemiş olasılığı yüksektir.</item>
+        <item>3 ayda bir nöroloji/geriatri takibi. Nöropsikolojik test bataryası (MMSE, MoCA, ADL).</item>
+        <item>Asetilkolinesteraz inhibitörü (donepezil, rivastigmin) başlanması değerlendirilebilir. Aile eğitimi ve destek grubu.</item>
+        <item>Aktif Tedavi</item>
+    </string-array>
+    <string-array name="patient_hist_clinic_else" tools:ignore="TypographyDashes">
+        <item>CDR 2</item>
+        <item>MMSE: 10–19</item>
+        <item>Orta derecede kognitif gerileme saptanmıştır. Bellek bozukluğu belirgindir; tanıdık kişileri, yerleri hatırlamakta güçlük çekebilir. Günlük aktivitelerde sürekli yardım gereklidir.</item>
+        <item>Yaygın kortikal atrofi, belirgin hipokampal küçülme. Nöronal kayıp kritik eşiği geçmiş olabilir. Serebral amiloid anjiyopati riski.</item>
+        <item>Aylık klinik değerlendirme. Bakıcı/aile ile ortak değerlendirme seansları zorunludur.</item>
+        <item>Kombinasyon tedavisi (AChE inhibitörü + memantin) endikasyonu. Davranışsal semptomlar için ek farmakolojik destek. Güvenli yaşam ortamı düzenlemesi.</item>
+        <item>Acil Müdahale</item>
+    </string-array>
+
+    <!-- HomeScreen -->
+    <string name="home_screen_upload_title">MR Analizi Yükle</string>
+    <string name="home_screen_upload_subtitle">Alzheimer değerlendirmesi için MR görüntüsü seçin</string>
+    <string name="home_screen_pick_image">Görüntü Seçin</string>
+    <string name="home_screen_pick_camera">Kamera</string>
+    <string name="home_screen_pick_gallery">Galeri</string>
+    <string name="home_screen_disclaimer">Sonuçlar tıbbi tanı yerine geçmez.</string>
+    <string name="home_screen_preview_title">Görüntü Hazır</string>
+    <string name="home_screen_preview_instruction">Analizi başlatmak için onaylayın</string>
+    <string name="home_screen_preview_change">Değiştir</string>
+    <string name="home_screen_preview_analyze">Analizi Başlat</string>
+    <string name="home_screen_preview_disclaimer">~15 saniye · Sonuçlar tıbbi tanı yerine geçmez.</string>
+    <string name="home_screen_analyze_brain_img">Beyin görüntüsü inceleniyor…</string>
+    <string name="home_screen_analyze_calculating">Sonuç hesaplanıyor…</string>
+    <string name="home_screen_result_title">Analiz Sonucu</string>
+    <string name="home_screen_result_mri_label">MRI Görüntüsü</string>
+    <string name="home_screen_result_confidence">%%$1d güven</string>
+    <string name="home_screen_xai_loading_title">Yapay Zeka Klinik Raporu Hazırlanıyor…</string>
+    <string name="home_screen_xai_loading_subtitle">XAI Analizi &amp; Grok Vision</string>
+    <string name="home_screen_xai_summary_fallback">Yapay Zeka Klinik Özeti</string>
+    <string name="home_screen_xai_summary_keyword">Özet</string>
+    <string name="home_screen_xai_clinic_fallback">KLİNİK BİLGİ</string>
+    <string name="home_screen_result_disclaimer">Kesin tanı için uzman hekime başvurunuz.</string>
+    <string name="home_screen_gemini_error">Gemini hatası: %1$s</string>
+    <string name="home_screen_new_scan">Yeni Tarama</string>
+    <string name="home_screen_app_disclaimer">Bu uygulama tıbbi tanı aracı değildir.</string>
+
+    <string-array name="home_screen_stage_tones">
+        <item>Sağlıklı</item>
+        <item>Çok Hafif Evre</item>
+        <item>Hafif Evre</item>
+        <item>Orta Evre</item>
+        <item>İleri Evre</item>
+    </string-array>
+
+    <string-array name="home_screen_analyze_labels">
+        <item>Görüntü hazırlanıyor</item>
+        <item>Beyin segmentasyonu</item>
+        <item>Hipokampus analizi</item>
+        <item>Evre tespiti</item>
+    </string-array>
+
+    <string-array name="home_screen_class_labels">
+        <item>Hafif Alzheimer</item>
+        <item>Orta Evre Alzheimer</item>
+        <item>Demanssız</item>
+        <item>Çok Hafif Alzheimer</item>
+    </string-array>
+
+    <!-- XAI Gemini Report -->
+    <string name="xai_patient_desc_both">%1$s, %2$d yaşında hasta</string>
+    <string name="xai_patient_desc_age">%1$d yaşında hasta</string>
+    <string name="xai_patient_desc_gender">%1$s</string>
+    <string name="xai_patient_desc_none">bilgisi girilmemiş hasta</string>
+    <string name="xai_saliency_success_peak">RISE Saliency Analizi: Model kararında en belirleyici anatomik bölge %1$s olarak tespit edilmiştir (aktivasyon yoğunluğu: %%%2$d).</string>
+    <string name="xai_saliency_success">RISE Saliency Analizi: Model kararında en belirleyici anatomik bölge %1$s olarak tespit edilmiştir.</string>
+    <string name="xai_saliency_fail">RISE Saliency Analizi: Bölge tespiti tamamlanamadı.</string>
+    <string name="xai_fallback_region_info"> Model, %1$s bölgesindeki örüntülere odaklanmıştır.</string>
+    <string name="xai_fallback_report">%1$s Model, %2$s bulgularıyla uyumlu örüntüler tespit etmiştir (güven %%%3$d).%4$s Kesin değerlendirme için klinik muayene ve uzman görüşü önerilmektedir.</string>
+
+    <string name="xai_prompt"><![CDATA[Sen deneyimli bir nöroloji uzmanısın. Aşağıdaki yapay zeka analiz sonuçlarını ve ekli aksiyel beyin MRI görüntüsünü değerlendir.
+Lütfen her bir MRI görüntüsünün kendine has dokusal ve yapısal detaylarına (atrofi şiddeti, asimetri, spesifik kortikal durumlar vb.) özgün bir şekilde odaklan. Tıbbi ve profesyonel bir üslup kullan.
+
+HASTA BİLGİSİ: %1$s
+MODEL TAHMİNİ: %2$s — Güven: %%%3$d (±%%%4$.1f)
+TÜM SINIF OLASILIKLARI: %5$s
+%6$s
+
+Lütfen raporunu aşağıdaki Markdown başlıklarıyla (tam olarak bu isimleri ve \'#\' işaretlerini kullanarak), Türkçe olarak yaz:
+
+### Klinik Özet
+Hastanın genel durumunu ve modelin tahminini, her defasında farklı bir nörolojik yaklaşım ve üslupla özgün bir şekilde özetle.
+
+### Model Karar Açıklaması
+RISE saliency analizi modelin hangi beyin bölgesine odaklandığını ortaya koymaktadır. Bu bölgede Alzheimer patolojisiyle ilişkili hangi yapısal değişikliklerin bekleneceğini ve MRI görüntüsünde gözlemlenebilir olup olmadığını açıkla. Modelin bu kararı neden verdiğini klinik literatürle ilişkilendir.
+
+### MRI Bulguları
+Ekli MRI görüntüsünü doğrudan incele. Hipokampus hacmi, temporal ve frontal lob atrofisi, ventriküller, beyaz cevher değişiklikleri ve sulkus genişlemesi gibi spesifik bulgulara odaklan.
+
+### Önerilen Sonraki Adımlar
+Klinisyen için somut ve önceliklendirilmiş öneriler sun (örn. MMSE, nöropsikolojik test, PET, takip MRI, nöroloji konsültasyonu).
+
+Önemli Not: Bu rapor bir yapay zeka destekli ön değerlendirmedir. Kesin tanı koymaz.]]></string>
+
+    <string name="brain_region_left_frontal">sol frontal lob</string>
+    <string name="brain_region_right_frontal">sağ frontal lob</string>
+    <string name="brain_region_prefrontal">prefrontal korteks</string>
+    <string name="brain_region_hippocampal">hipokampal bölge</string>
+    <string name="brain_region_left_temporal">sol temporal lob</string>
+    <string name="brain_region_right_temporal">sağ temporal lob</string>
+    <string name="brain_region_left_parietal">sol parietal korteks</string>
+    <string name="brain_region_right_parietal">sağ parietal korteks</string>
+    <string name="brain_region_parietal">parietal korteks</string>
+    <string name="brain_region_unknown">belirsiz bölge</string>
+
+    <string-array name="xai_report_headings">
+        <item>KLİNİK ÖZET</item>
+        <item>MODEL KARAR AÇIKLAMASI</item>
+        <item>MRI BULGULARI</item>
+        <item>SONRAKİ ADIMLAR</item>
+        <item>ÖNERİLEN SONRAKİ ADIMLAR</item>
+    </string-array>
+
+    <string-array name="home_screen_class_descriptions">
+        <item>Hafif derecede bilişsel gerileme tespit edilmiştir. Günlük aktivitelerde bazı güçlükler gözlemlenebilir.</item>
+        <item>Orta derecede bilişsel gerileme tespit edilmiştir. Düzenli tıbbi takip önerilmektedir.</item>
+        <item>Beyin fonksiyonları normal sınırlar içindedir. Koruyucu egzersizlerle bilişsel sağlığınızı destekleyebilirsiniz.</item>
+        <item>Çok hafif bilişsel değişiklikler görülmektedir. Erken dönem takip faydalı olabilir.</item>
+    </string-array>
+
+    <string name="error_invalid_mri">Lütfen geçerli bir beyin MR görüntüsü yükleyin.</string>
+    <string name="error_select_mri_first">Önce geçerli bir beyin MR görüntüsü seçin.</string>
+    <string name="error_classification_failed">Sınıflandırma başarısız oldu.</string>
+    <string name="error_firebase_save">Firebase kayıt hatası: %s</string>
 </resources>

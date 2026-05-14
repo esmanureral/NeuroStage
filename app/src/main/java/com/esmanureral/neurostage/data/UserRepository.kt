@@ -1,6 +1,7 @@
 package com.esmanureral.neurostage.data
 
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,15 +15,11 @@ class UserRepository @Inject constructor(
     private val prefs: SharedPreferences,
 ) {
     companion object {
-        private const val KEY_USER_NAME     = "user_name"
         private const val KEY_LAST_MR_STAGE = "last_mr_stage_index"
-        private const val KEY_SCAN_HISTORY  = "scan_history_json"
-        private const val NO_STAGE          = -1
-        private const val MAX_HISTORY       = 50
+        private const val KEY_SCAN_HISTORY = "scan_history_json"
+        private const val NO_STAGE = -1
+        private const val MAX_HISTORY = 50
     }
-
-    private val _userName = MutableStateFlow(prefs.getString(KEY_USER_NAME, "") ?: "")
-    val userName: StateFlow<String> = _userName.asStateFlow()
 
     private val _lastMrStageIndex = MutableStateFlow(
         prefs.getInt(KEY_LAST_MR_STAGE, NO_STAGE).takeIf { it != NO_STAGE }
@@ -32,13 +29,8 @@ class UserRepository @Inject constructor(
     private val _scanHistory = MutableStateFlow(loadHistory())
     val scanHistory: StateFlow<List<MrScanRecord>> = _scanHistory.asStateFlow()
 
-    fun saveUserName(name: String) {
-        prefs.edit().putString(KEY_USER_NAME, name.trim()).apply()
-        _userName.value = name.trim()
-    }
-
     fun saveMrStageIndex(index: Int) {
-        prefs.edit().putInt(KEY_LAST_MR_STAGE, index).apply()
+        prefs.edit { putInt(KEY_LAST_MR_STAGE, index) }
         _lastMrStageIndex.value = index
     }
 
@@ -49,34 +41,43 @@ class UserRepository @Inject constructor(
         saveMrStageIndex(record.stageIndex)
     }
 
-    fun isFirstLaunch(): Boolean = prefs.getString(KEY_USER_NAME, null) == null
-
     private fun loadHistory(): List<MrScanRecord> {
         val json = prefs.getString(KEY_SCAN_HISTORY, null) ?: return emptyList()
         return try {
             val arr = JSONArray(json)
             (0 until arr.length()).map { i ->
                 val obj = arr.getJSONObject(i)
+                val scores = obj.optJSONArray("scores")?.let { sArr ->
+                    FloatArray(sArr.length()) { idx -> sArr.optDouble(idx, 0.0).toFloat() }
+                }
                 MrScanRecord(
-                    timestamp  = obj.getLong("ts"),
+                    timestamp = obj.getLong("ts"),
                     stageIndex = obj.getInt("stage"),
-                    label      = obj.getString("label"),
+                    label = obj.getString("label"),
                     confidence = obj.getDouble("conf").toFloat(),
+                    scores = scores,
                 )
             }
-        } catch (_: Exception) { emptyList() }
+        } catch (_: Exception) {
+            emptyList()
+        }
     }
 
     private fun persistHistory(list: List<MrScanRecord>) {
         val arr = JSONArray()
         list.forEach { r ->
             arr.put(JSONObject().apply {
-                put("ts",    r.timestamp)
+                put("ts", r.timestamp)
                 put("stage", r.stageIndex)
                 put("label", r.label)
-                put("conf",  r.confidence.toDouble())
+                put("conf", r.confidence.toDouble())
+                r.scores?.let { sc ->
+                    val scArr = JSONArray()
+                    sc.forEach { v -> scArr.put(v.toDouble()) }
+                    put("scores", scArr)
+                }
             })
         }
-        prefs.edit().putString(KEY_SCAN_HISTORY, arr.toString()).apply()
+        prefs.edit { putString(KEY_SCAN_HISTORY, arr.toString()) }
     }
 }

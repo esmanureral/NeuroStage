@@ -3,6 +3,7 @@ package com.esmanureral.neurostage.di
 import android.content.Context
 import android.content.SharedPreferences
 import com.esmanureral.neurostage.TFLiteClassifier
+import com.esmanureral.neurostage.util.Constants
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,7 +19,7 @@ object AppModule {
     @Provides
     @Singleton
     fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences =
-        context.getSharedPreferences("neurostage_prefs", Context.MODE_PRIVATE)
+        context.getSharedPreferences(Constants.PREFS_NAME, Context.MODE_PRIVATE)
 
     @Provides
     @Singleton
@@ -26,10 +27,8 @@ object AppModule {
     fun provideAlzheimerClassifier(@ApplicationContext context: Context): TFLiteClassifier =
         TFLiteClassifier(
             context = context,
-            modelFileName = "alzheimer_preprocessed.tflite",
-            inputSize = 260,
-            numClasses = 4,
-            normalize = false
+            modelFileName = Constants.Model.ALZHEIMER_FILE_NAME,
+            inputSize = Constants.Model.ALZHEIMER_INPUT_SIZE
         )
 
     @Provides
@@ -38,9 +37,8 @@ object AppModule {
     fun provideMriFilterClassifier(@ApplicationContext context: Context): TFLiteClassifier =
         TFLiteClassifier(
             context = context,
-            modelFileName = "mri_filter_v2_noquant.tflite",
-            inputSize = 224,
-            numClasses = 2,
-            normalize = true   // MobileNetV3Small: [0,1] range
+            modelFileName = Constants.Model.MRI_FILTER_FILE_NAME,
+            inputSize = Constants.Model.MRI_FILTER_INPUT_SIZE,
+            normalize = true
         )
 }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "415260254323",
+    "project_id": "neurostage-ac109",
+    "storage_bucket": "neurostage-ac109.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:415260254323:android:5e53b2e915fb2c0e834a06",
+        "android_client_info": {
+          "package_name": "com.esmanureral.neurostage"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBio7u-iWzHDhenTaeyes8uub6scTAC3tE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

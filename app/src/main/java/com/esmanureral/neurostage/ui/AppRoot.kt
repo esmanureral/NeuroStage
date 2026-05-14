@@ -151,12 +151,25 @@ fun AppRoot() {
 
         composable(Routes.PATIENT_HOME) {
             PatientHomeScreen(
+                onStartScan = {
+                    nav.navigate(Routes.PATIENT_SCAN) {
+                        launchSingleTop = true
+                    }
+                },
                 onBackToRolePick = {
                     nav.navigate(Routes.ROLE_PICK) {
                         popUpTo(Routes.PATIENT_HOME) { inclusive = true }
                         launchSingleTop = true
                     }
                 },
+            )
+        }
+
+        composable(Routes.PATIENT_SCAN) {
+            MainScreen(
+                patientId = null,
+                isPatient = true,
+                onBack = { nav.popBackStack() },
             )
         }
     }

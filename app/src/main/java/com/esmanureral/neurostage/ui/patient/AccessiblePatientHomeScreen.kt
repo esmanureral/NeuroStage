@@ -27,7 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.esmanureral.neurostage.R
 
@@ -143,7 +142,7 @@ private fun AccessibleExitBottomBar(onExit: () -> Unit) {
         colors = ButtonDefaults.buttonColors(
             containerColor = PatientColors.accessibleExitAction,
         ),
-        shape = RoundedCornerShape(0.dp),
+        shape = RoundedCornerShape(PatientDimens.cornerNone),
         modifier = Modifier
             .fillMaxWidth()
             .height(PatientDimens.accessibleExitBarHeight),

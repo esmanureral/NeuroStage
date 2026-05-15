@@ -15,6 +15,11 @@ object Routes {
 
     const val PATIENT_HOME = "patient_home"
     const val PATIENT_SCAN = "patient_scan"
+
+    const val PATIENT_GAMES = "patient_games"
+    const val PATIENT_GAME_ROUTINE = "patient_game_routine"
+    const val PATIENT_GAME_MEMORY = "patient_game_memory"
+    const val PATIENT_GAME_PUZZLE = "patient_game_puzzle"
 }
 
 object RouteArgs {

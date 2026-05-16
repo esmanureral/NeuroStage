@@ -21,11 +21,42 @@ import com.esmanureral.neurostage.ui.doctor.PatientIntakeScreen
 import com.esmanureral.neurostage.ui.doctor.PatientListScreen
 import com.esmanureral.neurostage.ui.onboarding.RoleGateViewModel
 import com.esmanureral.neurostage.ui.onboarding.RolePickScreen
-import com.esmanureral.neurostage.ui.patient.PatientHomeScreen
+import com.esmanureral.neurostage.ui.onboarding.RolePickViewModel
+import com.esmanureral.neurostage.ui.patient.StageAwarePatientHomeScreen
+import com.esmanureral.neurostage.ui.patient.games.GameHubScreen
+import com.esmanureral.neurostage.ui.patient.games.MemoryGameScreen
+import com.esmanureral.neurostage.ui.patient.games.RoutineOrderGameScreen
+import com.esmanureral.neurostage.domain.patient.PatientStage
+import com.esmanureral.neurostage.ui.patient.navigation.BrainExerciseRouteGuard
+import com.esmanureral.neurostage.ui.patient.navigation.MildHomePuzzleRouteGuard
+import com.esmanureral.neurostage.ui.patient.navigation.MriModeratePuzzleRouteGuard
+import com.esmanureral.neurostage.ui.patient.games.puzzle.PuzzleGameScreen
+import com.esmanureral.neurostage.ui.patient.puzzle.core.PuzzleProgressTrack
+import com.esmanureral.neurostage.ui.theme.NeuroStagePatientTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
 
 @Composable
 fun AppRoot() {
     val nav = rememberNavController()
+
+    fun navigateToPatientHome() {
+        nav.navigate(Routes.PATIENT_HOME) {
+            popUpTo(Routes.PATIENT_HOME) { inclusive = true }
+            launchSingleTop = true
+        }
+    }
+
+    fun popBackToPatientHome() {
+        if (!nav.popBackStack(Routes.PATIENT_HOME, inclusive = false)) {
+            navigateToPatientHome()
+        }
+    }
+
+    fun navigateIfBrainExerciseEligible(stage: Int?, block: () -> Unit) {
+        if (PatientStage.isBrainExerciseEligible(stage)) block()
+    }
 
     NavHost(
         navController = nav,
@@ -54,7 +85,7 @@ fun AppRoot() {
                     }
                 },
                 onPickPatient = {
-                    nav.navigate(Routes.PATIENT_HOME) {
+                    nav.navigate(Routes.PATIENT_SCAN) {
                         popUpTo(Routes.ROLE_PICK) { inclusive = true }
                         launchSingleTop = true
                     }
@@ -150,14 +181,188 @@ fun AppRoot() {
         }
 
         composable(Routes.PATIENT_HOME) {
-            PatientHomeScreen(
-                onBackToRolePick = {
+            NeuroStagePatientTheme {
+                val stageVm: RolePickViewModel = hiltViewModel()
+                val stage by stageVm.patientStage.collectAsStateWithLifecycle()
+
+                val backToRolePick: () -> Unit = {
                     nav.navigate(Routes.ROLE_PICK) {
-                        popUpTo(Routes.PATIENT_HOME) { inclusive = true }
+                        popUpTo(0) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
+
+                val startScan: () -> Unit = {
+                    nav.navigate(Routes.PATIENT_SCAN) { launchSingleTop = true }
+                }
+
+                LaunchedEffect(stage) {
+                    if (stage == null) {
+                        nav.navigate(Routes.PATIENT_SCAN) {
+                            popUpTo(Routes.PATIENT_HOME) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    }
+                }
+
+                if (stage == null) {
+                    Box(Modifier.fillMaxSize())
+                } else {
+                    StageAwarePatientHomeScreen(
+                        onStartScan = startScan,
+                        onOpenGames = {
+                            navigateIfBrainExerciseEligible(stage) {
+                                nav.navigate(Routes.PATIENT_GAMES) { launchSingleTop = true }
+                            }
+                        },
+                        onStartRoutineGame = {
+                            navigateIfBrainExerciseEligible(stage) {
+                                nav.navigate(Routes.PATIENT_GAME_ROUTINE) { launchSingleTop = true }
+                            }
+                        },
+                        onStartMemoryGame = {
+                            navigateIfBrainExerciseEligible(stage) {
+                                nav.navigate(Routes.PATIENT_GAME_MEMORY) { launchSingleTop = true }
+                            }
+                        },
+                        onStartPuzzleGame = {
+                            navigateIfBrainExerciseEligible(stage) {
+                                nav.navigate(Routes.PATIENT_GAME_PUZZLE) { launchSingleTop = true }
+                            }
+                        },
+                        onBackToRolePick = backToRolePick,
+                    )
+                }
+            }
+        }
+
+        composable(Routes.PATIENT_SCAN) {
+            val vm: RolePickViewModel = hiltViewModel()
+            val stage by vm.patientStage.collectAsStateWithLifecycle()
+
+            MainScreen(
+                patientId = null,
+                isPatient = true,
+                onBack = {
+                    nav.navigate(Routes.ROLE_PICK) {
+                        popUpTo(0) { inclusive = true }
                         launchSingleTop = true
                     }
                 },
+                onOpenGames = {
+                    when (stage) {
+                        PatientStage.MILD_DEMENTIA,
+                        PatientStage.VERY_MILD_DEMENTIA,
+                            -> {
+                            nav.navigate(Routes.PATIENT_HOME) {
+                                popUpTo(Routes.PATIENT_SCAN) { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        }
+
+                        PatientStage.MODERATE_DEMENTIA -> {
+                            nav.navigate(Routes.PATIENT_GAMES) {
+                                popUpTo(Routes.PATIENT_SCAN) { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        }
+
+                        else -> Unit
+                    }
+                },
             )
+        }
+
+        composable(Routes.PATIENT_GAMES) {
+            NeuroStagePatientTheme {
+                val vm: RolePickViewModel = hiltViewModel()
+                val stage by vm.patientStage.collectAsStateWithLifecycle()
+                BrainExerciseRouteGuard(
+                    stageIndex = stage,
+                    onBlocked = { nav.popBackStack() },
+                ) {
+                    GameHubScreen(
+                        stageIndex = stage,
+                        onStartRoutineGame = { nav.navigate(Routes.PATIENT_GAME_ROUTINE) },
+                        onStartMemoryGame = { nav.navigate(Routes.PATIENT_GAME_MEMORY) },
+                        onStartPuzzleGame = {
+                            if (stage == PatientStage.MODERATE_DEMENTIA) {
+                                nav.navigate(Routes.PATIENT_GAME_PUZZLE_MRI_MODERATE)
+                            } else {
+                                nav.navigate(Routes.PATIENT_GAME_PUZZLE)
+                            }
+                        },
+                        onBack = { nav.popBackStack() },
+                    )
+                }
+            }
+        }
+
+        composable(Routes.PATIENT_GAME_ROUTINE) {
+            NeuroStagePatientTheme {
+                val vm: RolePickViewModel = hiltViewModel()
+                val stage by vm.patientStage.collectAsStateWithLifecycle()
+                BrainExerciseRouteGuard(
+                    stageIndex = stage,
+                    onBlocked = { nav.popBackStack() },
+                ) {
+                    RoutineOrderGameScreen(
+                        stageIndex = stage,
+                        onBack = { nav.popBackStack() },
+                    )
+                }
+            }
+        }
+
+        composable(Routes.PATIENT_GAME_MEMORY) {
+            NeuroStagePatientTheme {
+                val vm: RolePickViewModel = hiltViewModel()
+                val stage by vm.patientStage.collectAsStateWithLifecycle()
+                BrainExerciseRouteGuard(
+                    stageIndex = stage,
+                    onBlocked = { nav.popBackStack() },
+                ) {
+                    MemoryGameScreen(
+                        stageIndex = stage,
+                        onBack = { nav.popBackStack() },
+                    )
+                }
+            }
+        }
+
+        composable(Routes.PATIENT_GAME_PUZZLE) {
+            NeuroStagePatientTheme {
+                val vm: RolePickViewModel = hiltViewModel()
+                val stage by vm.patientStage.collectAsStateWithLifecycle()
+                MildHomePuzzleRouteGuard(
+                    stageIndex = stage,
+                    onBlocked = { nav.popBackStack() },
+                ) {
+                    PuzzleGameScreen(
+                        stageIndex = stage,
+                        onBack = { nav.popBackStack() },
+                        onBackToHome = { popBackToPatientHome() },
+                    )
+                }
+            }
+        }
+
+        composable(Routes.PATIENT_GAME_PUZZLE_MRI_MODERATE) {
+            NeuroStagePatientTheme {
+                val vm: RolePickViewModel = hiltViewModel()
+                val stage by vm.patientStage.collectAsStateWithLifecycle()
+                MriModeratePuzzleRouteGuard(
+                    stageIndex = stage,
+                    onBlocked = { nav.popBackStack() },
+                ) {
+                    PuzzleGameScreen(
+                        stageIndex = stage,
+                        onBack = { nav.popBackStack() },
+                        onBackToHome = { popBackToPatientHome() },
+                        progressTrack = PuzzleProgressTrack.MriModerateCatalog,
+                    )
+                }
+            }
         }
     }
 }

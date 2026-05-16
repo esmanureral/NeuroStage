@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.esmanureral.neurostage.data.MrScanRecord
+import com.esmanureral.neurostage.data.AppPreferences
 import com.esmanureral.neurostage.data.UserRepository
 import com.esmanureral.neurostage.patients.PatientRepository
 import com.esmanureral.neurostage.scans.ScanRecord
@@ -80,6 +81,7 @@ class AnalysisViewModel @Inject constructor(
     private val auth: AuthRepository,
     private val patients: PatientRepository,
     private val scans: ScanRepository,
+    private val prefs: AppPreferences,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<AnalysisState>(AnalysisState.Idle)
@@ -181,6 +183,8 @@ class AnalysisViewModel @Inject constructor(
                     stageIndex = maxIndex,
                     bitmap = bitmap,
                 )
+
+                prefs.setPatientStage(maxIndex)
 
                 val ts = System.currentTimeMillis()
                 userRepository.addScanRecord(

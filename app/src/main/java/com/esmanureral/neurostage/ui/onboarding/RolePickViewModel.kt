@@ -10,6 +10,8 @@ import javax.inject.Inject
 class RolePickViewModel @Inject constructor(
     private val prefs: AppPreferences,
 ) : ViewModel() {
+    val patientStage = prefs.patientStage
+
     fun pickDoctor() = prefs.setWorld(UserWorld.DOCTOR)
     fun pickPatient() = prefs.setWorld(UserWorld.PATIENT)
     fun clear() = prefs.clearWorld()

@@ -2,7 +2,7 @@ package com.esmanureral.neurostage.data
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import com.esmanureral.neurostage.domain.patient.MildPuzzleCatalog
+import com.esmanureral.neurostage.domain.patient.puzzle.mild.MildPuzzleCatalog
 import com.esmanureral.neurostage.domain.patient.PatientStage
 import com.esmanureral.neurostage.domain.patient.puzzle.moderate.ModeratePuzzleCatalog
 import kotlinx.coroutines.flow.MutableStateFlow

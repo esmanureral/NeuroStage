@@ -117,6 +117,7 @@ fun PatientHomeExerciseSection(
     onStartPuzzleGame: () -> Unit,
     onStartRoutineGame: () -> Unit,
     onStartMemoryGame: () -> Unit,
+    onStartMemoryMatchGame: () -> Unit,
     onOpenGames: () -> Unit,
 ) {
     Text(
@@ -167,6 +168,16 @@ fun PatientHomeExerciseSection(
             onClick = onStartMemoryGame,
         )
     }
+
+    Spacer(Modifier.height(PatientDimens.homeExerciseRowGap))
+    PatientHomeExerciseCard(
+        emoji = stringResource(R.string.patient_emoji_memory_match),
+        title = stringResource(R.string.patient_game_memory_match_short),
+        subtitle = stringResource(R.string.patient_game_memory_match_sub),
+        bgColor = PatientColors.matchCardBackground,
+        textColor = PatientColors.matchCardText,
+        onClick = onStartMemoryMatchGame,
+    )
 
     Spacer(Modifier.height(PatientDimens.homeExerciseSectionGap))
     TextButton(onClick = onOpenGames, modifier = Modifier.fillMaxWidth()) {

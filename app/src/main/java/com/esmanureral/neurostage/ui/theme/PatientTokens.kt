@@ -47,6 +47,30 @@ object PatientColors {
         @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_memory_card_background)
     val memoryCardText: Color
         @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_memory_card_text)
+    val matchCardBackground: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_match_card_background)
+    val matchCardText: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_match_card_text)
+    val matchAccent: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_match_accent)
+    val matchAccentLight: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_match_accent_light)
+    val matchBoardBackground: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_match_board_background)
+    val matchCardFace: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_match_card_face)
+    val matchCardBack: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_match_card_back)
+    val matchCardBackBorder: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_match_card_back_border)
+    val matchMatchedBackground: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_match_matched_background)
+    val matchMatchedBorder: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_match_matched_border)
+    val matchMismatchBackground: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_match_mismatch_background)
+    val matchMismatchBorder: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_match_mismatch_border)
     val moderateNoticeBackground: Color
         @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_moderate_notice_background)
     val moderateNoticeTitle: Color
@@ -279,6 +303,20 @@ object PatientDimens {
         @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_game_grid_gap)
     val gameGridGapS: Dp
         @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_game_grid_gap_s)
+    val memoryMatchBoardCorner: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_memory_match_board_corner)
+    val memoryMatchBoardPadding: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_memory_match_board_padding)
+    val memoryMatchCardCorner: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_memory_match_card_corner)
+    val memoryMatchCardEmojiSize: TextUnit
+        @Composable @ReadOnlyComposable get() = textDimen(R.dimen.patient_memory_match_card_emoji_size)
+    val memoryMatchCardEmojiSizeDense: TextUnit
+        @Composable @ReadOnlyComposable get() = textDimen(R.dimen.patient_memory_match_card_emoji_size_dense)
+    val memoryMatchCardWordSize: TextUnit
+        @Composable @ReadOnlyComposable get() = textDimen(R.dimen.patient_memory_match_card_word_size)
+    val memoryMatchCardBorder: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_memory_match_card_border)
     val gameTryAgainCorner: Dp
         @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_game_try_again_corner)
     val gameTryAgainPadding: Dp

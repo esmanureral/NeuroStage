@@ -19,6 +19,7 @@ object Routes {
     const val PATIENT_GAMES = "patient_games"
     const val PATIENT_GAME_ROUTINE = "patient_game_routine"
     const val PATIENT_GAME_MEMORY = "patient_game_memory"
+    const val PATIENT_GAME_MEMORY_MATCH = "patient_game_memory_match"
     const val PATIENT_GAME_PUZZLE = "patient_game_puzzle"
     const val PATIENT_GAME_PUZZLE_MRI_MODERATE = "patient_game_puzzle_mri_moderate"
 }

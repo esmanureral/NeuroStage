@@ -77,7 +77,12 @@
     <string name="patient_emoji_puzzle">🧩</string>
     <string name="patient_emoji_routine">📋</string>
     <string name="patient_emoji_memory">🧠</string>
+    <string name="patient_emoji_memory_match">🃏</string>
     <string name="patient_emoji_brain">🧠</string>
+    <string name="patient_game_memory_match_short">Kart Eşleştir</string>
+    <string name="patient_game_memory_match_sub">Kartları eşleştir</string>
+    <string name="patient_game_memory_match_title">Kart Eşleştirme</string>
+    <string name="patient_game_memory_match_hub_sub">Aynı resimleri bul ve eşleştir</string>
 
     <!-- MR tarama sonrası hasta yönlendirme (HomeScreen) -->
     <string name="guidance_moderate_title">Yakınınızı veya doktorunuzu arayın</string>
@@ -422,6 +427,17 @@ Klinisyen için somut ve önceliklendirilmiş öneriler sun (örn. MMSE, nörops
     <string name="puzzle_success_back">Ana Sayfaya Dön</string>
     <string name="puzzle_tray_label">Parçalar</string>
 
+    <!-- Memory match (kart eşleştirme) — hafif / çok hafif -->
+    <string name="memory_match_level_1_title">Seviye 1</string>
+    <string name="memory_match_level_2_title">Seviye 2</string>
+    <string name="memory_match_level_3_title">Seviye 3</string>
+    <string name="memory_match_level_4_title">Seviye 4</string>
+    <string name="memory_match_pairs_progress">%1$d / %2$d</string>
+    <string name="memory_match_cd_card_closed">Kapalı kart</string>
+    <string name="memory_match_cd_card_open">Açık kart: %1$s</string>
+    <string name="memory_match_success_emoji">🎉</string>
+    <string name="memory_match_btn_play_again">TEKRAR OYNA</string>
+
     <!-- Memory game -->
     <string name="memory_game_title">BELLEK OYUNU</string>
     <string name="memory_show_instruction">Aşağıdaki %1$d nesneye dikkatlice bakın.\nHazır olunca HAZİRIM butonuna basın.</string>
@@ -479,7 +495,9 @@ Klinisyen için somut ve önceliklendirilmiş öneriler sun (örn. MMSE, nörops
     <string name="routine_emoji_wash_rinse">💦</string>
     <string name="routine_emoji_wash_dry">🧻</string>
     <string name="memory_emoji_apple">🍎</string>
+    <string name="memory_emoji_cat">🐱</string>
     <string name="memory_emoji_dog">🐶</string>
+    <string name="memory_item_cat">Kedi</string>
     <string name="memory_emoji_pencil">✏️</string>
     <string name="memory_emoji_book">📚</string>
     <string name="memory_emoji_rose">🌹</string>
@@ -490,6 +508,38 @@ Klinisyen için somut ve önceliklendirilmiş öneriler sun (örn. MMSE, nörops
     <string name="memory_emoji_paint">🎨</string>
     <string name="memory_emoji_house">🏠</string>
     <string name="memory_emoji_moon">🌙</string>
+    <string name="memory_emoji_tomato">🍅</string>
+    <string name="memory_emoji_strawberry">🍓</string>
+    <string name="memory_emoji_cherry">🍒</string>
+    <string name="memory_emoji_peach">🍑</string>
+    <string name="memory_emoji_watermelon">🍉</string>
+    <string name="memory_item_tomato">Domates</string>
+    <string name="memory_item_strawberry">Çilek</string>
+    <string name="memory_item_cherry">Kiraz</string>
+    <string name="memory_item_peach">Şeftali</string>
+    <string name="memory_item_watermelon">Karpuz</string>
+    <string name="memory_emoji_moon_waxing">🌔</string>
+    <string name="memory_emoji_moon_waning">🌖</string>
+    <string name="memory_emoji_arrow_ne">↗️</string>
+    <string name="memory_emoji_arrow_nw">↖️</string>
+    <string name="memory_emoji_clock_300">🕒</string>
+    <string name="memory_emoji_clock_330">🕞</string>
+    <string name="memory_emoji_clock_400">🕓</string>
+    <string name="memory_emoji_shirt_vertical">┃┃👕</string>
+    <string name="memory_emoji_shirt_horizontal">══👕</string>
+    <string name="memory_emoji_clover_4">🍀</string>
+    <string name="memory_emoji_clover_3">☘️</string>
+    <string name="memory_item_moon_waxing">Ay</string>
+    <string name="memory_item_moon_waning">Ay</string>
+    <string name="memory_item_arrow_ne">Ok · sağ yukarı</string>
+    <string name="memory_item_arrow_nw">Ok · sol yukarı</string>
+    <string name="memory_item_clock_300">Saat · 03:00</string>
+    <string name="memory_item_clock_330">Saat · 03:30</string>
+    <string name="memory_item_clock_400">Saat · 04:00</string>
+    <string name="memory_item_shirt_vertical">Tişört · dikey çizgi</string>
+    <string name="memory_item_shirt_horizontal">Tişört · yatay çizgi</string>
+    <string name="memory_item_clover_4">Yonca · 4 yaprak</string>
+    <string name="memory_item_clover_3">Yonca · 3 yaprak</string>
 
     <string name="routine_game_tea">Çay Demleme</string>
     <string name="routine_step_tea_pot">Çaydanlığı al</string>

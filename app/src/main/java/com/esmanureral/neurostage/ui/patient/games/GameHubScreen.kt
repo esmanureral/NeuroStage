@@ -36,9 +36,11 @@ fun GameHubScreen(
     stageIndex: Int?,
     onStartRoutineGame: () -> Unit,
     onStartMemoryGame: () -> Unit,
+    onStartMemoryMatchGame: () -> Unit,
     onStartPuzzleGame: () -> Unit,
     onBack: () -> Unit,
 ) {
+    val showMemoryMatch = PatientStage.isBrainExerciseEligible(stageIndex)
     val hubSubtitle = if (PatientStage.canAccessPatientExerciseHub(stageIndex)) {
         stringResource(R.string.patient_exercise_hub_subtitle)
     } else {
@@ -89,6 +91,19 @@ fun GameHubScreen(
                 accentColor = PatientColors.memoryCardText,
                 onClick = onStartMemoryGame,
             )
+
+            if (showMemoryMatch) {
+                Spacer(Modifier.height(PatientDimens.gameHubCardGap))
+
+                GameCard(
+                    emojiRes = R.string.patient_emoji_memory_match,
+                    title = stringResource(R.string.patient_game_memory_match_title),
+                    subtitle = stringResource(R.string.patient_game_memory_match_hub_sub),
+                    bgColor = PatientColors.matchCardBackground,
+                    accentColor = PatientColors.matchCardText,
+                    onClick = onStartMemoryMatchGame,
+                )
+            }
 
             Spacer(Modifier.height(PatientDimens.gameHubCardGap))
 

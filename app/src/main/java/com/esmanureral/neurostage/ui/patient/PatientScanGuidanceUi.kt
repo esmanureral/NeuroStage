@@ -32,7 +32,7 @@ object PatientScanGuidanceMapper {
                 borderRes = R.color.patient_guidance_moderate_border,
                 buttonRes = R.color.patient_guidance_moderate_button,
             ),
-            showGamesButton = false,
+            showGamesButton = true,
         )
 
         PatientStage.MILD_DEMENTIA -> PatientScanGuidanceUi(

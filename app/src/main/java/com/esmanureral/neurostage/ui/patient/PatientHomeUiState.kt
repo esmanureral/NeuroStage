@@ -3,8 +3,8 @@ package com.esmanureral.neurostage.ui.patient
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import com.esmanureral.neurostage.R
-import com.esmanureral.neurostage.domain.patient.MildPuzzleCatalog
-import com.esmanureral.neurostage.domain.patient.MildPuzzleStep
+import com.esmanureral.neurostage.domain.patient.puzzle.mild.MildPuzzleCatalog
+import com.esmanureral.neurostage.domain.patient.puzzle.mild.MildPuzzleStep
 import com.esmanureral.neurostage.domain.patient.PatientStage
 
 data class StageChipUi(

@@ -25,6 +25,7 @@ import com.esmanureral.neurostage.ui.onboarding.RolePickViewModel
 import com.esmanureral.neurostage.ui.patient.StageAwarePatientHomeScreen
 import com.esmanureral.neurostage.ui.patient.games.GameHubScreen
 import com.esmanureral.neurostage.ui.patient.games.MemoryGameScreen
+import com.esmanureral.neurostage.ui.patient.games.memorymatch.MemoryMatchGameScreen
 import com.esmanureral.neurostage.ui.patient.games.RoutineOrderGameScreen
 import com.esmanureral.neurostage.domain.patient.PatientStage
 import com.esmanureral.neurostage.ui.patient.navigation.BrainExerciseRouteGuard
@@ -230,6 +231,13 @@ fun AppRoot() {
                                 nav.navigate(Routes.PATIENT_GAME_PUZZLE) { launchSingleTop = true }
                             }
                         },
+                        onStartMemoryMatchGame = {
+                            navigateIfBrainExerciseEligible(stage) {
+                                nav.navigate(Routes.PATIENT_GAME_MEMORY_MATCH) {
+                                    launchSingleTop = true
+                                }
+                            }
+                        },
                         onBackToRolePick = backToRolePick,
                     )
                 }
@@ -292,6 +300,11 @@ fun AppRoot() {
                                 nav.navigate(Routes.PATIENT_GAME_PUZZLE)
                             }
                         },
+                        onStartMemoryMatchGame = {
+                            if (PatientStage.isBrainExerciseEligible(stage)) {
+                                nav.navigate(Routes.PATIENT_GAME_MEMORY_MATCH)
+                            }
+                        },
                         onBack = { nav.popBackStack() },
                     )
                 }
@@ -324,6 +337,21 @@ fun AppRoot() {
                 ) {
                     MemoryGameScreen(
                         stageIndex = stage,
+                        onBack = { nav.popBackStack() },
+                    )
+                }
+            }
+        }
+
+        composable(Routes.PATIENT_GAME_MEMORY_MATCH) {
+            NeuroStagePatientTheme {
+                val vm: RolePickViewModel = hiltViewModel()
+                val stage by vm.patientStage.collectAsStateWithLifecycle()
+                MildHomePuzzleRouteGuard(
+                    stageIndex = stage,
+                    onBlocked = { nav.popBackStack() },
+                ) {
+                    MemoryMatchGameScreen(
                         onBack = { nav.popBackStack() },
                     )
                 }

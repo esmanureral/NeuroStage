@@ -22,15 +22,20 @@ import com.esmanureral.neurostage.ui.doctor.PatientListScreen
 import com.esmanureral.neurostage.ui.onboarding.RoleGateViewModel
 import com.esmanureral.neurostage.ui.onboarding.RolePickScreen
 import com.esmanureral.neurostage.ui.onboarding.RolePickViewModel
-import com.esmanureral.neurostage.ui.patient.AccessiblePatientHomeScreen
 import com.esmanureral.neurostage.ui.patient.StageAwarePatientHomeScreen
 import com.esmanureral.neurostage.ui.patient.games.GameHubScreen
 import com.esmanureral.neurostage.ui.patient.games.MemoryGameScreen
 import com.esmanureral.neurostage.ui.patient.games.RoutineOrderGameScreen
 import com.esmanureral.neurostage.domain.patient.PatientStage
 import com.esmanureral.neurostage.ui.patient.navigation.BrainExerciseRouteGuard
+import com.esmanureral.neurostage.ui.patient.navigation.MildHomePuzzleRouteGuard
+import com.esmanureral.neurostage.ui.patient.navigation.MriModeratePuzzleRouteGuard
 import com.esmanureral.neurostage.ui.patient.games.puzzle.PuzzleGameScreen
+import com.esmanureral.neurostage.ui.patient.puzzle.core.PuzzleProgressTrack
 import com.esmanureral.neurostage.ui.theme.NeuroStagePatientTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
 
 @Composable
 fun AppRoot() {
@@ -80,7 +85,10 @@ fun AppRoot() {
                     }
                 },
                 onPickPatient = {
-                    navigateToPatientHome()
+                    nav.navigate(Routes.PATIENT_SCAN) {
+                        popUpTo(Routes.ROLE_PICK) { inclusive = true }
+                        launchSingleTop = true
+                    }
                 },
             )
         }
@@ -188,11 +196,17 @@ fun AppRoot() {
                     nav.navigate(Routes.PATIENT_SCAN) { launchSingleTop = true }
                 }
 
+                LaunchedEffect(stage) {
+                    if (stage == null) {
+                        nav.navigate(Routes.PATIENT_SCAN) {
+                            popUpTo(Routes.PATIENT_HOME) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    }
+                }
+
                 if (stage == null) {
-                    AccessiblePatientHomeScreen(
-                        onStartScan = startScan,
-                        onBackToRolePick = backToRolePick,
-                    )
+                    Box(Modifier.fillMaxSize())
                 } else {
                     StageAwarePatientHomeScreen(
                         onStartScan = startScan,
@@ -236,11 +250,24 @@ fun AppRoot() {
                     }
                 },
                 onOpenGames = {
-                    if (PatientStage.isBrainExerciseEligible(stage)) {
-                        nav.navigate(Routes.PATIENT_HOME) {
-                            popUpTo(Routes.PATIENT_SCAN) { inclusive = true }
-                            launchSingleTop = true
+                    when (stage) {
+                        PatientStage.MILD_DEMENTIA,
+                        PatientStage.VERY_MILD_DEMENTIA,
+                            -> {
+                            nav.navigate(Routes.PATIENT_HOME) {
+                                popUpTo(Routes.PATIENT_SCAN) { inclusive = true }
+                                launchSingleTop = true
+                            }
                         }
+
+                        PatientStage.MODERATE_DEMENTIA -> {
+                            nav.navigate(Routes.PATIENT_GAMES) {
+                                popUpTo(Routes.PATIENT_SCAN) { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        }
+
+                        else -> Unit
                     }
                 },
             )
@@ -258,7 +285,13 @@ fun AppRoot() {
                         stageIndex = stage,
                         onStartRoutineGame = { nav.navigate(Routes.PATIENT_GAME_ROUTINE) },
                         onStartMemoryGame = { nav.navigate(Routes.PATIENT_GAME_MEMORY) },
-                        onStartPuzzleGame = { nav.navigate(Routes.PATIENT_GAME_PUZZLE) },
+                        onStartPuzzleGame = {
+                            if (stage == PatientStage.MODERATE_DEMENTIA) {
+                                nav.navigate(Routes.PATIENT_GAME_PUZZLE_MRI_MODERATE)
+                            } else {
+                                nav.navigate(Routes.PATIENT_GAME_PUZZLE)
+                            }
+                        },
                         onBack = { nav.popBackStack() },
                     )
                 }
@@ -301,7 +334,7 @@ fun AppRoot() {
             NeuroStagePatientTheme {
                 val vm: RolePickViewModel = hiltViewModel()
                 val stage by vm.patientStage.collectAsStateWithLifecycle()
-                BrainExerciseRouteGuard(
+                MildHomePuzzleRouteGuard(
                     stageIndex = stage,
                     onBlocked = { nav.popBackStack() },
                 ) {
@@ -309,6 +342,24 @@ fun AppRoot() {
                         stageIndex = stage,
                         onBack = { nav.popBackStack() },
                         onBackToHome = { popBackToPatientHome() },
+                    )
+                }
+            }
+        }
+
+        composable(Routes.PATIENT_GAME_PUZZLE_MRI_MODERATE) {
+            NeuroStagePatientTheme {
+                val vm: RolePickViewModel = hiltViewModel()
+                val stage by vm.patientStage.collectAsStateWithLifecycle()
+                MriModeratePuzzleRouteGuard(
+                    stageIndex = stage,
+                    onBlocked = { nav.popBackStack() },
+                ) {
+                    PuzzleGameScreen(
+                        stageIndex = stage,
+                        onBack = { nav.popBackStack() },
+                        onBackToHome = { popBackToPatientHome() },
+                        progressTrack = PuzzleProgressTrack.MriModerateCatalog,
                     )
                 }
             }

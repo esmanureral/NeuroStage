@@ -2,6 +2,7 @@ package com.esmanureral.neurostage.ui.patient.games.puzzle
 
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
+import com.esmanureral.neurostage.ui.patient.puzzle.core.PuzzleSequentialRevealMode
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,6 +22,7 @@ data class PuzzlePiece(
 class PuzzleGameViewModel(
     rows: Int,
     cols: Int,
+    private val sequentialRevealMode: PuzzleSequentialRevealMode = PuzzleSequentialRevealMode.None,
 ) : ViewModel() {
 
     private val total = rows * cols
@@ -31,7 +33,7 @@ class PuzzleGameViewModel(
     private val _isCompleted = MutableStateFlow(false)
     val isCompleted: StateFlow<Boolean> = _isCompleted.asStateFlow()
 
-    private val _trayOrder = MutableStateFlow(shuffledTrayOrder())
+    private val _trayOrder = MutableStateFlow(buildTrayOrder())
     val trayOrder: StateFlow<List<Int>> = _trayOrder.asStateFlow()
 
     fun placePiece(pieceId: Int, slotIndex: Int) {
@@ -73,11 +75,26 @@ class PuzzleGameViewModel(
 
     fun reset() {
         _pieces.value = buildInitial()
-        _trayOrder.value = shuffledTrayOrder()
+        _trayOrder.value = buildTrayOrder()
         _isCompleted.value = false
     }
 
-    private fun shuffledTrayOrder(): List<Int> = (0 until total).shuffled()
+    fun piecesInTray(trayOrder: List<Int>, pieces: List<PuzzlePiece>): List<PuzzlePiece> =
+        trayOrder.mapNotNull { pieceId ->
+            pieces.find { it.id == pieceId && it.currentSlot < 0 }
+        }
+
+    private fun buildTrayOrder(): List<Int> = when (sequentialRevealMode) {
+        PuzzleSequentialRevealMode.None ->
+            (0 until total).toList().shuffled()
+
+        PuzzleSequentialRevealMode.HorizontalLeftThenRight,
+        PuzzleSequentialRevealMode.VerticalBottomThenTop,
+        PuzzleSequentialRevealMode.Grid2x2_TopRowThenBottom,
+        PuzzleSequentialRevealMode.Grid2x3_RowTriple,
+        PuzzleSequentialRevealMode.Grid3x2_RowPairs,
+            -> (0 until total).toList()
+    }
 
     private fun buildInitial(): List<PuzzlePiece> =
         (0 until total).map { id ->

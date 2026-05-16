@@ -2,45 +2,44 @@ package com.esmanureral.neurostage.ui.patient
 
 import androidx.lifecycle.ViewModel
 import com.esmanureral.neurostage.data.patient.BrainExerciseRepository
-import com.esmanureral.neurostage.domain.patient.MildPuzzleCatalog
-import com.esmanureral.neurostage.domain.patient.MildPuzzleStep
 import com.esmanureral.neurostage.domain.patient.PatientStage
+import com.esmanureral.neurostage.ui.patient.puzzle.core.PuzzleProgressTrack
+import com.esmanureral.neurostage.ui.patient.puzzle.core.PuzzleSessionConfig
+import com.esmanureral.neurostage.ui.patient.puzzle.mild.buildFallbackGridPuzzleSession
+import com.esmanureral.neurostage.ui.patient.puzzle.mild.buildMildBrainExercisePuzzleSession
+import com.esmanureral.neurostage.ui.patient.puzzle.moderate.buildModerateDementiaPuzzleSession
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
-
-data class PuzzleSessionConfig(
-    val step: MildPuzzleStep,
-    val rows: Int,
-    val cols: Int,
-    val usesCatalogPath: Boolean,
-    val hasNextStep: Boolean,
-)
 
 @HiltViewModel
 class PuzzleFlowViewModel @Inject constructor(
     private val repository: BrainExerciseRepository,
 ) : ViewModel() {
 
-    val puzzleProgress: StateFlow<Int> = repository.puzzleProgress
-    val patientStage: StateFlow<Int?> = repository.patientStage
-
-    fun sessionConfig(stageIndex: Int?, progress: Int): PuzzleSessionConfig {
-        val usesCatalog = PatientStage.isBrainExerciseEligible(stageIndex)
-        val step = if (usesCatalog) {
-            MildPuzzleCatalog.stepForProgress(progress)
-        } else {
-            MildPuzzleStep.TEA
-        }
-        val fallbackGrid = PatientStage.fallbackPuzzleGridSize(stageIndex)
-        return PuzzleSessionConfig(
-            step = step,
-            rows = if (usesCatalog) step.rows else fallbackGrid,
-            cols = if (usesCatalog) step.cols else fallbackGrid,
-            usesCatalogPath = usesCatalog,
-            hasNextStep = usesCatalog && MildPuzzleCatalog.hasNextStep(step),
-        )
+    fun puzzleProgressFor(track: PuzzleProgressTrack): StateFlow<Int> = when (track) {
+        PuzzleProgressTrack.MildHomeCatalog -> repository.puzzleProgress
+        PuzzleProgressTrack.MriModerateCatalog -> repository.mriModeratePuzzleProgress
     }
 
-    fun advanceToNextPuzzle() = repository.advancePuzzleProgress()
+    fun sessionConfig(
+        stageIndex: Int?,
+        progress: Int,
+        track: PuzzleProgressTrack
+    ): PuzzleSessionConfig {
+        return when (track) {
+            PuzzleProgressTrack.MriModerateCatalog -> buildModerateDementiaPuzzleSession(progress)
+            PuzzleProgressTrack.MildHomeCatalog -> when {
+                PatientStage.isBrainExerciseEligible(stageIndex) ->
+                    buildMildBrainExercisePuzzleSession(progress)
+
+                else -> buildFallbackGridPuzzleSession(stageIndex)
+            }
+        }
+    }
+
+    fun advanceToNextPuzzle(track: PuzzleProgressTrack) = when (track) {
+        PuzzleProgressTrack.MildHomeCatalog -> repository.advancePuzzleProgress()
+        PuzzleProgressTrack.MriModerateCatalog -> repository.advanceMriModeratePuzzleProgress()
+    }
 }

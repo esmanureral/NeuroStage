@@ -33,12 +33,25 @@ private fun horizontalBoundary(row: Int, col: Int, cols: Int): Int =
 private fun pieceEdges(pieceId: Int, rows: Int, cols: Int): PieceEdges =
     if (rows == 2 && cols == 2) edges2x2(pieceId) else edgesForGrid(pieceId, rows, cols)
 
-fun piecePath(w: Float, h: Float, pieceId: Int, rows: Int, cols: Int): Path =
-    jigsawPath(w, h, pieceId, rows, cols)
+fun piecePath(
+    w: Float,
+    h: Float,
+    pieceId: Int,
+    rows: Int,
+    cols: Int,
+    knobFraction: Float,
+): Path = jigsawPath(w, h, pieceId, rows, cols, knobFraction)
 
-private fun jigsawPath(w: Float, h: Float, pieceId: Int, rows: Int, cols: Int): Path {
+private fun jigsawPath(
+    w: Float,
+    h: Float,
+    pieceId: Int,
+    rows: Int,
+    cols: Int,
+    knobFraction: Float,
+): Path {
     val e = pieceEdges(pieceId, rows, cols)
-    val knob = min(w, h) * PuzzleLayoutConfig.JIGSAW_KNOB_FRACTION
+    val knob = min(w, h) * knobFraction
     return Path().apply {
         moveTo(0f, 0f)
         edgeTop(this, w, knob, e.top)
@@ -59,6 +72,7 @@ private fun edgeTop(p: Path, w: Float, knob: Float, type: Int) {
             p.cubicTo(mid + knob * 0.35f, -knob * 1.15f, mid + knob * 0.35f, 0f, mid + knob, 0f)
             p.lineTo(w, 0f)
         }
+
         -1 -> {
             p.lineTo(mid - knob, 0f)
             p.cubicTo(mid - knob * 0.35f, 0f, mid - knob * 0.35f, knob * 1.15f, mid, knob * 1.3f)
@@ -74,13 +88,28 @@ private fun edgeRight(p: Path, w: Float, h: Float, knob: Float, type: Int) {
         0 -> p.lineTo(w, h)
         1 -> {
             p.lineTo(w, mid - knob)
-            p.cubicTo(w, mid - knob * 0.35f, w + knob * 1.15f, mid - knob * 0.35f, w + knob * 1.3f, mid)
+            p.cubicTo(
+                w,
+                mid - knob * 0.35f,
+                w + knob * 1.15f,
+                mid - knob * 0.35f,
+                w + knob * 1.3f,
+                mid
+            )
             p.cubicTo(w + knob * 1.15f, mid + knob * 0.35f, w, mid + knob * 0.35f, w, mid + knob)
             p.lineTo(w, h)
         }
+
         -1 -> {
             p.lineTo(w, mid - knob)
-            p.cubicTo(w, mid - knob * 0.35f, w - knob * 1.15f, mid - knob * 0.35f, w - knob * 1.3f, mid)
+            p.cubicTo(
+                w,
+                mid - knob * 0.35f,
+                w - knob * 1.15f,
+                mid - knob * 0.35f,
+                w - knob * 1.3f,
+                mid
+            )
             p.cubicTo(w - knob * 1.15f, mid + knob * 0.35f, w, mid + knob * 0.35f, w, mid + knob)
             p.lineTo(w, h)
         }
@@ -93,13 +122,28 @@ private fun edgeBottom(p: Path, w: Float, h: Float, knob: Float, type: Int) {
         0 -> p.lineTo(0f, h)
         1 -> {
             p.lineTo(mid + knob, h)
-            p.cubicTo(mid + knob * 0.35f, h, mid + knob * 0.35f, h + knob * 1.15f, mid, h + knob * 1.3f)
+            p.cubicTo(
+                mid + knob * 0.35f,
+                h,
+                mid + knob * 0.35f,
+                h + knob * 1.15f,
+                mid,
+                h + knob * 1.3f
+            )
             p.cubicTo(mid - knob * 0.35f, h + knob * 1.15f, mid - knob * 0.35f, h, mid - knob, h)
             p.lineTo(0f, h)
         }
+
         -1 -> {
             p.lineTo(mid + knob, h)
-            p.cubicTo(mid + knob * 0.35f, h, mid + knob * 0.35f, h - knob * 1.15f, mid, h - knob * 1.3f)
+            p.cubicTo(
+                mid + knob * 0.35f,
+                h,
+                mid + knob * 0.35f,
+                h - knob * 1.15f,
+                mid,
+                h - knob * 1.3f
+            )
             p.cubicTo(mid - knob * 0.35f, h - knob * 1.15f, mid - knob * 0.35f, h, mid - knob, h)
             p.lineTo(0f, h)
         }
@@ -116,6 +160,7 @@ private fun edgeLeft(p: Path, h: Float, knob: Float, type: Int) {
             p.cubicTo(-knob * 1.15f, mid - knob * 0.35f, 0f, mid - knob * 0.35f, 0f, mid - knob)
             p.lineTo(0f, 0f)
         }
+
         -1 -> {
             p.lineTo(0f, mid + knob)
             p.cubicTo(0f, mid + knob * 0.35f, knob * 1.15f, mid + knob * 0.35f, knob * 1.3f, mid)

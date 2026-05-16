@@ -39,7 +39,7 @@ fun GameHubScreen(
     onStartPuzzleGame: () -> Unit,
     onBack: () -> Unit,
 ) {
-    val hubSubtitle = if (PatientStage.isBrainExerciseEligible(stageIndex)) {
+    val hubSubtitle = if (PatientStage.canAccessPatientExerciseHub(stageIndex)) {
         stringResource(R.string.patient_exercise_hub_subtitle)
     } else {
         null

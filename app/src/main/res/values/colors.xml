@@ -7,4 +7,95 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Patient — core -->
+    <color name="patient_background">#FFF8F9FA</color>
+    <color name="patient_surface">#FFFFFFFF</color>
+    <color name="patient_on_surface">#FFFFFFFF</color>
+    <color name="patient_text_primary">#FF111827</color>
+    <color name="patient_text_secondary">#FF6B7280</color>
+    <color name="patient_divider">#FFE5E7EB</color>
+    <color name="patient_primary">#FF1E40AF</color>
+    <color name="patient_primary_light">#FFEFF6FF</color>
+
+    <!-- Patient — mild home / notices -->
+    <color name="patient_mild_accent">#FFE65100</color>
+    <color name="patient_mild_background">#FFFFF3E0</color>
+    <color name="patient_mild_body_text">#FF5D4037</color>
+    <color name="patient_moderate_notice_background">#FFFFEBEE</color>
+    <color name="patient_moderate_notice_title_color">#FFC62828</color>
+    <color name="patient_moderate_notice_body_color">#FF5C1010</color>
+
+    <!-- Patient — exercise cards -->
+    <color name="patient_puzzle_card_background">#FFFFFBEB</color>
+    <color name="patient_puzzle_card_text">#FFD97706</color>
+    <color name="patient_routine_card_background">#FFF5F3FF</color>
+    <color name="patient_routine_card_text">#FF7C3AED</color>
+    <color name="patient_memory_card_background">#FFF0FDFA</color>
+    <color name="patient_memory_card_text">#FF0D9488</color>
+
+    <!-- Patient — stage chips -->
+    <color name="patient_stage_mild">#FFEA580C</color>
+    <color name="patient_stage_moderate">#FFDC2626</color>
+    <color name="patient_stage_healthy">#FF16A34A</color>
+    <color name="patient_stage_very_mild">#FFD97706</color>
+
+    <!-- Patient — scan guidance -->
+    <color name="patient_guidance_text_title">#FF1C1C1E</color>
+    <color name="patient_guidance_text_body">#FF3C3C3E</color>
+    <color name="patient_guidance_moderate_bg">#FFFFEBEE</color>
+    <color name="patient_guidance_moderate_border">#FFEF9A9A</color>
+    <color name="patient_guidance_moderate_button">#FFC62828</color>
+    <color name="patient_guidance_mild_bg">#FFFFF3E0</color>
+    <color name="patient_guidance_mild_border">#FFFFCC80</color>
+    <color name="patient_guidance_mild_button">#FFE65100</color>
+    <color name="patient_guidance_very_mild_bg">#FFFFFDE7</color>
+    <color name="patient_guidance_very_mild_border">#FFFFF176</color>
+    <color name="patient_guidance_very_mild_button">#FFF57F17</color>
+    <color name="patient_guidance_healthy_bg">#FFE8F5E9</color>
+    <color name="patient_guidance_healthy_border">#FFA5D6A7</color>
+    <color name="patient_guidance_healthy_button">#FF2E7D32</color>
+
+    <!-- Patient — games -->
+    <color name="patient_game_background_cream">#FFFAF8F5</color>
+    <color name="patient_game_text_primary">#FF1C1C1E</color>
+    <color name="patient_game_text_muted">#FF6C6C70</color>
+    <color name="patient_game_success">#FF2E7D32</color>
+    <color name="patient_game_success_light">#FFE8F5E9</color>
+    <color name="patient_game_warning_background">#FFFFF8E1</color>
+    <color name="patient_game_warning_text">#FFF57F17</color>
+    <color name="patient_memory_accent">#FF00796B</color>
+    <color name="patient_memory_accent_light">#FFE0F2F1</color>
+    <color name="patient_routine_accent">#FF6750A4</color>
+    <color name="patient_routine_accent_light">#FFF3EFF9</color>
+
+    <!-- Patient — puzzle -->
+    <color name="patient_puzzle_background">#FFF0F4FF</color>
+    <color name="patient_puzzle_board_background">#FFE8EEF8</color>
+    <color name="patient_puzzle_slot">#FFCDD5E0</color>
+    <color name="patient_puzzle_accent">#FFD97706</color>
+    <color name="patient_puzzle_accent_background">#FFFFF8ED</color>
+    <color name="patient_puzzle_success">#FF16A34A</color>
+    <color name="patient_puzzle_text_primary">#FF1C1C1E</color>
+    <color name="patient_puzzle_text_secondary">#FF6B7280</color>
+    <color name="patient_puzzle_slot_stroke">#BFCDD5E0</color>
+    <color name="patient_puzzle_magnet_stroke">#D916A34A</color>
+
+    <!-- Patient — accessible entry -->
+    <color name="patient_accessible_background">#FFFDFBF7</color>
+    <color name="patient_accessible_text_primary">#FF1C1C1E</color>
+    <color name="patient_accessible_text_secondary">#CC1C1C1E</color>
+    <color name="patient_accessible_scan_action">#FF34C759</color>
+    <color name="patient_accessible_exit_action">#FFFF3B30</color>
+
+    <!-- MR scan (HomeScreen / MainScreen) -->
+    <color name="scan_result_background">#FFF8F7FF</color>
+    <color name="scan_xai_loading_background">#FFF3E8FF</color>
+    <color name="scan_xai_loading_border">#FFD8B4FE</color>
+    <color name="scan_xai_loading_accent">#FF9333EA</color>
+    <color name="scan_xai_loading_title">#FF6B21A8</color>
+    <color name="scan_xai_loading_subtitle">#FF7E22CE</color>
+    <color name="scan_xai_summary_accent">#FF7C3AED</color>
+    <color name="scan_score_bar_track">#FFEDE9FE</color>
+    <color name="scan_mri_label_scrim">#99000000</color>
 </resources>

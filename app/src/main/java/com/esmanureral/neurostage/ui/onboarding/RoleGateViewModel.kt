@@ -38,9 +38,11 @@ class RoleGateViewModel @Inject constructor(
                 .filter { it !is AuthStatus.Unknown }
                 .first()
 
+            val patientStage = prefs.patientStage.value
             _startDestination.value = when (world) {
                 UserWorld.DOCTOR -> if (authStatus is AuthStatus.SignedIn) Routes.DOCTOR_HOME else Routes.DOCTOR_LOGIN
-                UserWorld.PATIENT -> Routes.PATIENT_HOME
+                UserWorld.PATIENT ->
+                    if (patientStage != null) Routes.PATIENT_HOME else Routes.PATIENT_SCAN
             }
         }
     }

@@ -11,9 +11,90 @@
     <string name="role_pick_patient_button">Hasta (Kişisel Tarama)</string>
 
     <!-- Patient home -->
-    <string name="patient_home_title">Hasta</string>
-    <string name="patient_home_subtitle">Bu tarafın ekranlarını bir sonraki adımda inşa edeceğiz.\nŞimdilik altyapı hazır.</string>
+    <string name="patient_home_title">Hoş Geldiniz</string>
+    <string name="patient_home_subtitle">Beyin sağlığınızı yapay zeka ile takip edin</string>
+    <string name="patient_home_scan_button">MR Taraması Yap</string>
+    <string name="patient_home_scan_subtitle">Yeni beyin görüntüsü yükleyin</string>
+    <string name="patient_home_history_button">Geçmiş Sonuçlar</string>
+    <string name="patient_home_history_subtitle">Önceki taramalarınızı görün</string>
+    <string name="patient_home_help_button">Yardım</string>
+    <string name="patient_home_help_subtitle">Nasıl kullanılır?</string>
+    <string name="patient_home_logout_button">Çıkış Yap</string>
     <string name="patient_home_back_to_role">Rol Seçimine Dön</string>
+    <string name="patient_home_actions_label">İşlemler</string>
+    <string name="patient_home_scan_pill">YENİ</string>
+    <string name="patient_home_info_disclaimer">Tarama sonuçlarınız doktor onayı olmadan tanı niteliği taşımaz.</string>
+    <string name="patient_mild_home_title">Bilişsel Egzersizleriniz</string>
+    <string name="patient_mild_home_body">Hafif evre bulgularına göre size önerilen günlük beyin egzersizleri. Kendi hızınızda, acele etmeden tamamlayın.</string>
+    <string name="patient_mild_exercises_section">Önerilen egzersizler</string>
+    <string name="patient_exercises_section_subtitle">Dokunarak başlayın · Kendi sıranızla</string>
+    <string name="patient_exercise_recommended_badge">Öne çıkan</string>
+    <string name="patient_very_mild_home_title">Çok hafif evre için egzersizler</string>
+    <string name="patient_very_mild_home_body">Kısa ve net görevlerle hafıza ve dikkati destekleyin. Günde bir kez, rahat tempoda yeterli.</string>
+    <string name="patient_mild_puzzle_title">Yapboz</string>
+    <string name="patient_mild_puzzle_subtitle_l1">Seviye 1 · %1$d/2 · %2$s</string>
+    <string name="patient_mild_puzzle_subtitle_l2">Seviye 2 · %1$d/3 · %2$s</string>
+    <string name="patient_mild_puzzle_subtitle_l3">Seviye 3 · %1$d/3 · %2$s</string>
+    <string name="patient_game_routine_short">Sıralama</string>
+    <string name="patient_game_routine_sub">Günlük rutin</string>
+    <string name="patient_game_memory_short">Bellek</string>
+    <string name="patient_game_memory_sub">Nesne tanıma</string>
+    <string name="patient_game_puzzle_short">Yapboz</string>
+    <string name="patient_game_puzzle_sub">Parçaları birleştir</string>
+    <string name="patient_open_game_hub">Tüm egzersizleri gör</string>
+    <string name="patient_cd_open_exercise_hub">Tüm egzersizleri listele</string>
+    <string name="patient_moderate_notice_title">Doktorunuzla görüşün</string>
+    <string name="patient_moderate_notice_body">Önce doktor değerlendirmesi önemlidir.</string>
+    <string name="patient_moderate_puzzle_subtitle">Orta · %1$d/%2$d · %3$s</string>
+    <string name="patient_non_mild_notice_title">Tarama sonucunuz kayıtlı</string>
+    <string name="patient_non_mild_notice_body">Beyin egzersizleri yalnızca hafif ve çok hafif demans evreleri için hazırlanmıştır. Doktorunuzla görüşmeye ve düzenli kontrollere devam edin.</string>
+    <string name="patient_exercise_hub_subtitle">Hafif evre · Kendi hızınızda</string>
+    <string name="patient_back_to_home">Ana sayfaya dön</string>
+    <string name="patient_home_appbar_title">Beyin Egzersizleri</string>
+    <string name="patient_home_cd_back">Geri</string>
+    <string name="patient_home_cd_logout">Çıkış yap</string>
+    <string name="patient_exit_dialog_title">Çıkış yapılsın mı?</string>
+    <string name="patient_exit_dialog_message">Rol seçim ekranına dönersiniz. Tarama sonucunuz kayıtlı kalır.</string>
+    <string name="patient_exit_dialog_confirm">Çıkış Yap</string>
+    <string name="patient_exit_dialog_cancel">Vazgeç</string>
+
+    <!-- Accessible patient home (yüksek kontrast, büyük dokunma alanları) -->
+    <string name="accessible_home_welcome">NEUROSTAGE\'E HOŞ GELDİNİZ</string>
+    <string name="accessible_home_scan_instruction">YENİ BİR BEYİN (MR) TARAMASI YAPMAK İÇİN AŞAĞIDAKİ BÜYÜK YEŞİL DÜĞMEYE BASINIZ.</string>
+    <string name="accessible_home_start_scan">TARAMA BAŞLAT</string>
+    <string name="accessible_home_exit">GÜVENLİ ÇIKIŞ YAP</string>
+    <string name="accessible_cd_start_scan">MR taraması başlat</string>
+    <string name="patient_stage_mild">Hafif evre</string>
+    <string name="patient_stage_moderate">Orta evre</string>
+    <string name="patient_stage_healthy">Sağlıklı</string>
+    <string name="patient_stage_very_mild">Çok hafif evre</string>
+    <string name="patient_game_hub_pick">Bir egzersiz seçin</string>
+    <string name="patient_game_routine_title">Sıralama Oyunu</string>
+    <string name="patient_game_routine_hub_sub">Günlük bir işin adımlarını sırala</string>
+    <string name="patient_game_memory_title">Bellek Oyunu</string>
+    <string name="patient_game_memory_hub_sub">Nesneleri hatırla ve bul</string>
+    <string name="patient_game_puzzle_hub_sub">Parçaları doğru sıraya diz</string>
+    <string name="patient_emoji_puzzle">🧩</string>
+    <string name="patient_emoji_routine">📋</string>
+    <string name="patient_emoji_memory">🧠</string>
+    <string name="patient_emoji_brain">🧠</string>
+
+    <!-- MR tarama sonrası hasta yönlendirme (HomeScreen) -->
+    <string name="guidance_moderate_title">Yakınınızı veya doktorunuzu arayın</string>
+    <string name="guidance_moderate_body">Bu sonuç, bir nöroloji uzmanı tarafından en kısa sürede değerlendirilmelidir. Lütfen bugün bir yakınınıza veya doktorunuza haber verin.</string>
+    <string name="guidance_moderate_button">Egzersiz sayfasına git</string>
+    <string name="guidance_moderate_icon">🔴</string>
+    <string name="guidance_mild_title">Nöroloji randevusu alın</string>
+    <string name="guidance_mild_body">Hafif bulgular tespit edildi. En geç 1 ay içinde bir nöroloji uzmanına gitmeniz önerilir. Bu arada beyin egzersizleri yaparak bilişsel sağlığınızı destekleyebilirsiniz.</string>
+    <string name="guidance_mild_button">Egzersizlere git</string>
+    <string name="guidance_mild_icon">🟠</string>
+    <string name="guidance_very_mild_title">6 ayda bir takip önerilir</string>
+    <string name="guidance_very_mild_body">Çok hafif değişiklikler görülüyor. Düzenli doktor takibine devam edin; beyin egzersizleriyle bilişsel sağlığınızı destekleyebilirsiniz.</string>
+    <string name="guidance_very_mild_button">Egzersizlere git</string>
+    <string name="guidance_very_mild_icon">🟡</string>
+    <string name="guidance_healthy_title">Beyin sağlığınızı koruyun</string>
+    <string name="guidance_healthy_body">Tarama sonucunuz bu program kapsamı dışındadır. Rutin kontrollerinize devam edin; sorularınız için doktorunuza danışın.</string>
+    <string name="guidance_healthy_icon">✅</string>
 
     <string name="doctor_auth_error_name_required">Ad ve soyad girin.</string>
     <string name="doctor_auth_error_email_password">E-posta ve en az %1$d karakter şifre girin.</string>
@@ -215,7 +296,7 @@
     <string name="home_screen_analyze_calculating">Sonuç hesaplanıyor…</string>
     <string name="home_screen_result_title">Analiz Sonucu</string>
     <string name="home_screen_result_mri_label">MRI Görüntüsü</string>
-    <string name="home_screen_result_confidence">%%$1d güven</string>
+    <string name="home_screen_result_confidence">%1$d%% güven</string>
     <string name="home_screen_xai_loading_title">Yapay Zeka Klinik Raporu Hazırlanıyor…</string>
     <string name="home_screen_xai_loading_subtitle">XAI Analizi &amp; Grok Vision</string>
     <string name="home_screen_xai_summary_fallback">Yapay Zeka Klinik Özeti</string>
@@ -313,4 +394,118 @@ Klinisyen için somut ve önceliklendirilmiş öneriler sun (örn. MMSE, nörops
     <string name="error_select_mri_first">Önce geçerli bir beyin MR görüntüsü seçin.</string>
     <string name="error_classification_failed">Sınıflandırma başarısız oldu.</string>
     <string name="error_firebase_save">Firebase kayıt hatası: %s</string>
+
+    <!-- Puzzle Game -->
+    <string name="puzzle_title">Yapboz</string>
+    <string name="puzzle_subtitle">Seviye 1 · %1$d×%2$d · %3$d parça</string>
+    <string name="puzzle_subtitle_mild">%1$s</string>
+    <string name="puzzle_mild_level_1">Seviye 1</string>
+    <string name="puzzle_mild_level_2">Seviye 2</string>
+    <string name="puzzle_mild_level_3">Seviye 3</string>
+    <string name="puzzle_mild_tea">Çay</string>
+    <string name="puzzle_mild_daisy">Papatya</string>
+    <string name="puzzle_mild_radio">Radyo</string>
+    <string name="puzzle_mild_car">Araba</string>
+    <string name="puzzle_mild_cat">Kedi</string>
+    <string name="puzzle_mild_tower">Kız Kulesi</string>
+    <string name="puzzle_mild_coffee">Kahve</string>
+    <string name="puzzle_mild_clock">Saat</string>
+    <string name="puzzle_moderate_coffee">Kahve</string>
+    <string name="puzzle_moderate_watermelon">Karpuz</string>
+    <string name="puzzle_moderate_butterfly">Kelebek</string>
+    <string name="puzzle_moderate_sea">Deniz</string>
+    <string name="puzzle_cd_back">Geri</string>
+    <string name="puzzle_cd_reset">Yeniden Başlat</string>
+    <string name="puzzle_success_title">Tebrikler!</string>
+    <string name="puzzle_success_play_again">Tekrar oyna</string>
+    <string name="puzzle_success_next">Sonraki yapboz</string>
+    <string name="puzzle_success_back">Ana Sayfaya Dön</string>
+    <string name="puzzle_tray_label">Parçalar</string>
+
+    <!-- Memory game -->
+    <string name="memory_game_title">BELLEK OYUNU</string>
+    <string name="memory_show_instruction">Aşağıdaki %1$d nesneye dikkatlice bakın.\nHazır olunca HAZİRIM butonuna basın.</string>
+    <string name="memory_btn_ready">HAZİRIM — DEVAM ET</string>
+    <string name="memory_recall_title">HANGİLERİNİ GÖRDÜNÜZ?</string>
+    <string name="memory_recall_instruction">Az önce gördüğünüz %1$d nesneye dokunun.</string>
+    <string name="memory_btn_confirm">CEVABI ONAYLA</string>
+    <string name="memory_selection_count">%1$d / %2$d seçildi</string>
+    <string name="memory_result_perfect">HARIKA! Hepsini buldunuz!</string>
+    <string name="memory_result_partial">%1$d / %2$d doğru — Tekrar deneyelim!</string>
+    <string name="memory_result_emoji_success">🎉</string>
+    <string name="memory_result_emoji_retry">😊</string>
+    <string name="routine_success_emoji">🎉</string>
+    <string name="memory_btn_play_again">TEKRAR OYNA</string>
+    <string name="game_btn_back_upper">GERİ DÖN</string>
+
+    <string name="memory_item_apple">Elma</string>
+    <string name="memory_item_dog">Köpek</string>
+    <string name="memory_item_pencil">Kalem</string>
+    <string name="memory_item_book">Kitap</string>
+    <string name="memory_item_rose">Gül</string>
+    <string name="memory_item_guitar">Gitar</string>
+    <string name="memory_item_star">Yıldız</string>
+    <string name="memory_item_car">Araba</string>
+    <string name="memory_item_rainbow">Gökkuşağı</string>
+    <string name="memory_item_paint">Boya</string>
+    <string name="memory_item_house">Ev</string>
+    <string name="memory_item_moon">Ay</string>
+
+    <!-- Routine order game -->
+    <string name="routine_instruction">Adımlara DOĞRU SIRAYLA dokunun.\nÖrneğin önce 1. adım, sonra 2. adım…</string>
+    <string name="routine_try_again">😊  Tekrar deneyelim! Adımlara sırayla dokunun.</string>
+    <string name="routine_btn_confirm">✅  SIRALAMAYI ONAYLA</string>
+    <string name="routine_steps_count">%1$d / %2$d adım seçildi</string>
+    <string name="routine_btn_restart">🔄  YENİDEN BAŞLA</string>
+    <string name="routine_success_title">HARIKA!</string>
+    <string name="routine_success_body">%1$s adımlarını\ndoğru sıraladınız!</string>
+    <string name="routine_btn_play_again">🔄  TEKRAR OYNA</string>
+    <string name="routine_position_unknown">?</string>
+
+    <!-- Routine / memory game emojis -->
+    <string name="routine_emoji_tea_game">🍵</string>
+    <string name="routine_emoji_tea_pot">🫖</string>
+    <string name="routine_emoji_tea_water">💧</string>
+    <string name="routine_emoji_tea_stove">🔥</string>
+    <string name="routine_emoji_tea_brew">🍵</string>
+    <string name="routine_emoji_plant_game">🌿</string>
+    <string name="routine_emoji_plant_tap">🚿</string>
+    <string name="routine_emoji_plant_bucket">🪣</string>
+    <string name="routine_emoji_plant_go">🌿</string>
+    <string name="routine_emoji_plant_water">💧</string>
+    <string name="routine_emoji_wash_game">🙌</string>
+    <string name="routine_emoji_wash_tap">🚿</string>
+    <string name="routine_emoji_wash_soap">🧼</string>
+    <string name="routine_emoji_wash_rinse">💦</string>
+    <string name="routine_emoji_wash_dry">🧻</string>
+    <string name="memory_emoji_apple">🍎</string>
+    <string name="memory_emoji_dog">🐶</string>
+    <string name="memory_emoji_pencil">✏️</string>
+    <string name="memory_emoji_book">📚</string>
+    <string name="memory_emoji_rose">🌹</string>
+    <string name="memory_emoji_guitar">🎸</string>
+    <string name="memory_emoji_star">⭐</string>
+    <string name="memory_emoji_car">🚗</string>
+    <string name="memory_emoji_rainbow">🌈</string>
+    <string name="memory_emoji_paint">🎨</string>
+    <string name="memory_emoji_house">🏠</string>
+    <string name="memory_emoji_moon">🌙</string>
+
+    <string name="routine_game_tea">Çay Demleme</string>
+    <string name="routine_step_tea_pot">Çaydanlığı al</string>
+    <string name="routine_step_tea_water">Su doldur</string>
+    <string name="routine_step_tea_stove">Ocağa koy</string>
+    <string name="routine_step_tea_brew">Çayı demle</string>
+
+    <string name="routine_game_plant">Bitki Sulama</string>
+    <string name="routine_step_plant_tap">Musluğu aç</string>
+    <string name="routine_step_plant_bucket">Kovayı doldur</string>
+    <string name="routine_step_plant_go">Bitkiye git</string>
+    <string name="routine_step_plant_water">Bitkiyi sula</string>
+
+    <string name="routine_game_wash">El Yıkama</string>
+    <string name="routine_step_wash_tap">Musluğu aç</string>
+    <string name="routine_step_wash_soap">Sabunla ova</string>
+    <string name="routine_step_wash_rinse">Durula</string>
+    <string name="routine_step_wash_dry">Kurula</string>
 </resources>

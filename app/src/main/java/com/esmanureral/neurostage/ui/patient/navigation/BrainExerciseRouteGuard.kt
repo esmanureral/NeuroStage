@@ -10,12 +10,47 @@ fun BrainExerciseRouteGuard(
     onBlocked: () -> Unit,
     content: @Composable () -> Unit,
 ) {
+    val allowed = PatientStage.canAccessPatientExerciseHub(stageIndex)
     LaunchedEffect(stageIndex) {
-        if (stageIndex != null && !PatientStage.isBrainExerciseEligible(stageIndex)) {
+        if (stageIndex != null && !allowed) {
             onBlocked()
         }
     }
-    if (PatientStage.isBrainExerciseEligible(stageIndex)) {
+    if (allowed) {
+        content()
+    }
+}
+
+@Composable
+fun MildHomePuzzleRouteGuard(
+    stageIndex: Int?,
+    onBlocked: () -> Unit,
+    content: @Composable () -> Unit,
+) {
+    val allowed = PatientStage.isBrainExerciseEligible(stageIndex)
+    LaunchedEffect(stageIndex) {
+        if (stageIndex != null && !allowed) {
+            onBlocked()
+        }
+    }
+    if (allowed) {
+        content()
+    }
+}
+
+@Composable
+fun MriModeratePuzzleRouteGuard(
+    stageIndex: Int?,
+    onBlocked: () -> Unit,
+    content: @Composable () -> Unit,
+) {
+    val allowed = stageIndex == PatientStage.MODERATE_DEMENTIA
+    LaunchedEffect(stageIndex) {
+        if (!allowed) {
+            onBlocked()
+        }
+    }
+    if (allowed) {
         content()
     }
 }

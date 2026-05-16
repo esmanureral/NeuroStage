@@ -12,8 +12,11 @@ class BrainExerciseRepositoryImpl @Inject constructor(
 
     override val patientStage: StateFlow<Int?> = prefs.patientStage
     override val puzzleProgress: StateFlow<Int> = prefs.mildPuzzleProgress
+    override val mriModeratePuzzleProgress: StateFlow<Int> = prefs.mriModeratePuzzleProgress
 
     override fun advancePuzzleProgress() = prefs.advanceMildPuzzle()
+
+    override fun advanceMriModeratePuzzleProgress() = prefs.advanceMriModeratePuzzle()
 
     override fun clearSession() = prefs.clearWorld()
 }

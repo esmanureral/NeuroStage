@@ -90,9 +90,9 @@ class PuzzleGameViewModel(
 
         PuzzleSequentialRevealMode.HorizontalLeftThenRight,
         PuzzleSequentialRevealMode.VerticalBottomThenTop,
-        PuzzleSequentialRevealMode.Grid2x2_TopRowThenBottom,
-        PuzzleSequentialRevealMode.Grid2x3_RowTriple,
-        PuzzleSequentialRevealMode.Grid3x2_RowPairs,
+        PuzzleSequentialRevealMode.Grid2x2TopRowThenBottom,
+        PuzzleSequentialRevealMode.Grid2x3RowTriple,
+        PuzzleSequentialRevealMode.Grid3x2RowPairs,
             -> (0 until total).toList()
     }
 

@@ -9,8 +9,10 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
+import com.esmanureral.neurostage.ui.theme.PatientDimens
 import kotlin.math.roundToInt
 
 @Composable
@@ -19,16 +21,18 @@ fun PuzzlePieceView(
     pieceId: Int,
     rows: Int,
     cols: Int,
+    knobFraction: Float,
     modifier: Modifier = Modifier,
     borderColor: Color = Color.White,
     showBorder: Boolean = true,
 ) {
     val row = pieceId / cols
     val col = pieceId % cols
+    val borderWidthPx = with(LocalDensity.current) { PatientDimens.puzzlePieceBorderWidth.toPx() }
     Canvas(modifier = modifier) {
         val w = size.width
         val h = size.height
-        val path = piecePath(w, h, pieceId, rows, cols)
+        val path = piecePath(w, h, pieceId, rows, cols, knobFraction)
         val boardW = (w * cols).roundToInt().coerceAtLeast(1)
         val boardH = (h * rows).roundToInt().coerceAtLeast(1)
         clipPath(path) {
@@ -43,7 +47,7 @@ fun PuzzlePieceView(
                 path = path,
                 color = borderColor,
                 style = Stroke(
-                    width = 2.5f,
+                    width = borderWidthPx,
                     cap = StrokeCap.Round,
                     join = StrokeJoin.Round,
                 ),

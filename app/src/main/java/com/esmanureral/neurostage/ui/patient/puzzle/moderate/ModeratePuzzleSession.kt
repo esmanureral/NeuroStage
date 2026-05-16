@@ -9,8 +9,8 @@ internal fun buildModerateDementiaPuzzleSession(progress: Int): PuzzleSessionCon
     val step = ModeratePuzzleCatalog.stepForProgress(progress)
     val sequentialMode = when (step.gameLevel) {
         1 -> PuzzleSequentialRevealMode.HorizontalLeftThenRight
-        2 -> PuzzleSequentialRevealMode.Grid2x2_TopRowThenBottom
-        3 -> PuzzleSequentialRevealMode.Grid2x3_RowTriple
+        2 -> PuzzleSequentialRevealMode.Grid2x2TopRowThenBottom
+        3 -> PuzzleSequentialRevealMode.Grid2x3RowTriple
         else -> PuzzleSequentialRevealMode.None
     }
     return PuzzleSessionConfig(

@@ -15,6 +15,7 @@ fun trayPieceSizeFor(
     minWidthSixPlusPieces: Dp,
     maxHeight: Dp,
     fallbackSize: Dp,
+    trayScaleOfSlot: Float,
 ): TrayPieceSize {
     if (columns <= 0) return TrayPieceSize(fallbackSize, fallbackSize)
 
@@ -26,7 +27,7 @@ fun trayPieceSizeFor(
     }
     val minWidth = if (pieceCount <= 4) minWidthFourPieces else minWidthSixPlusPieces
 
-    var width = slotWidth * PuzzleLayoutConfig.TRAY_SCALE_OF_SLOT
+    var width = slotWidth * trayScaleOfSlot
     var height = width / aspect
 
     if (width < minWidth) {

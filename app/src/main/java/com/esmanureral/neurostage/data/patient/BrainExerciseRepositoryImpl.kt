@@ -15,6 +15,9 @@ class BrainExerciseRepositoryImpl @Inject constructor(
     override val mriModeratePuzzleProgress: StateFlow<Int> = prefs.mriModeratePuzzleProgress
     override val memoryMatchLevel: StateFlow<Int> = prefs.memoryMatchLevel
     override val memoryMatchAllComplete: StateFlow<Boolean> = prefs.memoryMatchAllComplete
+    override val moderateMemoryMatchLevel: StateFlow<Int> = prefs.moderateMemoryMatchLevel
+    override val moderateMemoryMatchAllComplete: StateFlow<Boolean> =
+        prefs.moderateMemoryMatchAllComplete
 
     override fun advancePuzzleProgress() = prefs.advanceMildPuzzle()
 
@@ -25,6 +28,13 @@ class BrainExerciseRepositoryImpl @Inject constructor(
     override fun setMemoryMatchAllComplete() = prefs.setMemoryMatchAllComplete()
 
     override fun resetMemoryMatchProgress() = prefs.resetMemoryMatchProgress()
+
+    override fun setModerateMemoryMatchLevel(levelIndex: Int) =
+        prefs.setModerateMemoryMatchLevel(levelIndex)
+
+    override fun setModerateMemoryMatchAllComplete() = prefs.setModerateMemoryMatchAllComplete()
+
+    override fun resetModerateMemoryMatchProgress() = prefs.resetModerateMemoryMatchProgress()
 
     override fun clearSession() = prefs.clearWorld()
 }

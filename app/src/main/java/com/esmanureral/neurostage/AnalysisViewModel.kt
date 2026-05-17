@@ -171,7 +171,7 @@ class AnalysisViewModel @Inject constructor(
                 }
                 stepTicker.join()
                 delay(STEP_HOLD_ALL_DONE_MS)
-                val labels = appContext.resources.getStringArray(R.array.home_screen_class_labels)
+                val labels = appContext.resources.getStringArray(R.array.dementia_stage_labels)
                 val descriptions =
                     appContext.resources.getStringArray(R.array.home_screen_class_descriptions)
                 val maxIndex = scores.indices.maxByOrNull { scores[it] } ?: 0
@@ -282,7 +282,7 @@ class AnalysisViewModel @Inject constructor(
             )
 
             _xaiState.value = _xaiState.value.copy(isGeminiLoading = true)
-            val classLabels = appContext.resources.getStringArray(R.array.home_screen_class_labels)
+            val classLabels = appContext.resources.getStringArray(R.array.dementia_stage_labels)
             val stageLabel = classLabels.getOrNull(stageIndex) ?: ""
             val geminiResult = runCatching {
                 geminiGenerator.generate(

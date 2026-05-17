@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import androidx.core.content.edit
 import com.esmanureral.neurostage.domain.patient.puzzle.mild.MildPuzzleCatalog
 import com.esmanureral.neurostage.domain.patient.PatientStage
+import com.esmanureral.neurostage.domain.patient.memorymatch.moderate.ModerateMemoryMatchCatalog
 import com.esmanureral.neurostage.domain.patient.puzzle.moderate.ModeratePuzzleCatalog
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,6 +26,10 @@ class AppPreferences @Inject constructor(
         const val KEY_MEMORY_MATCH_LEVEL = "memory_match_level"
         const val KEY_MEMORY_MATCH_ALL_COMPLETE = "memory_match_all_complete"
         const val MEMORY_MATCH_MAX_LEVEL_INDEX = 3
+        const val KEY_MODERATE_MEMORY_MATCH_LEVEL = "moderate_memory_match_level"
+        const val KEY_MODERATE_MEMORY_MATCH_ALL_COMPLETE = "moderate_memory_match_all_complete"
+        const val KEY_COLOR_MATCH_LEVEL = "color_match_level"
+        const val KEY_COLOR_MATCH_ALL_COMPLETE = "color_match_all_complete"
     }
 
     private val _userWorld = MutableStateFlow(loadWorld())
@@ -45,6 +50,14 @@ class AppPreferences @Inject constructor(
     private val _memoryMatchAllComplete = MutableStateFlow(loadMemoryMatchAllComplete())
     val memoryMatchAllComplete: StateFlow<Boolean> = _memoryMatchAllComplete.asStateFlow()
 
+    private val _moderateMemoryMatchLevel = MutableStateFlow(loadModerateMemoryMatchLevel())
+    val moderateMemoryMatchLevel: StateFlow<Int> = _moderateMemoryMatchLevel.asStateFlow()
+
+    private val _moderateMemoryMatchAllComplete =
+        MutableStateFlow(loadModerateMemoryMatchAllComplete())
+    val moderateMemoryMatchAllComplete: StateFlow<Boolean> =
+        _moderateMemoryMatchAllComplete.asStateFlow()
+
     fun setWorld(world: UserWorld) {
         prefs.edit { putString(KEY_USER_WORLD, world.name) }
         _userWorld.value = world
@@ -59,14 +72,26 @@ class AppPreferences @Inject constructor(
                 remove(KEY_MILD_PUZZLE_PROGRESS)
                 remove(KEY_MEMORY_MATCH_LEVEL)
                 remove(KEY_MEMORY_MATCH_ALL_COMPLETE)
+                remove(KEY_MODERATE_MEMORY_MATCH_LEVEL)
+                remove(KEY_MODERATE_MEMORY_MATCH_ALL_COMPLETE)
+                remove(KEY_COLOR_MATCH_LEVEL)
+                remove(KEY_COLOR_MATCH_ALL_COMPLETE)
             }
             _mildPuzzleProgress.value = 0
             _memoryMatchLevel.value = 0
             _memoryMatchAllComplete.value = false
+            _moderateMemoryMatchLevel.value = 0
+            _moderateMemoryMatchAllComplete.value = false
         }
         if (stage != PatientStage.MODERATE_DEMENTIA) {
-            prefs.edit { remove(KEY_MRI_MODERATE_PUZZLE_PROGRESS) }
+            prefs.edit {
+                remove(KEY_MRI_MODERATE_PUZZLE_PROGRESS)
+                remove(KEY_MODERATE_MEMORY_MATCH_LEVEL)
+                remove(KEY_MODERATE_MEMORY_MATCH_ALL_COMPLETE)
+            }
             _mriModeratePuzzleProgress.value = 0
+            _moderateMemoryMatchLevel.value = 0
+            _moderateMemoryMatchAllComplete.value = false
         }
     }
 
@@ -116,6 +141,55 @@ class AppPreferences @Inject constructor(
         _memoryMatchAllComplete.value = false
     }
 
+    fun setModerateMemoryMatchLevel(levelIndex: Int) {
+        val coerced = levelIndex.coerceIn(0, moderateMemoryMatchMaxLevelIndex())
+        prefs.edit {
+            putInt(KEY_MODERATE_MEMORY_MATCH_LEVEL, coerced)
+            putBoolean(KEY_MODERATE_MEMORY_MATCH_ALL_COMPLETE, false)
+        }
+        _moderateMemoryMatchLevel.value = coerced
+        _moderateMemoryMatchAllComplete.value = false
+    }
+
+    fun setModerateMemoryMatchAllComplete() {
+        prefs.edit {
+            putInt(KEY_MODERATE_MEMORY_MATCH_LEVEL, moderateMemoryMatchMaxLevelIndex())
+            putBoolean(KEY_MODERATE_MEMORY_MATCH_ALL_COMPLETE, true)
+        }
+        _moderateMemoryMatchLevel.value = moderateMemoryMatchMaxLevelIndex()
+        _moderateMemoryMatchAllComplete.value = true
+    }
+
+    fun resetModerateMemoryMatchProgress() {
+        prefs.edit {
+            putInt(KEY_MODERATE_MEMORY_MATCH_LEVEL, 0)
+            putBoolean(KEY_MODERATE_MEMORY_MATCH_ALL_COMPLETE, false)
+        }
+        _moderateMemoryMatchLevel.value = 0
+        _moderateMemoryMatchAllComplete.value = false
+    }
+
+    val colorMatchLevelIndex: Int
+        get() = prefs.getInt(KEY_COLOR_MATCH_LEVEL, 0).coerceIn(0, 3)
+
+    fun setColorMatchLevelIndex(levelIndex: Int) {
+        prefs.edit {
+            putInt(KEY_COLOR_MATCH_LEVEL, levelIndex.coerceAtLeast(0))
+            putBoolean(KEY_COLOR_MATCH_ALL_COMPLETE, false)
+        }
+    }
+
+    fun setColorMatchAllComplete() {
+        prefs.edit { putBoolean(KEY_COLOR_MATCH_ALL_COMPLETE, true) }
+    }
+
+    fun resetColorMatchProgress() {
+        prefs.edit {
+            putInt(KEY_COLOR_MATCH_LEVEL, 0)
+            putBoolean(KEY_COLOR_MATCH_ALL_COMPLETE, false)
+        }
+    }
+
     fun clearWorld() {
         prefs.edit {
             remove(KEY_USER_WORLD)
@@ -124,6 +198,10 @@ class AppPreferences @Inject constructor(
             remove(KEY_MRI_MODERATE_PUZZLE_PROGRESS)
             remove(KEY_MEMORY_MATCH_LEVEL)
             remove(KEY_MEMORY_MATCH_ALL_COMPLETE)
+            remove(KEY_MODERATE_MEMORY_MATCH_LEVEL)
+            remove(KEY_MODERATE_MEMORY_MATCH_ALL_COMPLETE)
+            remove(KEY_COLOR_MATCH_LEVEL)
+            remove(KEY_COLOR_MATCH_ALL_COMPLETE)
         }
         _userWorld.value = null
         _patientStage.value = null
@@ -131,6 +209,8 @@ class AppPreferences @Inject constructor(
         _mriModeratePuzzleProgress.value = 0
         _memoryMatchLevel.value = 0
         _memoryMatchAllComplete.value = false
+        _moderateMemoryMatchLevel.value = 0
+        _moderateMemoryMatchAllComplete.value = false
     }
 
     private fun loadWorld(): UserWorld? {
@@ -160,4 +240,13 @@ class AppPreferences @Inject constructor(
 
     private fun loadMemoryMatchAllComplete(): Boolean =
         prefs.getBoolean(KEY_MEMORY_MATCH_ALL_COMPLETE, false)
+
+    private fun moderateMemoryMatchMaxLevelIndex(): Int = ModerateMemoryMatchCatalog.MAX_LEVEL_INDEX
+
+    private fun loadModerateMemoryMatchLevel(): Int =
+        prefs.getInt(KEY_MODERATE_MEMORY_MATCH_LEVEL, 0)
+            .coerceIn(0, moderateMemoryMatchMaxLevelIndex())
+
+    private fun loadModerateMemoryMatchAllComplete(): Boolean =
+        prefs.getBoolean(KEY_MODERATE_MEMORY_MATCH_ALL_COMPLETE, false)
 }

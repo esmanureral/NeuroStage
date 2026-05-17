@@ -2,6 +2,7 @@ package com.esmanureral.neurostage.ui.patient.games.puzzle
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,7 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalContext
@@ -53,6 +53,10 @@ fun PuzzleGameScreen(
     val dragState = remember { PuzzleDragStateHolder() }
 
     var showSuccess by remember(screenSession.config.viewModelKey) { mutableStateOf(false) }
+    var isAdvancingToNext by remember { mutableStateOf(false) }
+    var successSnapshot by remember(screenSession.config.viewModelKey) {
+        mutableStateOf<PuzzleSuccessSnapshot?>(null)
+    }
 
     val pieces by gameViewModel.pieces.collectAsStateWithLifecycle()
     val trayOrder by gameViewModel.trayOrder.collectAsStateWithLifecycle()
@@ -61,18 +65,60 @@ fun PuzzleGameScreen(
     val layout = rememberPuzzleLayoutResources(screenSession.config.cols)
     val context = LocalContext.current
     val stepLabel = stringResource(screenSession.config.nameRes)
-    val puzzleBitmap = remember(
-        screenSession.config.drawableRes,
-        screenSession.config.rows,
-        screenSession.config.cols,
-        screenSession.config.viewModelKey,
-    ) {
-        loadPuzzleImage(
-            context,
-            screenSession.config.drawableRes,
-            screenSession.config.rows,
-            screenSession.config.cols,
+    val puzzleBitmap = rememberSessionPuzzleBitmap(
+        context = context,
+        sessionKey = screenSession.config.viewModelKey,
+        drawableRes = screenSession.config.drawableRes,
+        rows = screenSession.config.rows,
+        cols = screenSession.config.cols,
+    )
+
+    val allPiecesPlaced = pieces.all { it.isPlaced }
+    val showSuccessScreen = (showSuccess || isCompleted || allPiecesPlaced) && !isAdvancingToNext
+
+    fun setShowSuccess(visible: Boolean) {
+        showSuccess = visible
+    }
+
+    fun clearAdvancingFlag() {
+        isAdvancingToNext = false
+    }
+
+    fun beginNextLevel() {
+        isAdvancingToNext = true
+        showSuccess = false
+        successSnapshot = null
+        flowViewModel.advanceToNextPuzzle(progressTrack)
+    }
+
+    fun restartCurrentLevel() {
+        showSuccess = false
+        successSnapshot = null
+        gameViewModel.reset()
+    }
+
+    fun ensureSuccessSnapshot(): PuzzleSuccessSnapshot? {
+        successSnapshot?.let { return it }
+        val bitmap = puzzleBitmap ?: return null
+        if (!showSuccessScreen) return null
+        val created = PuzzleSuccessSnapshot(
+            bitmap = bitmap,
+            boardAspectRatio = screenSession.boardAspectRatio,
         )
+        successSnapshot = created
+        return created
+    }
+
+    LaunchedEffect(allPiecesPlaced) {
+        if (allPiecesPlaced) {
+            dragState.cancelDrag()
+        }
+    }
+
+    LaunchedEffect(screenSession.config.viewModelKey, puzzleBitmap) {
+        if (puzzleBitmap != null) {
+            clearAdvancingFlag()
+        }
     }
 
     BindPuzzleGameEffects(
@@ -80,31 +126,7 @@ fun PuzzleGameScreen(
         isCompleted = isCompleted,
         gameViewModel = gameViewModel,
         clickSound = clickSound,
-        onShowSuccess = { showSuccess = it },
-    )
-
-    val uiState = PuzzleGameUiState(
-        pieces = pieces,
-        trayOrder = trayOrder,
-        isCompleted = isCompleted,
-        showSuccess = showSuccess,
-        stepLabel = stepLabel,
-        puzzleBitmap = puzzleBitmap,
-        clickSound = clickSound,
-        dragState = dragState,
-        ghostAlpha = layout.ghostAlpha,
-        knobFraction = layout.knobFraction,
-        snapRadiusFraction = layout.snapRadiusFraction,
-        trayScaleOfSlot = layout.trayScaleOfSlot,
-        trayHitScale = layout.trayHitScale,
-        trayBackgroundAlpha = layout.trayBackgroundAlpha,
-        borderAnimDurationMs = layout.borderAnimDurationMs,
-        trayColumns = layout.trayColumns,
-        successContentWidthFraction = layout.successContentWidthFraction,
-        boardPieceZIndex = layout.boardPieceZIndex,
-        dragOverlayZIndex = layout.dragOverlayZIndex,
-        slotStrokeNormalPx = layout.slotStrokeNormalPx,
-        slotStrokeMagnetPx = layout.slotStrokeMagnetPx,
+        onShowSuccess = ::setShowSuccess,
     )
 
     Scaffold(
@@ -120,18 +142,78 @@ fun PuzzleGameScreen(
             )
         },
     ) { padding ->
-        if (uiState.showSuccess) {
+        if (isAdvancingToNext) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                contentAlignment = Alignment.Center,
+            ) {
+                CircularProgressIndicator(color = PatientColors.puzzleAccent)
+            }
+            return@Scaffold
+        }
+
+        if (showSuccessScreen) {
+            val snapshot = ensureSuccessSnapshot()
+            if (snapshot == null) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CircularProgressIndicator(color = PatientColors.puzzleAccent)
+                }
+                return@Scaffold
+            }
             PuzzleSuccessRoute(
                 padding = padding,
-                screenSession = screenSession,
-                uiState = uiState,
-                flowViewModel = flowViewModel,
-                progressTrack = progressTrack,
-                gameViewModel = gameViewModel,
+                snapshot = snapshot,
+                contentWidthFraction = layout.successContentWidthFraction,
+                hasNextLevel = screenSession.config.hasNextStep,
+                onNextLevel = ::beginNextLevel,
+                onPlayAgain = ::restartCurrentLevel,
                 onBackToHome = onBackToHome,
             )
             return@Scaffold
         }
+
+        if (puzzleBitmap == null) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                contentAlignment = Alignment.Center,
+            ) {
+                CircularProgressIndicator(color = PatientColors.puzzleAccent)
+            }
+            return@Scaffold
+        }
+
+        val uiState = PuzzleGameUiState(
+            pieces = pieces,
+            trayOrder = trayOrder,
+            isCompleted = isCompleted,
+            showSuccess = showSuccess,
+            stepLabel = stepLabel,
+            puzzleBitmap = puzzleBitmap,
+            clickSound = clickSound,
+            dragState = dragState,
+            ghostAlpha = layout.ghostAlpha,
+            knobFraction = layout.knobFraction,
+            snapRadiusFraction = layout.snapRadiusFraction,
+            trayScaleOfSlot = layout.trayScaleOfSlot,
+            trayHitScale = layout.trayHitScale,
+            trayBackgroundAlpha = layout.trayBackgroundAlpha,
+            borderAnimDurationMs = layout.borderAnimDurationMs,
+            trayColumns = layout.trayColumns,
+            successContentWidthFraction = layout.successContentWidthFraction,
+            boardPieceZIndex = layout.boardPieceZIndex,
+            dragOverlayZIndex = layout.dragOverlayZIndex,
+            slotStrokeNormalPx = layout.slotStrokeNormalPx,
+            slotStrokeMagnetPx = layout.slotStrokeMagnetPx,
+        )
 
         PuzzlePlayRoute(
             padding = padding,
@@ -145,22 +227,21 @@ fun PuzzleGameScreen(
 @Composable
 private fun PuzzleSuccessRoute(
     padding: PaddingValues,
-    screenSession: PuzzleScreenSession,
-    uiState: PuzzleGameUiState,
-    flowViewModel: PuzzleFlowViewModel,
-    progressTrack: PuzzleProgressTrack,
-    gameViewModel: PuzzleGameViewModel,
+    snapshot: PuzzleSuccessSnapshot,
+    contentWidthFraction: Float,
+    hasNextLevel: Boolean,
+    onNextLevel: () -> Unit,
+    onPlayAgain: () -> Unit,
     onBackToHome: () -> Unit,
 ) {
     PuzzleSuccessView(
         modifier = Modifier.padding(padding),
-        imageRes = screenSession.config.drawableRes,
-        boardAspectRatio = screenSession.boardAspectRatio,
-        imageContentScale = ContentScale.Crop,
-        contentWidthFraction = uiState.successContentWidthFraction,
-        hasNextLevel = screenSession.config.hasNextStep,
-        onNextLevel = { flowViewModel.advanceToNextPuzzle(progressTrack) },
-        onPlayAgain = gameViewModel::reset,
+        puzzleBitmap = snapshot.bitmap,
+        boardAspectRatio = snapshot.boardAspectRatio,
+        contentWidthFraction = contentWidthFraction,
+        hasNextLevel = hasNextLevel,
+        onNextLevel = onNextLevel,
+        onPlayAgain = onPlayAgain,
         onBack = onBackToHome,
     )
 }
@@ -206,6 +287,7 @@ private fun PuzzlePlayRoute(
                 boardAspectRatio = screenSession.boardAspectRatio,
                 dragState = uiState.dragState,
                 ghostAlpha = uiState.ghostAlpha,
+                showGhost = uiState.pieces.any { !it.isPlaced },
                 knobFraction = uiState.knobFraction,
                 borderAnimDurationMs = uiState.borderAnimDurationMs,
                 boardPieceZIndex = uiState.boardPieceZIndex,

@@ -6,6 +6,7 @@ import com.esmanureral.neurostage.auth.AuthRepository
 import com.esmanureral.neurostage.auth.AuthStatus
 import com.esmanureral.neurostage.data.AppPreferences
 import com.esmanureral.neurostage.data.UserWorld
+import com.esmanureral.neurostage.domain.patient.PatientStage
 import com.esmanureral.neurostage.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,16 +35,27 @@ class RoleGateViewModel @Inject constructor(
                 return@launch
             }
 
-            val authStatus = auth.status
-                .filter { it !is AuthStatus.Unknown }
-                .first()
-
-            val patientStage = prefs.patientStage.value
             _startDestination.value = when (world) {
-                UserWorld.DOCTOR -> if (authStatus is AuthStatus.SignedIn) Routes.DOCTOR_HOME else Routes.DOCTOR_LOGIN
-                UserWorld.PATIENT ->
-                    if (patientStage != null) Routes.PATIENT_HOME else Routes.PATIENT_SCAN
+                UserWorld.DOCTOR -> resolveDoctorDestination()
+                UserWorld.PATIENT -> resolvePatientDestination(prefs.patientStage.value)
             }
         }
+    }
+
+    private suspend fun resolveDoctorDestination(): String {
+        val authStatus = auth.status
+            .filter { it !is AuthStatus.Unknown }
+            .first()
+        return if (authStatus is AuthStatus.SignedIn) {
+            Routes.DOCTOR_HOME
+        } else {
+            Routes.DOCTOR_LOGIN
+        }
+    }
+
+    private fun resolvePatientDestination(patientStage: Int?): String = when {
+        patientStage == null -> Routes.PATIENT_SCAN
+        PatientStage.canAccessPatientExerciseHub(patientStage) -> Routes.PATIENT_GAMES
+        else -> Routes.PATIENT_HOME
     }
 }

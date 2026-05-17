@@ -44,11 +44,15 @@
     <string name="patient_open_game_hub">Tüm egzersizleri gör</string>
     <string name="patient_cd_open_exercise_hub">Tüm egzersizleri listele</string>
     <string name="patient_moderate_notice_title">Doktorunuzla görüşün</string>
-    <string name="patient_moderate_notice_body">Önce doktor değerlendirmesi önemlidir.</string>
+    <string name="patient_moderate_notice_body">Sakin tempoda hazırlanan egzersizler size eşlik eder. Doktorunuzla birlikte en uygun planı oluşturabilirsiniz.</string>
     <string name="patient_moderate_puzzle_subtitle">Orta · %1$d/%2$d · %3$s</string>
     <string name="patient_non_mild_notice_title">Tarama sonucunuz kayıtlı</string>
     <string name="patient_non_mild_notice_body">Beyin egzersizleri yalnızca hafif ve çok hafif demans evreleri için hazırlanmıştır. Doktorunuzla görüşmeye ve düzenli kontrollere devam edin.</string>
-    <string name="patient_exercise_hub_subtitle">Hafif evre · Kendi hızınızda</string>
+    <string name="patient_exercise_hub_subtitle">Hafif Evre Demans · Kendi hızınızda</string>
+    <string name="patient_exercise_hub_subtitle_moderate">Orta Evre Demans · Kendi hızınızda</string>
+    <string name="patient_exercise_back_hub">Egzersizlere dön</string>
+    <string name="patient_exercise_back_home">Ana sayfaya dön</string>
+    <string name="patient_exercise_back_exit">Çıkış</string>
     <string name="patient_back_to_home">Ana sayfaya dön</string>
     <string name="patient_home_appbar_title">Beyin Egzersizleri</string>
     <string name="patient_home_cd_back">Geri</string>
@@ -64,11 +68,141 @@
     <string name="accessible_home_start_scan">TARAMA BAŞLAT</string>
     <string name="accessible_home_exit">GÜVENLİ ÇIKIŞ YAP</string>
     <string name="accessible_cd_start_scan">MR taraması başlat</string>
-    <string name="patient_stage_mild">Hafif evre</string>
-    <string name="patient_stage_moderate">Orta evre</string>
-    <string name="patient_stage_healthy">Sağlıklı</string>
-    <string name="patient_stage_very_mild">Çok hafif evre</string>
+    <string name="patient_stage_mild">Hafif Evre Demans</string>
+    <string name="patient_stage_moderate">Orta Evre Demans</string>
+    <string name="patient_stage_healthy">Demans Bulgusu Yok</string>
+    <string name="patient_stage_very_mild">Çok Hafif Evre Demans</string>
     <string name="patient_game_hub_pick">Bir egzersiz seçin</string>
+    <string name="patient_hub_greeting">Merhaba</string>
+    <string name="patient_hub_quote_mark">“</string>
+    <string name="patient_hub_quote_label_morning">Güne başlarken</string>
+    <string name="patient_hub_quote_label_afternoon">Bugün için</string>
+    <string name="patient_hub_quote_label_evening">Akşam mesajı</string>
+    <string name="patient_hub_actions_section">Bugün ne yapmak istersiniz?</string>
+    <string name="patient_hub_action_scan_title">MR yükle</string>
+    <string name="patient_hub_action_scan_sub">Yeni bir beyin taraması yükleyin</string>
+    <string name="patient_hub_start">Başla</string>
+    <string name="patient_hub_stage_section_title">Evre bilgilendirmesi</string>
+    <string name="patient_hub_exercises_section_title">Egzersizleriniz</string>
+    <string name="patient_hub_bottom_new_scan">Yeni MR</string>
+    <string name="patient_hub_bottom_records">Kayıtlarım</string>
+    <string name="patient_hub_bottom_records_count">Kayıtlarım (%1$d)</string>
+    <string name="patient_hub_scan_section_title">MR taraması</string>
+    <string name="patient_hub_scan_unchanged_title">Sonucunuz değişmedi</string>
+    <string name="patient_hub_scan_unchanged_body">Evreniz önceki taramanızla aynı görünüyor. Egzersizlerinize kaldığınız yerden devam edebilirsiniz.</string>
+    <string name="patient_hub_scan_unchanged_scores_title">Diğer olasılıklar</string>
+    <string name="patient_hub_scan_return">Egzersiz sayfasına dön</string>
+    <string name="patient_hub_scan_try_another">Başka MR yükle</string>
+    <string name="patient_hub_action_exercises_title">Egzersizlere git</string>
+    <string name="patient_hub_action_exercises_sub">Zihin egzersizlerinizi seçin ve başlayın</string>
+    <string name="patient_hub_action_reminder_title">Hatırlatıcı oluştur</string>
+    <string name="patient_hub_action_reminder_sub">Günlük egzersiz veya ilaç için hatırlatma kurun</string>
+
+    <string-array name="patient_hub_motivation_quotes_morning">
+        <item>Her yeni gün, zihnin için taze ve güzel bir başlangıçtır.</item>
+        <item>Bugün kendine zaman ayırdığın için çok şanslısın.</item>
+        <item>Güneşin enerjisi bugün seninle olsun. Egzersize hazır mısın?</item>
+        <item>Derin bir nefes al ve bugünün tadını çıkar.</item>
+        <item>Zihnini zinde tutmak için harika bir gün!</item>
+    </string-array>
+    <string-array name="patient_hub_motivation_quotes_afternoon">
+        <item>Küçük egzersizler, zihnine ettiğin en büyük teşekkürdür.</item>
+        <item>Bugün yapacağın her pratik, hafızana çok iyi gelecek.</item>
+        <item>Senin tempon, senin kuralların. Acelemiz yok.</item>
+        <item>Zihnin tıpkı bir çiçek gibi; ilgilendikçe daha çok açar.</item>
+        <item>Burada olmak, kendine verdiğin en güzel hediye.</item>
+    </string-array>
+
+    <string name="patient_exercise_list_hint">Bir egzersiz seçin ve Başla\'ya dokunun.</string>
+    <string name="patient_reminder_screen_title">Hatırlatıcılar</string>
+    <string name="patient_reminder_next_in">%1$d saat %2$d dakika içinde hatırlatıcı</string>
+    <string name="patient_reminder_next_at">%1$s</string>
+    <string name="patient_reminder_no_upcoming">Yaklaşan hatırlatıcı yok</string>
+    <string name="patient_reminder_every_day_label">Her gün</string>
+    <string name="patient_reminder_days_summary">Her %1$s</string>
+    <string name="patient_reminder_edit_title">Hatırlatıcıyı düzenle</string>
+    <string name="patient_reminder_save_short">Kaydet</string>
+    <string name="patient_reminder_cancel_short">İptal et</string>
+    <string name="patient_reminder_delete_confirm">Hatırlatıcıyı sil</string>
+    <string name="patient_reminder_delete_dialog_title">Hatırlatıcıyı sil</string>
+    <string name="patient_reminder_delete_dialog_message">Bu hatırlatıcıyı silmek istediğinize emin misiniz?</string>
+    <string name="patient_reminder_delete_dialog_confirm">Sil</string>
+    <string name="patient_reminder_toast_saved">Hatırlatıcı kaydedildi</string>
+    <string name="patient_reminder_list_heading">Hatırlatılacaklar</string>
+    <string name="patient_reminder_form_title">Yeni hatırlatıcı</string>
+    <string name="patient_reminder_form_hint">Saate dokunarak saati ayarlayın; ad ve tekrar seçeneklerini belirleyin.</string>
+    <string name="patient_reminder_title_label">Hatırlatıcı adı</string>
+    <string name="patient_reminder_title_placeholder">Örn. İlaç, egzersiz</string>
+    <string name="patient_reminder_tap_time">Saate dokunun ve yazın (örn. 09:30)</string>
+    <string name="patient_reminder_time_type_hint">Saati yazın · örn. 09:30</string>
+    <string name="patient_reminder_time_edit_hint">Saat ve dakikayı yazın (ör. 9 ve 30)</string>
+    <string name="patient_reminder_hold_delete">Silmek için basılı tutun</string>
+    <string name="patient_reminder_long_press_deleted">Hatırlatıcı silindi</string>
+    <string name="patient_reminder_notification_body">%1$s zamanı geldi</string>
+    <string name="patient_reminder_repeat_label">Tekrar</string>
+    <string name="patient_reminder_pick_date">Tarih</string>
+    <string name="patient_reminder_tap_date">Tarihi değiştirmek için dokunun</string>
+    <string name="patient_reminder_cancel">İptal</string>
+    <string name="patient_reminder_ok">Tamam</string>
+    <string name="patient_reminder_cd_pick_time">Saat seç</string>
+    <string name="patient_reminder_cd_pick_date">Tarih seç</string>
+    <string name="patient_reminder_default_title">Günlük hatırlatıcı</string>
+    <string name="patient_reminder_save">Hatırlatıcıyı kaydet</string>
+    <string name="patient_reminder_empty">Henüz hatırlatıcı yok. Yukarıdaki + ile ekleyin.</string>
+    <string name="patient_reminder_delete">Hatırlatıcıyı sil</string>
+    <string name="patient_reminder_repeat_daily">Her gün</string>
+    <string name="patient_reminder_repeat_weekly">Haftanın günleri</string>
+    <string name="patient_reminder_repeat_once">Bir kez</string>
+    <string name="patient_reminder_pick_time">Saat</string>
+    <string name="patient_reminder_pick_days">Hangi günler?</string>
+    <string name="patient_reminder_schedule_daily">Her gün · %1$s</string>
+    <string name="patient_reminder_schedule_weekly">%1$s · %2$s</string>
+    <string name="patient_reminder_schedule_once">%1$s · %2$s</string>
+    <string name="patient_reminder_month_year">%1$s %2$d</string>
+    <string name="patient_reminder_prev_month">Önceki ay</string>
+    <string name="patient_reminder_next_month">Sonraki ay</string>
+    <string name="patient_reminder_cd_add">Hatırlatıcı ekle</string>
+
+    <string-array name="patient_reminder_weekday_short">
+        <item>Pzt</item>
+        <item>Sal</item>
+        <item>Çar</item>
+        <item>Per</item>
+        <item>Cum</item>
+        <item>Cmt</item>
+        <item>Paz</item>
+    </string-array>
+    <string-array name="patient_reminder_weekday_letter">
+        <item>P</item>
+        <item>S</item>
+        <item>Ç</item>
+        <item>P</item>
+        <item>C</item>
+        <item>C</item>
+        <item>P</item>
+    </string-array>
+    <string-array name="patient_reminder_weekday_names">
+        <item>Pazartesi</item>
+        <item>Salı</item>
+        <item>Çarşamba</item>
+        <item>Perşembe</item>
+        <item>Cuma</item>
+        <item>Cumartesi</item>
+        <item>Pazar</item>
+    </string-array>
+    <string name="patient_reminder_notification_title">NeuroStage hatırlatıcı</string>
+    <string name="patient_reminder_channel_name">Hasta hatırlatıcıları</string>
+    <string name="patient_scan_history_title">MR kayıtlarım</string>
+    <string name="patient_scan_history_back">Geri</string>
+    <string name="patient_scan_history_empty">Henüz kayıtlı MR taramanız yok.\nYeni bir tarama yüklediğinizde burada listelenecek.</string>
+    <string name="patient_scan_history_confidence">Güven: %1$d%%</string>
+    <string name="patient_scan_history_open_detail">Tarama detayını aç</string>
+    <string name="patient_scan_detail_title">Tarama sonucu</string>
+    <string name="patient_hub_card_routine_title">Günlük işleri sırayla hatırla</string>
+    <string name="patient_hub_card_memory_title">Gördüğün nesneleri bul</string>
+    <string name="patient_hub_card_match_title">Aynı kartları eşleştir</string>
+    <string name="patient_hub_card_match_title_moderate">Kartları eşleştir</string>
+    <string name="patient_hub_card_puzzle_title">Yapbozu tamamla</string>
     <string name="patient_game_routine_title">Sıralama Oyunu</string>
     <string name="patient_game_routine_hub_sub">Günlük bir işin adımlarını sırala</string>
     <string name="patient_game_memory_title">Bellek Oyunu</string>
@@ -84,19 +218,33 @@
     <string name="patient_game_memory_match_title">Kart Eşleştirme</string>
     <string name="patient_game_memory_match_hub_sub">Aynı resimleri bul ve eşleştir</string>
 
+    <string name="patient_emoji_color_match">🎨</string>
+    <string name="patient_game_color_match_short">Renk Eşleştir</string>
+    <string name="patient_game_color_match_sub">Şablondaki renklere taşı</string>
+    <string name="color_match_level_title">Seviye %1$d</string>
+    <string name="color_match_instruction_l1">Renk taşlarını üstteki boyalı şablona göre boş kutulara sürükleyin.</string>
+    <string name="color_match_instruction_l1_3">Açık renkli ipuçları size yardımcı olur. Doğru renkleri yerleştirin.</string>
+    <string name="color_match_instruction_l2">3×3 şablonda renkleri eşleştirin. Bazı renkler birden fazla kullanılır.</string>
+    <string name="color_match_template_label">Şablon</string>
+    <string name="color_match_work_label">Boş şablon</string>
+    <string name="color_match_pool_label">Renk havuzu</string>
+    <string name="color_match_dialog_title">Harika! 🎉</string>
+    <string name="color_match_dialog_body">Çok güzel eşleştirdiniz. Harika gidiyorsunuz!</string>
+    <string name="color_match_dialog_continue">Devam et</string>
+    <string name="color_match_dialog_replay">Tekrar dene</string>
+
     <!-- MR tarama sonrası hasta yönlendirme (HomeScreen) -->
-    <string name="guidance_moderate_title">Yakınınızı veya doktorunuzu arayın</string>
-    <string name="guidance_moderate_body">Bu sonuç, bir nöroloji uzmanı tarafından en kısa sürede değerlendirilmelidir. Lütfen bugün bir yakınınıza veya doktorunuza haber verin.</string>
+    <string name="guidance_moderate_title">Sizin için özel program</string>
+    <string name="guidance_moderate_body">Bu evre için sakin tempolu egzersizler hazırladık. Doktorunuzla görüşmeyi unutmayın; birlikte en uygun planı oluşturabilirsiniz.</string>
     <string name="guidance_moderate_button">Egzersiz sayfasına git</string>
-    <string name="guidance_moderate_icon">🔴</string>
-    <string name="guidance_mild_title">Nöroloji randevusu alın</string>
-    <string name="guidance_mild_body">Hafif bulgular tespit edildi. En geç 1 ay içinde bir nöroloji uzmanına gitmeniz önerilir. Bu arada beyin egzersizleri yaparak bilişsel sağlığınızı destekleyebilirsiniz.</string>
+    <string name="guidance_mild_title">Size uygun egzersizler</string>
+    <string name="guidance_mild_body">Hafif destek programı sizin için açıldı. Kendi hızınızda egzersiz yapabilir; doktor randevunuzu da planlayabilirsiniz.</string>
     <string name="guidance_mild_button">Egzersizlere git</string>
-    <string name="guidance_mild_icon">🟠</string>
-    <string name="guidance_very_mild_title">6 ayda bir takip önerilir</string>
-    <string name="guidance_very_mild_body">Çok hafif değişiklikler görülüyor. Düzenli doktor takibine devam edin; beyin egzersizleriyle bilişsel sağlığınızı destekleyebilirsiniz.</string>
+    <string name="guidance_mild_icon">🌿</string>
+    <string name="guidance_very_mild_title">Erken destek faydalı olabilir</string>
+    <string name="guidance_very_mild_body">Çok hafif düzeyde bir destek önerilebilir. Düzenli egzersizler ve doktor takibi birlikte iyi sonuç verebilir.</string>
     <string name="guidance_very_mild_button">Egzersizlere git</string>
-    <string name="guidance_very_mild_icon">🟡</string>
+    <string name="guidance_very_mild_icon">🌸</string>
     <string name="guidance_healthy_title">Beyin sağlığınızı koruyun</string>
     <string name="guidance_healthy_body">Tarama sonucunuz bu program kapsamı dışındadır. Rutin kontrollerinize devam edin; sorularınız için doktorunuza danışın.</string>
     <string name="guidance_healthy_icon">✅</string>
@@ -150,13 +298,6 @@
     <string name="doctor_result_scores_legacy">Bu kayıt eski formatta tutulmuş. Yeni analizlerde skor dağılımı da saklanır.</string>
     <string name="doctor_result_score_percent">%1$d%%</string>
     <string name="doctor_result_class_fallback">Sınıf %1$d</string>
-
-    <string-array name="doctor_result_class_labels">
-        <item>Hafif evre</item>
-        <item>Orta evre</item>
-        <item>Sağlıklı</item>
-        <item>Çok hafif evre</item>
-    </string-array>
 
     <string name="error_session_required">Oturum bulunamadı.</string>
 
@@ -239,14 +380,6 @@
     <string name="patient_history_meta_separator"> · </string>
     <string name="patient_history_markdown_bold">**</string>
 
-    <!-- Sıra: Mild(0), Moderate(1), Healthy(2), Very Mild(3) — model çıktı indeksleri -->
-    <string-array name="patient_history_model_class_labels">
-        <item>Hafif evre</item>
-        <item>Orta evre</item>
-        <item>Sağlıklı</item>
-        <item>Çok hafif evre</item>
-    </string-array>
-
     <!-- Fallback klinik metin blokları [cdr, MMSE, klinik, patoloji, takip, öneri, aciliyet yazısı] -->
     <string-array name="patient_hist_clinic_idx2" tools:ignore="TypographyDashes">
         <item>CDR 0</item>
@@ -287,16 +420,16 @@
 
     <!-- HomeScreen -->
     <string name="home_screen_upload_title">MR Analizi Yükle</string>
-    <string name="home_screen_upload_subtitle">Alzheimer değerlendirmesi için MR görüntüsü seçin</string>
-    <string name="home_screen_pick_image">Görüntü Seçin</string>
+    <string name="home_screen_upload_subtitle">Galeriden beyin MR görüntüsü yükleyin</string>
+    <string name="home_screen_pick_image">Galeriden seçin</string>
     <string name="home_screen_pick_camera">Kamera</string>
     <string name="home_screen_pick_gallery">Galeri</string>
-    <string name="home_screen_disclaimer">Sonuçlar tıbbi tanı yerine geçmez.</string>
+    <string name="home_screen_disclaimer">Yapay zeka analizleri tıbbi tanı niteliği taşımaz; kesin teşhis için lütfen bir hekime danışın.</string>
     <string name="home_screen_preview_title">Görüntü Hazır</string>
     <string name="home_screen_preview_instruction">Analizi başlatmak için onaylayın</string>
     <string name="home_screen_preview_change">Değiştir</string>
     <string name="home_screen_preview_analyze">Analizi Başlat</string>
-    <string name="home_screen_preview_disclaimer">~15 saniye · Sonuçlar tıbbi tanı yerine geçmez.</string>
+    <string name="home_screen_preview_disclaimer">Yapay zeka analizleri tıbbi tanı niteliği taşımaz; kesin teşhis için lütfen bir hekime danışın.</string>
     <string name="home_screen_analyze_brain_img">Beyin görüntüsü inceleniyor…</string>
     <string name="home_screen_analyze_calculating">Sonuç hesaplanıyor…</string>
     <string name="home_screen_result_title">Analiz Sonucu</string>
@@ -310,15 +443,7 @@
     <string name="home_screen_result_disclaimer">Kesin tanı için uzman hekime başvurunuz.</string>
     <string name="home_screen_gemini_error">Gemini hatası: %1$s</string>
     <string name="home_screen_new_scan">Yeni Tarama</string>
-    <string name="home_screen_app_disclaimer">Bu uygulama tıbbi tanı aracı değildir.</string>
-
-    <string-array name="home_screen_stage_tones">
-        <item>Sağlıklı</item>
-        <item>Çok Hafif Evre</item>
-        <item>Hafif Evre</item>
-        <item>Orta Evre</item>
-        <item>İleri Evre</item>
-    </string-array>
+    <string name="home_screen_app_disclaimer">Yapay zeka analizleri tıbbi tanı niteliği taşımaz; kesin teşhis için lütfen bir hekime danışın.</string>
 
     <string-array name="home_screen_analyze_labels">
         <item>Görüntü hazırlanıyor</item>
@@ -327,11 +452,12 @@
         <item>Evre tespiti</item>
     </string-array>
 
-    <string-array name="home_screen_class_labels">
-        <item>Hafif Alzheimer</item>
-        <item>Orta Evre Alzheimer</item>
-        <item>Demanssız</item>
-        <item>Çok Hafif Alzheimer</item>
+    <!-- Tek kaynak — MildDemented(0), ModerateDemented(1), NonDemented(2), VeryMildDemented(3) -->
+    <string-array name="dementia_stage_labels">
+        <item>Hafif Evre Demans</item>
+        <item>Orta Evre Demans</item>
+        <item>Demans Bulgusu Yok</item>
+        <item>Çok Hafif Evre Demans</item>
     </string-array>
 
     <!-- XAI Gemini Report -->
@@ -395,6 +521,17 @@ Klinisyen için somut ve önceliklendirilmiş öneriler sun (örn. MMSE, nörops
         <item>Çok hafif bilişsel değişiklikler görülmektedir. Erken dönem takip faydalı olabilir.</item>
     </string-array>
 
+    <!-- Hasta MR sonuç ekranı — yumuşak, destekleyici açıklamalar -->
+    <string-array name="patient_scan_result_descriptions">
+        <item>Size özel hafif destek programı önerildi. Küçük adımlarla ilerleyebilir; doktorunuzla da görüşmeyi planlayabilirsiniz.</item>
+        <item>Size özel orta destek programı önerildi. Sakin tempoda egzersizler ve doktor takibi birlikte en iyi sonucu verir.</item>
+        <item>Tarama sonucu sakin bir profil gösteriyor. Günlük rutininize devam etmeniz yeterli; sorularınız için doktorunuza danışabilirsiniz.</item>
+        <item>Çok hafif düzeyde destek önerilebilir. Erken egzersizler ve düzenli takip size yardımcı olabilir.</item>
+    </string-array>
+
+    <string name="patient_scan_result_support_note">Bu sonuç bir ön değerlendirmedir; kesin tanı için doktorunuz yönlendirecektir.</string>
+    <string name="patient_scan_result_confidence_label">Model güveni: %1$d%%</string>
+
     <string name="error_invalid_mri">Lütfen geçerli bir beyin MR görüntüsü yükleyin.</string>
     <string name="error_select_mri_first">Önce geçerli bir beyin MR görüntüsü seçin.</string>
     <string name="error_classification_failed">Sınıflandırma başarısız oldu.</string>
@@ -423,15 +560,20 @@ Klinisyen için somut ve önceliklendirilmiş öneriler sun (örn. MMSE, nörops
     <string name="puzzle_cd_reset">Yeniden Başlat</string>
     <string name="puzzle_success_title">Tebrikler!</string>
     <string name="puzzle_success_play_again">Tekrar oyna</string>
-    <string name="puzzle_success_next">Sonraki yapboz</string>
+    <string name="puzzle_success_next">Sonraki</string>
     <string name="puzzle_success_back">Ana Sayfaya Dön</string>
     <string name="puzzle_tray_label">Parçalar</string>
 
-    <!-- Memory match (kart eşleştirme) — hafif / çok hafif -->
+    <!-- Memory match (kart eşleştirme) -->
     <string name="memory_match_level_1_title">Seviye 1</string>
     <string name="memory_match_level_2_title">Seviye 2</string>
     <string name="memory_match_level_3_title">Seviye 3</string>
     <string name="memory_match_level_4_title">Seviye 4</string>
+    <string name="memory_match_moderate_level_1_title">Seviye 1</string>
+    <string name="memory_match_moderate_level_2_title">Seviye 2</string>
+    <string name="memory_match_moderate_level_3_title">Seviye 3</string>
+    <string name="memory_match_moderate_level_4_title">Seviye 4</string>
+    <string name="patient_game_memory_match_hub_sub_moderate">Aynı resimleri bul — sakin ve kolay</string>
     <string name="memory_match_pairs_progress">%1$d / %2$d</string>
     <string name="memory_match_cd_card_closed">Kapalı kart</string>
     <string name="memory_match_cd_card_open">Açık kart: %1$s</string>
@@ -503,6 +645,10 @@ Klinisyen için somut ve önceliklendirilmiş öneriler sun (örn. MMSE, nörops
     <string name="memory_emoji_rose">🌹</string>
     <string name="memory_emoji_guitar">🎸</string>
     <string name="memory_emoji_star">⭐</string>
+    <string name="memory_emoji_sun">☀️</string>
+    <string name="memory_emoji_umbrella">☂️</string>
+    <string name="memory_item_sun">Güneş</string>
+    <string name="memory_item_umbrella">Şemsiye</string>
     <string name="memory_emoji_car">🚗</string>
     <string name="memory_emoji_rainbow">🌈</string>
     <string name="memory_emoji_paint">🎨</string>

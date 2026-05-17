@@ -37,7 +37,7 @@ fun RolePickScreen(
     viewModel: RolePickViewModel = hiltViewModel(),
 ) {
     LaunchedEffect(Unit) {
-        viewModel.clear()
+        viewModel.clearIfHadSession()
     }
 
     Box(

@@ -97,3 +97,32 @@ object StageColors {
     val ModerateBg = Color(0xFFFDE8F2)
     val SevereBg = Color(0xFFFDE0E8)
 }
+
+/** Hasta MR sonuç ekranı — sakin, pastel tonlar (alarm kırmızısı yok). */
+object PatientResultStageColors {
+    val Healthy = Color(0xFF6BA88A)
+    val VeryMild = Color(0xFF7A9CC9)
+    val Mild = Color(0xFFB8956E)
+    val Moderate = Color(0xFF8B9FD4)
+
+    val HealthyBg = Color(0xFFEEF6F1)
+    val VeryMildBg = Color(0xFFEEF4FA)
+    val MildBg = Color(0xFFF7F2EB)
+    val ModerateBg = Color(0xFFF0F2FA)
+
+    fun accent(stageIndex: Int): Color = when (stageIndex) {
+        0 -> Mild
+        1 -> Moderate
+        2 -> Healthy
+        3 -> VeryMild
+        else -> Moderate
+    }
+
+    fun background(stageIndex: Int): Color = when (stageIndex) {
+        0 -> MildBg
+        1 -> ModerateBg
+        2 -> HealthyBg
+        3 -> VeryMildBg
+        else -> ModerateBg
+    }
+}

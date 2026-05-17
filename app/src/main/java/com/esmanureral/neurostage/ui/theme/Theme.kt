@@ -108,6 +108,8 @@ object ScanDimens {
         @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.scan_disclaimer_top)
     val disclaimerBottom: Dp
         @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.scan_disclaimer_bottom)
+    val disclaimerHorizontal: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.scan_disclaimer_horizontal)
     val toolbarHorizontalPadding: Dp
         @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.scan_toolbar_h_padding)
     val toolbarVerticalPadding: Dp

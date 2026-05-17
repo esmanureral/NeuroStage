@@ -1,6 +1,7 @@
 package com.esmanureral.neurostage.ui.patient.games.puzzle
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -41,6 +42,9 @@ fun PuzzleGameBoard(
     boardAspectRatio: Float,
     dragState: PuzzleDragStateHolder,
     ghostAlpha: Float,
+    showGhost: Boolean = true,
+    showSlotOutlines: Boolean = true,
+    completedBoard: Boolean = false,
     knobFraction: Float,
     borderAnimDurationMs: Int,
     boardPieceZIndex: Float,
@@ -77,26 +81,30 @@ fun PuzzleGameBoard(
         val pieceWidthDp = with(density) { dragState.cellWidthPx.toDp() }
         val pieceHeightDp = with(density) { dragState.cellHeightPx.toDp() }
 
-        PuzzleBoardGhostLayer(
-            puzzleBitmap = puzzleBitmap,
-            ghostAlpha = ghostAlpha,
-        )
+        if (showGhost) {
+            PuzzleBoardGhostLayer(
+                puzzleBitmap = puzzleBitmap,
+                ghostAlpha = ghostAlpha,
+            )
+        }
 
-        PuzzleSlotOutlines(
-            slotCount = slotCount,
-            gridRows = gridRows,
-            gridCols = gridCols,
-            cellWidthPx = dragState.cellWidthPx,
-            cellHeightPx = dragState.cellHeightPx,
-            pieceWidthDp = pieceWidthDp,
-            pieceHeightDp = pieceHeightDp,
-            pieces = pieces,
-            draggingId = dragState.draggingId,
-            nearCorrectSlot = dragState.nearCorrectSlot,
-            knobFraction = knobFraction,
-            slotStrokeNormalPx = slotStrokeNormalPx,
-            slotStrokeMagnetPx = slotStrokeMagnetPx,
-        )
+        if (showSlotOutlines) {
+            PuzzleSlotOutlines(
+                slotCount = slotCount,
+                gridRows = gridRows,
+                gridCols = gridCols,
+                cellWidthPx = dragState.cellWidthPx,
+                cellHeightPx = dragState.cellHeightPx,
+                pieceWidthDp = pieceWidthDp,
+                pieceHeightDp = pieceHeightDp,
+                pieces = pieces,
+                draggingId = dragState.draggingId,
+                nearCorrectSlot = dragState.nearCorrectSlot,
+                knobFraction = knobFraction,
+                slotStrokeNormalPx = slotStrokeNormalPx,
+                slotStrokeMagnetPx = slotStrokeMagnetPx,
+            )
+        }
 
         PuzzlePlacedPieces(
             pieces = pieces,
@@ -111,6 +119,7 @@ fun PuzzleGameBoard(
             knobFraction = knobFraction,
             borderAnimDurationMs = borderAnimDurationMs,
             boardPieceZIndex = boardPieceZIndex,
+            completedBoard = completedBoard,
         )
     }
 }
@@ -196,6 +205,7 @@ private fun PuzzlePlacedPieces(
     knobFraction: Float,
     borderAnimDurationMs: Int,
     boardPieceZIndex: Float,
+    completedBoard: Boolean = false,
 ) {
     val density = LocalDensity.current
 
@@ -203,7 +213,7 @@ private fun PuzzlePlacedPieces(
         val (ox, oy) = slotOffsetDp(piece.currentSlot, gridCols, cellWidthPx, cellHeightPx, density)
         val borderCol by animateColorAsState(
             targetValue = if (piece.isPlaced) PatientColors.puzzleSuccess else PatientColors.surface,
-            animationSpec = tween(borderAnimDurationMs),
+            animationSpec = if (completedBoard) snap() else tween(borderAnimDurationMs),
             label = "puzzle_piece_border_${piece.id}",
         )
 

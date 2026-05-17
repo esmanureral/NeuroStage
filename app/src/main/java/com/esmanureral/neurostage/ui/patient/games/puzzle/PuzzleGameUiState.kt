@@ -6,6 +6,12 @@ import androidx.compose.ui.graphics.ImageBitmap
 import com.esmanureral.neurostage.ui.patient.puzzle.core.PuzzleSessionConfig
 
 @Stable
+data class PuzzleSuccessSnapshot(
+    val bitmap: ImageBitmap,
+    val boardAspectRatio: Float,
+)
+
+@Stable
 data class PuzzleScreenSession(
     val config: PuzzleSessionConfig,
     val fallbackGrid: Int,

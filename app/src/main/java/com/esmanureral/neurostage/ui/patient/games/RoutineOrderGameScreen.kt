@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
@@ -42,11 +43,13 @@ import java.util.Locale
 
 private enum class GamePhase { PLAYING, TRY_AGAIN, SUCCESS }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoutineOrderGameScreen(
     stageIndex: Int?,
     onBack: () -> Unit,
 ) {
+    val screenTitle = stringResource(R.string.patient_game_routine_short)
     val count = itemCountForStage(stageIndex)
     val game = remember { routineGames.random() }
     val steps = remember { game.steps.take(count).shuffled() }
@@ -82,9 +85,7 @@ fun RoutineOrderGameScreen(
 
     Scaffold(
         containerColor = PatientColors.gameBackgroundCream,
-        bottomBar = {
-            GameBackBottomBar(onBack = onBack)
-        },
+        topBar = { GameScreenTopBar(title = screenTitle, onBack = onBack) },
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -98,7 +99,6 @@ fun RoutineOrderGameScreen(
                 GamePhase.SUCCESS -> SuccessView(
                     gameName = gameTitle,
                     onPlayAgain = { resetGame() },
-                    onBack = onBack,
                 )
 
                 GamePhase.PLAYING, GamePhase.TRY_AGAIN -> {
@@ -276,7 +276,6 @@ fun RoutineOrderGameScreen(
 private fun SuccessView(
     gameName: String,
     onPlayAgain: () -> Unit,
-    onBack: () -> Unit,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -307,15 +306,6 @@ private fun SuccessView(
             text = stringResource(R.string.routine_btn_play_again),
             containerColor = PatientColors.gameSuccess,
             onClick = onPlayAgain,
-            modifier = Modifier
-                .fillMaxWidth(0.8f)
-                .height(PatientDimens.gameSecondaryButtonHeight),
-        )
-        Spacer(Modifier.height(PatientDimens.gameSuccessActionsGap))
-        PrimaryGameButton(
-            text = stringResource(R.string.patient_back_to_home),
-            containerColor = PatientColors.gameTextMuted,
-            onClick = onBack,
             modifier = Modifier
                 .fillMaxWidth(0.8f)
                 .height(PatientDimens.gameSecondaryButtonHeight),

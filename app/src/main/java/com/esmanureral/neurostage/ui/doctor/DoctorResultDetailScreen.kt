@@ -119,7 +119,8 @@ private fun DetailContent(record: MrScanRecord) {
                 verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
                 Text(
-                    text = record.label,
+                    text = stringArrayResource(R.array.dementia_stage_labels)
+                        .getOrNull(record.stageIndex) ?: record.label,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                 )
@@ -166,7 +167,7 @@ private fun DetailContent(record: MrScanRecord) {
 
 @Composable
 private fun ScoreBars(scores: FloatArray) {
-    val labels = stringArrayResource(R.array.doctor_result_class_labels)
+    val labels = stringArrayResource(R.array.dementia_stage_labels)
     val max = (scores.maxOrNull() ?: 1f).coerceAtLeast(0.0001f)
     val trackColor = MaterialTheme.colorScheme.surfaceVariant
     val barColor = MaterialTheme.colorScheme.primary
@@ -189,9 +190,11 @@ private fun ScoreBars(scores: FloatArray) {
                         fontWeight = FontWeight.SemiBold,
                     )
                 }
-                Canvas(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(10.dp)) {
+                Canvas(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(10.dp)
+                ) {
                     val w = size.width
                     val h = size.height
                     val ratio = (v / max).coerceIn(0f, 1f)
@@ -216,9 +219,11 @@ private fun TinyLineChart(values: FloatArray) {
     val points = remember(values) { values.map { it.coerceIn(0f, 1f) } }
     val stroke = MaterialTheme.colorScheme.primary
     val grid = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
-    Canvas(modifier = Modifier
-        .fillMaxWidth()
-        .height(110.dp)) {
+    Canvas(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(110.dp)
+    ) {
         val w = size.width
         val h = size.height
         repeat(3) { i ->

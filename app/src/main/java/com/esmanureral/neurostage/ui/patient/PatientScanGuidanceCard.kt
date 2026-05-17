@@ -80,10 +80,12 @@ private fun GuidanceHeader(guidance: PatientScanGuidanceUi) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(dimens.guidanceHeaderGap),
     ) {
-        Text(
-            text = stringResource(guidance.iconRes),
-            fontSize = dimens.guidanceIconSize,
-        )
+        guidance.iconRes?.let { iconRes ->
+            Text(
+                text = stringResource(iconRes),
+                fontSize = dimens.guidanceIconSize,
+            )
+        }
         Text(
             text = stringResource(guidance.titleRes),
             style = MaterialTheme.typography.titleMedium,

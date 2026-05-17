@@ -99,12 +99,13 @@ fun MriModeratePuzzleRouteGuard(
     content: @Composable () -> Unit,
 ) {
     val allowed = stageIndex == PatientStage.MODERATE_DEMENTIA
-    LaunchedEffect(stageIndex) {
-        if (!allowed) {
+    LaunchedEffect(stageIndex, allowed) {
+        if (stageIndex != null && !allowed) {
             onBlocked()
         }
     }
-    if (allowed) {
-        content()
+    when {
+        stageIndex == null -> Unit
+        allowed -> content()
     }
 }

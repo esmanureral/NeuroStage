@@ -2,6 +2,7 @@ package com.esmanureral.neurostage.ui
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -37,6 +38,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.esmanureral.neurostage.AnalysisState
 import com.esmanureral.neurostage.AnalysisViewModel
+import com.esmanureral.neurostage.domain.patient.PatientStage
 import com.esmanureral.neurostage.ui.patient.PatientScanGuidanceCard
 import com.esmanureral.neurostage.ui.theme.*
 import com.esmanureral.neurostage.xai.XaiUiState
@@ -53,6 +55,8 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 private val neurostageBrandBlue = NeurostageBrandBlue
 
@@ -74,19 +78,78 @@ private fun waveBottomShape(waveDepth: Dp): Shape = object : Shape {
     }
 }
 
-private enum class Step { UPLOAD, PREVIEW, ANALYZE, RESULT }
+private enum class Step { UPLOAD, PREVIEW, ANALYZE, RESULT, HUB_UNCHANGED }
 
 private data class StageTone(val label: String, val dot: Color, val bg: Color, val scale: Int)
 
 @Composable
-private fun stageTone(i: Int): StageTone {
-    val labels = stringArrayResource(R.array.home_screen_stage_tones)
+private fun stageTone(i: Int, forPatient: Boolean = false): StageTone {
+    val labels = stringArrayResource(R.array.dementia_stage_labels)
+    if (forPatient) {
+        return when (i) {
+            PatientStage.MILD_DEMENTIA -> StageTone(
+                labels[PatientStage.MILD_DEMENTIA],
+                PatientResultStageColors.Mild,
+                PatientResultStageColors.MildBg,
+                2,
+            )
+            PatientStage.MODERATE_DEMENTIA -> StageTone(
+                labels[PatientStage.MODERATE_DEMENTIA],
+                PatientResultStageColors.Moderate,
+                PatientResultStageColors.ModerateBg,
+                3,
+            )
+            PatientStage.HEALTHY -> StageTone(
+                labels[PatientStage.HEALTHY],
+                PatientResultStageColors.Healthy,
+                PatientResultStageColors.HealthyBg,
+                0,
+            )
+            PatientStage.VERY_MILD_DEMENTIA -> StageTone(
+                labels[PatientStage.VERY_MILD_DEMENTIA],
+                PatientResultStageColors.VeryMild,
+                PatientResultStageColors.VeryMildBg,
+                1,
+            )
+            else -> StageTone(
+                labels.getOrElse(0) { "" },
+                PatientResultStageColors.Moderate,
+                PatientResultStageColors.ModerateBg,
+                4,
+            )
+        }
+    }
     return when (i) {
-        2 -> StageTone(labels[0], StageColors.Healthy, StageColors.HealthyBg, 0)
-        3 -> StageTone(labels[1], StageColors.VeryMild, StageColors.VeryMildBg, 1)
-        0 -> StageTone(labels[2], StageColors.Mild, StageColors.MildBg, 2)
-        1 -> StageTone(labels[3], StageColors.Moderate, StageColors.ModerateBg, 3)
-        else -> StageTone(labels[4], StageColors.Severe, StageColors.SevereBg, 4)
+        PatientStage.MILD_DEMENTIA -> StageTone(
+            labels[PatientStage.MILD_DEMENTIA],
+            StageColors.Mild,
+            StageColors.MildBg,
+            2,
+        )
+        PatientStage.MODERATE_DEMENTIA -> StageTone(
+            labels[PatientStage.MODERATE_DEMENTIA],
+            StageColors.Moderate,
+            StageColors.ModerateBg,
+            3,
+        )
+        PatientStage.HEALTHY -> StageTone(
+            labels[PatientStage.HEALTHY],
+            StageColors.Healthy,
+            StageColors.HealthyBg,
+            0,
+        )
+        PatientStage.VERY_MILD_DEMENTIA -> StageTone(
+            labels[PatientStage.VERY_MILD_DEMENTIA],
+            StageColors.VeryMild,
+            StageColors.VeryMildBg,
+            1,
+        )
+        else -> StageTone(
+            labels.getOrElse(0) { "" },
+            StageColors.Severe,
+            StageColors.SevereBg,
+            4,
+        )
     }
 }
 
@@ -95,6 +158,9 @@ fun MainScreen(
     viewModel: AnalysisViewModel = hiltViewModel(),
     patientId: String? = null,
     isPatient: Boolean = false,
+    returnToHub: Boolean = false,
+    stageBeforeScan: Int? = null,
+    onHubScanUnchanged: (() -> Unit)? = null,
     onBack: (() -> Unit)? = null,
     onOpenGames: (() -> Unit)? = null,
 ) {
@@ -111,8 +177,15 @@ fun MainScreen(
         viewModel.setActivePatient(patientId)
     }
 
+    val successState = state as? AnalysisState.Success
+    val isHubUnchangedResult = returnToHub &&
+        successState != null &&
+        stageBeforeScan != null &&
+        successState.stageIndex == stageBeforeScan
+
     val step = when {
-        state is AnalysisState.Success -> Step.RESULT
+        isHubUnchangedResult -> Step.HUB_UNCHANGED
+        successState != null -> Step.RESULT
         state is AnalysisState.Loading -> Step.ANALYZE
         bitmapState.value != null -> Step.PREVIEW
         else -> Step.UPLOAD
@@ -128,13 +201,21 @@ fun MainScreen(
         }
     }
 
-    val camera =
-        rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bmp ->
-            if (bmp != null) {
-                bitmapState.value = bmp
-                viewModel.validateAndSetBitmap(bmp)
+    BackHandler {
+        when (step) {
+            Step.ANALYZE -> Unit
+            Step.PREVIEW -> {
+                bitmapState.value = null
+                viewModel.reset()
             }
+            Step.HUB_UNCHANGED -> {
+                bitmapState.value = null
+                viewModel.reset()
+                onHubScanUnchanged?.invoke()
+            }
+            Step.RESULT, Step.UPLOAD -> onBack?.invoke()
         }
+    }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -145,7 +226,6 @@ fun MainScreen(
                 error = validationError,
                 onBack = onBack,
                 onPickGallery = { gallery.launch("image/*") },
-                onPickCamera = { camera.launch(null) },
             )
 
             Step.PREVIEW -> PreviewStep(
@@ -167,6 +247,231 @@ fun MainScreen(
                 onNewScan = { bitmapState.value = null; viewModel.reset() },
                 onOpenGames = onOpenGames,
             )
+
+            Step.HUB_UNCHANGED -> HubUnchangedResultStep(
+                result = state as AnalysisState.Success,
+                onReturnToHub = {
+                    bitmapState.value = null
+                    viewModel.reset()
+                    onHubScanUnchanged?.invoke()
+                },
+                onTryAnotherScan = {
+                    bitmapState.value = null
+                    viewModel.reset()
+                },
+            )
+        }
+    }
+}
+
+@Composable
+private fun HubUnchangedResultStep(
+    result: AnalysisState.Success,
+    onReturnToHub: () -> Unit,
+    onTryAnotherScan: () -> Unit,
+) {
+    val t = stageTone(result.stageIndex, forPatient = true)
+    val confidencePct = (result.confidence * 100).toInt()
+    val stageLabels = stringArrayResource(R.array.dementia_stage_labels)
+    val stageLabel = stageLabels.getOrNull(result.stageIndex) ?: result.label
+    val patientDescriptions = stringArrayResource(R.array.patient_scan_result_descriptions)
+    val patientDescription = patientDescriptions.getOrNull(result.stageIndex).orEmpty()
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.45f))
+            .systemBarsPadding(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp),
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(containerColor = NsWhite),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(20.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                Text(
+                    text = stringResource(R.string.patient_hub_scan_unchanged_title),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = NsNavy,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Text(
+                    text = stringResource(R.string.patient_hub_scan_unchanged_body),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = NsGray800,
+                    lineHeight = ScanDimens.reportSectionLineHeight,
+                )
+                PatientResultStageCard(
+                    stageLabel = stageLabel,
+                    description = patientDescription,
+                    confidencePercent = confidencePct,
+                    accentColor = t.dot,
+                    backgroundColor = t.bg,
+                )
+                Text(
+                    text = stringResource(R.string.patient_hub_scan_unchanged_scores_title),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold,
+                    color = NsGray600,
+                )
+                StageScoreBreakdown(
+                    scores = result.allScores,
+                    selectedStageIndex = result.stageIndex,
+                    forPatient = true,
+                )
+                Button(
+                    onClick = onReturnToHub,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(ScanDimens.primaryButtonCorner),
+                    colors = ButtonDefaults.buttonColors(containerColor = neurostageBrandBlue),
+                    contentPadding = PaddingValues(vertical = ScanDimens.primaryButtonVerticalPadding),
+                ) {
+                    Text(
+                        text = stringResource(R.string.patient_hub_scan_return),
+                        color = NsWhite,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+                OutlinedButton(
+                    onClick = onTryAnotherScan,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(ScanDimens.primaryButtonCorner),
+                    contentPadding = PaddingValues(vertical = ScanDimens.primaryButtonVerticalPadding),
+                ) {
+                    Text(
+                        text = stringResource(R.string.patient_hub_scan_try_another),
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PatientResultStageCard(
+    stageLabel: String,
+    description: String,
+    confidencePercent: Int,
+    accentColor: Color,
+    backgroundColor: Color,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(backgroundColor)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(12.dp)
+                    .clip(CircleShape)
+                    .background(accentColor),
+            )
+            Spacer(Modifier.width(10.dp))
+            Text(
+                text = stageLabel,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = NsNavy,
+                modifier = Modifier.weight(1f),
+            )
+            Text(
+                text = stringResource(
+                    R.string.patient_scan_result_confidence_label,
+                    confidencePercent,
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = accentColor,
+            )
+        }
+        if (description.isNotBlank()) {
+            Text(
+                text = description,
+                style = MaterialTheme.typography.bodyMedium,
+                color = NsGray800,
+                lineHeight = ScanDimens.reportSectionLineHeight,
+            )
+        }
+    }
+}
+
+@Composable
+private fun StageScoreBreakdown(
+    scores: FloatArray,
+    selectedStageIndex: Int,
+    forPatient: Boolean = false,
+) {
+    val classLabels = stringArrayResource(R.array.dementia_stage_labels)
+    val allClasses = listOf(
+        Triple(0, classLabels[0], if (forPatient) PatientResultStageColors.Mild else StageColors.Mild),
+        Triple(1, classLabels[1], if (forPatient) PatientResultStageColors.Moderate else StageColors.Moderate),
+        Triple(2, classLabels[2], if (forPatient) PatientResultStageColors.Healthy else StageColors.Healthy),
+        Triple(3, classLabels[3], if (forPatient) PatientResultStageColors.VeryMild else StageColors.VeryMild),
+    ).sortedByDescending { scores.getOrElse(it.first) { 0f } }
+
+    Column(verticalArrangement = Arrangement.spacedBy(ScanDimens.resultScoresGap)) {
+        allClasses.forEach { (idx, label, color) ->
+            val scorePct = (scores.getOrElse(idx) { 0f } * 100).toInt()
+            val barAnim by animateFloatAsState(
+                targetValue = scorePct / 100f,
+                animationSpec = tween(700, easing = FastOutSlowInEasing),
+                label = "unchangedBar$idx",
+            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(ScanDimens.resultScoreRowGap),
+            ) {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (idx == selectedStageIndex) NsNavy else NsSlate,
+                    fontWeight = if (idx == selectedStageIndex) FontWeight.Bold else FontWeight.Normal,
+                    modifier = Modifier.width(ScanDimens.resultScoreLabelWidth),
+                )
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(ScanDimens.resultScoreBarHeight)
+                        .clip(RoundedCornerShape(ScanDimens.resultScoreBarCorner))
+                        .background(ScanColors.scoreBarTrack),
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .fillMaxWidth(barAnim)
+                            .clip(RoundedCornerShape(ScanDimens.resultScoreBarCorner))
+                            .background(color),
+                    )
+                }
+                Text(
+                    text = "$scorePct%",
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = NsNavy,
+                    modifier = Modifier.width(ScanDimens.resultScorePercentWidth),
+                    textAlign = TextAlign.End,
+                )
+            }
         }
     }
 }
@@ -176,7 +481,6 @@ private fun UploadStep(
     error: String?,
     onBack: (() -> Unit)?,
     onPickGallery: () -> Unit,
-    onPickCamera: () -> Unit,
 ) {
     val inf = rememberInfiniteTransition(label = "pulse")
     val pulse by inf.animateFloat(
@@ -225,7 +529,8 @@ private fun UploadStep(
                 Text(
                     stringResource(R.string.home_screen_upload_subtitle),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = NsWhite.copy(alpha = 0.8f),
+                    color = NsWhite.copy(alpha = 0.85f),
+                    lineHeight = 22.sp,
                 )
                 Spacer(Modifier.height(ScanDimens.headerContentGap))
             }
@@ -299,65 +604,32 @@ private fun UploadStep(
 
         Spacer(Modifier.height(ScanDimens.pickerSectionGap))
 
-        Row(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = ScanDimens.contentHorizontalPadding),
-            horizontalArrangement = Arrangement.spacedBy(ScanDimens.pickerRowGap),
+                .padding(horizontal = ScanDimens.contentHorizontalPadding)
+                .clip(RoundedCornerShape(ScanDimens.pickerCorner))
+                .background(neurostageBrandBlue)
+                .clickable(onClick = onPickGallery)
+                .padding(vertical = ScanDimens.pickerButtonVerticalPadding),
+            contentAlignment = Alignment.Center,
         ) {
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .clip(RoundedCornerShape(ScanDimens.pickerCorner))
-                    .background(NsWhite)
-                    .clickable(onClick = onPickCamera)
-                    .padding(vertical = ScanDimens.pickerButtonVerticalPadding),
-                contentAlignment = Alignment.Center,
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(ScanDimens.pickerIconGap),
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(ScanDimens.pickerIconGap),
-                ) {
-                    Icon(
-                        Icons.Outlined.PhotoCamera,
-                        null,
-                        tint = neurostageBrandBlue,
-                        modifier = Modifier.size(ScanDimens.pickerIconSize),
-                    )
-                    Text(
-                        stringResource(R.string.home_screen_pick_camera),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = NsGray900,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                }
-            }
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .clip(RoundedCornerShape(ScanDimens.pickerCorner))
-                    .background(neurostageBrandBlue)
-                    .clickable(onClick = onPickGallery)
-                    .padding(vertical = ScanDimens.pickerButtonVerticalPadding),
-                contentAlignment = Alignment.Center,
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(ScanDimens.pickerIconGap),
-                ) {
-                    Icon(
-                        Icons.Outlined.PhotoLibrary,
-                        null,
-                        tint = NsWhite,
-                        modifier = Modifier.size(ScanDimens.pickerIconSize),
-                    )
-                    Text(
-                        stringResource(R.string.home_screen_pick_gallery),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = NsWhite,
-                        fontWeight = FontWeight.Bold,
-                    )
-                }
+                Icon(
+                    Icons.Outlined.PhotoLibrary,
+                    contentDescription = null,
+                    tint = NsWhite,
+                    modifier = Modifier.size(ScanDimens.pickerIconSize),
+                )
+                Text(
+                    stringResource(R.string.home_screen_pick_gallery),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = NsWhite,
+                    fontWeight = FontWeight.Bold,
+                )
             }
         }
 
@@ -365,7 +637,11 @@ private fun UploadStep(
             stringResource(R.string.home_screen_disclaimer),
             style = MaterialTheme.typography.bodySmall,
             color = NsGray600,
+            textAlign = TextAlign.Center,
+            lineHeight = 20.sp,
             modifier = Modifier.padding(
+                start = ScanDimens.disclaimerHorizontal,
+                end = ScanDimens.disclaimerHorizontal,
                 top = ScanDimens.disclaimerTop,
                 bottom = ScanDimens.disclaimerBottom,
             ),
@@ -626,9 +902,11 @@ private fun ResultStep(
     onNewScan: () -> Unit,
     onOpenGames: (() -> Unit)? = null,
 ) {
-    val t = stageTone(result.stageIndex)
+    val t = stageTone(result.stageIndex, forPatient = isPatient)
 
     val confidencePct = (result.confidence * 100).toInt()
+    val patientDescriptions = stringArrayResource(R.array.patient_scan_result_descriptions)
+    val patientDescription = patientDescriptions.getOrNull(result.stageIndex).orEmpty()
 
     val waveDepth = ScanDimens.waveDepth
 
@@ -705,54 +983,55 @@ private fun ResultStep(
                 }
             }
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(ScanDimens.resultCardCorner))
-                    .background(NsWhite)
-                    .padding(
-                        horizontal = ScanDimens.resultCardPaddingHorizontal,
-                        vertical = ScanDimens.resultCardPaddingVertical,
-                    ),
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(ScanDimens.resultStageDot)
-                            .clip(CircleShape)
-                            .background(t.dot),
-                    )
-                    Spacer(Modifier.width(ScanDimens.resultStageDotGap))
-                    Text(
-                        t.label,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = NsNavy,
-                        modifier = Modifier.weight(1f),
-                    )
-                    Text(
-                        String.format(
-                            stringResource(R.string.home_screen_result_confidence),
-                            confidencePct
+            if (isPatient) {
+                PatientResultStageCard(
+                    stageLabel = t.label,
+                    description = patientDescription,
+                    confidencePercent = confidencePct,
+                    accentColor = t.dot,
+                    backgroundColor = t.bg,
+                )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(ScanDimens.resultCardCorner))
+                        .background(NsWhite)
+                        .padding(
+                            horizontal = ScanDimens.resultCardPaddingHorizontal,
+                            vertical = ScanDimens.resultCardPaddingVertical,
                         ),
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = t.dot,
-                    )
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(ScanDimens.resultStageDot)
+                                .clip(CircleShape)
+                                .background(t.dot),
+                        )
+                        Spacer(Modifier.width(ScanDimens.resultStageDotGap))
+                        Text(
+                            t.label,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = NsNavy,
+                            modifier = Modifier.weight(1f),
+                        )
+                        Text(
+                            String.format(
+                                stringResource(R.string.home_screen_result_confidence),
+                                confidencePct
+                            ),
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = t.dot,
+                        )
+                    }
                 }
             }
-            val scores = result.allScores
-            val classLabels = stringArrayResource(R.array.home_screen_class_labels)
-            val allClasses = listOf(
-                Triple(0, classLabels[0], StageColors.Mild),
-                Triple(1, classLabels[1], StageColors.Moderate),
-                Triple(2, classLabels[2], StageColors.Healthy),
-                Triple(3, classLabels[3], StageColors.VeryMild),
-            ).sortedByDescending { scores.getOrElse(it.first) { 0f } }
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -760,51 +1039,11 @@ private fun ResultStep(
                     .background(NsWhite)
                     .padding(ScanDimens.resultScoresPadding),
             ) {
-                Column(verticalArrangement = Arrangement.spacedBy(ScanDimens.resultScoresGap)) {
-                    allClasses.forEach { (idx, label, color) ->
-                        val scorePct = (scores.getOrElse(idx) { 0f } * 100).toInt()
-                        val barAnim by animateFloatAsState(
-                            targetValue = scorePct / 100f,
-                            animationSpec = tween(700, easing = FastOutSlowInEasing),
-                            label = "bar$idx",
-                        )
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(ScanDimens.resultScoreRowGap),
-                        ) {
-                            Text(
-                                label,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = if (idx == result.stageIndex) NsNavy else NsSlate,
-                                fontWeight = if (idx == result.stageIndex) FontWeight.Bold else FontWeight.Normal,
-                                modifier = Modifier.width(ScanDimens.resultScoreLabelWidth),
-                            )
-                            Box(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(ScanDimens.resultScoreBarHeight)
-                                    .clip(RoundedCornerShape(ScanDimens.resultScoreBarCorner))
-                                    .background(ScanColors.scoreBarTrack),
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxHeight()
-                                        .fillMaxWidth(barAnim)
-                                        .clip(RoundedCornerShape(ScanDimens.resultScoreBarCorner))
-                                        .background(color),
-                                )
-                            }
-                            Text(
-                                "$scorePct%",
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = NsNavy,
-                                modifier = Modifier.width(ScanDimens.resultScorePercentWidth),
-                                textAlign = TextAlign.End,
-                            )
-                        }
-                    }
-                }
+                StageScoreBreakdown(
+                    scores = result.allScores,
+                    selectedStageIndex = result.stageIndex,
+                    forPatient = isPatient,
+                )
             }
 
             if (!isPatient) {

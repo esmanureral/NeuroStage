@@ -130,13 +130,26 @@ private val df = SimpleDateFormat(
     Locale(Constants.LocaleConfig.LANG_TR, Constants.LocaleConfig.REGION_TR),
 )
 
-private fun stageBadgeColor(label: String): Pair<Color, Color> = when (label) {
-    Constants.MriStageLabel.HEALTHY -> NsPatientStageBadge.healthy
-    Constants.MriStageLabel.VERY_MILD -> NsPatientStageBadge.veryMild
-    Constants.MriStageLabel.MILD -> NsPatientStageBadge.mild
-    Constants.MriStageLabel.MODERATE -> NsPatientStageBadge.moderateOrUnknown
+private fun stageBadgeColor(stageIndex: Int, storedLabel: String, labels: Array<String>): Pair<Color, Color> =
+    when (stageIndex) {
+        2 -> NsPatientStageBadge.healthy
+        3 -> NsPatientStageBadge.veryMild
+        0 -> NsPatientStageBadge.mild
+        1 -> NsPatientStageBadge.moderateOrUnknown
+        else -> legacyStageBadgeColor(labels.getOrNull(stageIndex) ?: storedLabel)
+    }
+
+/** Eski kayıtlardaki metin etiketleri için geriye dönük uyumluluk. */
+private fun legacyStageBadgeColor(label: String): Pair<Color, Color> = when (label) {
+    Constants.MriStageLabel.HEALTHY, "Sağlıklı", "Demanssız" -> NsPatientStageBadge.healthy
+    Constants.MriStageLabel.VERY_MILD, "Çok hafif evre", "Çok Hafif Alzheimer" -> NsPatientStageBadge.veryMild
+    Constants.MriStageLabel.MILD, "Hafif evre", "Hafif Alzheimer" -> NsPatientStageBadge.mild
+    Constants.MriStageLabel.MODERATE, "Orta evre", "Orta Evre Alzheimer" -> NsPatientStageBadge.moderateOrUnknown
     else -> NsPatientStageBadge.moderateOrUnknown
 }
+
+private fun stageDisplayLabel(stageIndex: Int, storedLabel: String, labels: Array<String>): String =
+    labels.getOrNull(stageIndex)?.takeIf { it.isNotEmpty() } ?: storedLabel
 
 @Composable
 fun PatientHistoryScreen(
@@ -280,10 +293,12 @@ fun PatientHistoryScreen(
                         modifier = Modifier.weight(1f),
                     )
                     ui.scans.firstOrNull()?.let { latest ->
-                        val (bg, fg) = stageBadgeColor(latest.label)
+                        val stageLabels = stringArrayResource(R.array.dementia_stage_labels)
+                        val latestLabel = stageDisplayLabel(latest.stageIndex, latest.label, stageLabels)
+                        val (bg, fg) = stageBadgeColor(latest.stageIndex, latest.label, stageLabels)
                         StatPill(
                             label = stringResource(R.string.patient_history_stat_last),
-                            value = latest.label,
+                            value = latestLabel,
                             valueColor = fg,
                             bgColor = bg,
                             modifier = Modifier.weight(2f),
@@ -436,7 +451,9 @@ private fun TimelineRow(
     onTap: () -> Unit,
 ) {
     val confidencePct = (scan.confidence * 100).toInt().coerceIn(0, 100)
-    val (badgeBg, badgeFg) = stageBadgeColor(scan.label)
+    val stageLabels = stringArrayResource(R.array.dementia_stage_labels)
+    val stageLabel = stageDisplayLabel(scan.stageIndex, scan.label, stageLabels)
+    val (badgeBg, badgeFg) = stageBadgeColor(scan.stageIndex, scan.label, stageLabels)
 
     Row(
         modifier = Modifier
@@ -497,7 +514,7 @@ private fun TimelineRow(
                             .padding(horizontal = 8.dp, vertical = 3.dp),
                     ) {
                         Text(
-                            text = scan.label,
+                            text = stageLabel,
                             style = MaterialTheme.typography.labelSmall,
                             color = badgeFg,
                             fontWeight = FontWeight.Bold,
@@ -568,7 +585,9 @@ private fun CompareDialog(a: ScanRecord, b: ScanRecord, onDismiss: () -> Unit) {
 @Composable
 private fun CompareSide(label: String, scan: ScanRecord, modifier: Modifier = Modifier) {
     val pct = (scan.confidence * 100).toInt().coerceIn(0, 100)
-    val (bg, fg) = stageBadgeColor(scan.label)
+    val stageLabels = stringArrayResource(R.array.dementia_stage_labels)
+    val stageLabel = stageDisplayLabel(scan.stageIndex, scan.label, stageLabels)
+    val (bg, fg) = stageBadgeColor(scan.stageIndex, scan.label, stageLabels)
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Text(label, style = MaterialTheme.typography.labelMedium, color = NsGray600)
         Text(
@@ -583,7 +602,7 @@ private fun CompareSide(label: String, scan: ScanRecord, modifier: Modifier = Mo
                 .padding(horizontal = 6.dp, vertical = 3.dp),
         ) {
             Text(
-                scan.label,
+                stageLabel,
                 style = MaterialTheme.typography.labelSmall,
                 color = fg,
                 fontWeight = FontWeight.Bold
@@ -644,10 +663,10 @@ private fun clinicalSnapshot(stageIndex: Int): ClinicalInfo {
 private fun ScanDetailBottomSheet(scan: ScanRecord, onDismiss: () -> Unit) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val confidence = (scan.confidence * 100).toInt().coerceIn(0, 100)
-    val (badgeBg, badgeFg) = stageBadgeColor(scan.label)
+    val scoreLabels = stringArrayResource(R.array.dementia_stage_labels)
+    val stageLabel = stageDisplayLabel(scan.stageIndex, scan.label, scoreLabels)
+    val (badgeBg, badgeFg) = stageBadgeColor(scan.stageIndex, scan.label, scoreLabels)
     val clinical = clinicalSnapshot(scan.stageIndex)
-
-    val scoreLabels = stringArrayResource(R.array.patient_history_model_class_labels)
     val knownHeadings = stringArrayResource(R.array.xai_report_headings).toList()
 
     val aiBlocks = scan.aiReport?.let { parseAiReportBlocks(it, knownHeadings) }
@@ -746,7 +765,7 @@ private fun ScanDetailBottomSheet(scan: ScanRecord, onDismiss: () -> Unit) {
                                     .padding(horizontal = 10.dp, vertical = 4.dp),
                             ) {
                                 Text(
-                                    scan.label,
+                                    stageLabel,
                                     style = MaterialTheme.typography.labelMedium,
                                     color = badgeFg,
                                     fontWeight = FontWeight.Bold

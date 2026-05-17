@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -19,7 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.PersonOutline
 import androidx.compose.material3.Card
@@ -77,7 +76,7 @@ private val waveBottomShape: Shape = object : Shape {
             moveTo(0f, 0f)
             lineTo(size.width, 0f)
             lineTo(size.width, size.height - waveDepth)
-            quadraticBezierTo(size.width / 2f, size.height + waveDepth, 0f, size.height - waveDepth)
+            quadraticTo(size.width / 2f, size.height + waveDepth, 0f, size.height - waveDepth)
             close()
         }
         return Outline.Generic(path)
@@ -93,9 +92,11 @@ private val patientAvatarPalette = listOf(
 )
 
 private fun scanLabelAccent(label: String): Color = when (label) {
-    MriStageLabel.HEALTHY -> NsStatusSuccess
-    MriStageLabel.MILD, MriStageLabel.VERY_MILD -> NsOrangeHot
-    MriStageLabel.MODERATE -> NsRedAlertStrong
+    MriStageLabel.HEALTHY, "Sağlıklı", "Demanssız" -> NsStatusSuccess
+    MriStageLabel.MILD, MriStageLabel.VERY_MILD,
+    "Hafif evre", "Hafif Alzheimer",
+    "Çok hafif evre", "Çok Hafif Alzheimer" -> NsOrangeHot
+    MriStageLabel.MODERATE, "Orta evre", "Orta Evre Alzheimer" -> NsRedAlertStrong
     else -> NsGray400
 }
 
@@ -124,7 +125,7 @@ fun PatientListScreen(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(onClick = onBack) {
                         Icon(
-                            Icons.Outlined.ArrowBack,
+                            Icons.AutoMirrored.Outlined.ArrowBack,
                             contentDescription = stringResource(R.string.doctor_history_cd_back),
                             tint = NsWhite,
                         )

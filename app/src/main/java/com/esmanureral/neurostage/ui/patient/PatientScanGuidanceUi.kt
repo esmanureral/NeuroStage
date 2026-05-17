@@ -12,7 +12,7 @@ data class PatientScanGuidancePalette(
 )
 
 data class PatientScanGuidanceUi(
-    @get:StringRes val iconRes: Int,
+    @get:StringRes val iconRes: Int?,
     @get:StringRes val titleRes: Int,
     @get:StringRes val bodyRes: Int,
     @get:StringRes val buttonLabelRes: Int?,
@@ -23,7 +23,7 @@ data class PatientScanGuidanceUi(
 object PatientScanGuidanceMapper {
     fun from(stageIndex: Int): PatientScanGuidanceUi = when (stageIndex) {
         PatientStage.MODERATE_DEMENTIA -> PatientScanGuidanceUi(
-            iconRes = R.string.guidance_moderate_icon,
+            iconRes = null,
             titleRes = R.string.guidance_moderate_title,
             bodyRes = R.string.guidance_moderate_body,
             buttonLabelRes = R.string.guidance_moderate_button,
@@ -36,7 +36,7 @@ object PatientScanGuidanceMapper {
         )
 
         PatientStage.MILD_DEMENTIA -> PatientScanGuidanceUi(
-            iconRes = R.string.guidance_mild_icon,
+            iconRes = null,
             titleRes = R.string.guidance_mild_title,
             bodyRes = R.string.guidance_mild_body,
             buttonLabelRes = R.string.guidance_mild_button,
@@ -49,7 +49,7 @@ object PatientScanGuidanceMapper {
         )
 
         PatientStage.VERY_MILD_DEMENTIA -> PatientScanGuidanceUi(
-            iconRes = R.string.guidance_very_mild_icon,
+            iconRes = null,
             titleRes = R.string.guidance_very_mild_title,
             bodyRes = R.string.guidance_very_mild_body,
             buttonLabelRes = R.string.guidance_very_mild_button,

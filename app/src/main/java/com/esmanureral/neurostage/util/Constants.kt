@@ -13,10 +13,10 @@ object Constants {
     }
 
     object MriStageLabel {
-        const val HEALTHY = "Sağlıklı"
-        const val MILD = "Hafif evre"
-        const val MODERATE = "Orta evre"
-        const val VERY_MILD = "Çok hafif evre"
+        const val MILD = "Hafif Evre Demans"
+        const val MODERATE = "Orta Evre Demans"
+        const val HEALTHY = "Demans Bulgusu Yok"
+        const val VERY_MILD = "Çok Hafif Evre Demans"
     }
 
     object Ui {

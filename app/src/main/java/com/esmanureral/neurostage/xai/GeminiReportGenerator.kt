@@ -57,7 +57,7 @@ class GeminiReportGenerator(private val context: android.content.Context) {
         }
 
         val classLabels =
-            context.resources.getStringArray(com.esmanureral.neurostage.R.array.home_screen_class_labels)
+            context.resources.getStringArray(com.esmanureral.neurostage.R.array.dementia_stage_labels)
         val allProbs = classLabels.mapIndexed { i, label ->
             val mean = (allScores.getOrElse(i) { 0f } * 100).toInt()
             val std =
@@ -167,5 +167,4 @@ class GeminiReportGenerator(private val context: android.content.Context) {
             GeminiReport(text = responseText)
         }
     }
-
 }

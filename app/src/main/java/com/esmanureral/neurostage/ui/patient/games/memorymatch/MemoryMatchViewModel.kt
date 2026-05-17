@@ -2,6 +2,7 @@ package com.esmanureral.neurostage.ui.patient.games.memorymatch
 
 import androidx.lifecycle.ViewModel
 import com.esmanureral.neurostage.data.patient.BrainExerciseRepository
+import com.esmanureral.neurostage.domain.patient.PatientStage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -10,23 +11,57 @@ class MemoryMatchViewModel @Inject constructor(
     private val repository: BrainExerciseRepository,
 ) : ViewModel() {
 
-    fun currentLevelIndex(): Int = repository.memoryMatchLevel.value
 
-    fun isAllComplete(): Boolean = repository.memoryMatchAllComplete.value
+    fun maxLevelIndex(stageIndex: Int?): Int = memoryMatchMaxLevelIndex(stageIndex)
 
-    fun saveLevel(levelIndex: Int) {
-        repository.setMemoryMatchLevel(levelIndex)
+    fun currentLevelIndex(stageIndex: Int?): Int {
+        val maxIndex = maxLevelIndex(stageIndex)
+        val raw = if (stageIndex == PatientStage.MODERATE_DEMENTIA) {
+            repository.moderateMemoryMatchLevel.value
+        } else {
+            repository.memoryMatchLevel.value
+        }
+        return raw.coerceIn(0, maxIndex)
     }
 
-    fun onLevelCompleted(completedLevelIndex: Int) {
-        if (completedLevelIndex >= memoryMatchAllLevels.lastIndex) {
-            repository.setMemoryMatchAllComplete()
+    fun isAllComplete(stageIndex: Int?): Boolean {
+        return if (stageIndex == PatientStage.MODERATE_DEMENTIA) {
+            repository.moderateMemoryMatchAllComplete.value
         } else {
-            repository.setMemoryMatchLevel(completedLevelIndex + 1)
+            repository.memoryMatchAllComplete.value
         }
     }
 
-    fun resetProgress() {
-        repository.resetMemoryMatchProgress()
+    fun saveLevel(stageIndex: Int?, levelIndex: Int) {
+        val coerced = levelIndex.coerceIn(0, maxLevelIndex(stageIndex))
+        if (stageIndex == PatientStage.MODERATE_DEMENTIA) {
+            repository.setModerateMemoryMatchLevel(coerced)
+        } else {
+            repository.setMemoryMatchLevel(coerced)
+        }
     }
+
+    fun onLevelCompleted(stageIndex: Int?, completedLevelIndex: Int) {
+        val maxIndex = maxLevelIndex(stageIndex)
+        if (completedLevelIndex >= maxIndex) {
+            if (stageIndex == PatientStage.MODERATE_DEMENTIA) {
+                repository.setModerateMemoryMatchAllComplete()
+            } else {
+                repository.setMemoryMatchAllComplete()
+            }
+        } else {
+            saveLevel(stageIndex, completedLevelIndex + 1)
+        }
+    }
+
+    fun resetProgress(stageIndex: Int?) {
+        if (stageIndex == PatientStage.MODERATE_DEMENTIA) {
+            repository.resetModerateMemoryMatchProgress()
+        } else {
+            repository.resetMemoryMatchProgress()
+        }
+    }
+
+    fun coerceLevelIndex(stageIndex: Int?, levelIndex: Int): Int =
+        levelIndex.coerceIn(0, maxLevelIndex(stageIndex))
 }

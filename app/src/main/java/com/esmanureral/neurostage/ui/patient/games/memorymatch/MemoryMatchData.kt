@@ -2,10 +2,44 @@ package com.esmanureral.neurostage.ui.patient.games.memorymatch
 
 import androidx.annotation.StringRes
 import com.esmanureral.neurostage.R
+import com.esmanureral.neurostage.domain.patient.PatientStage
+import com.esmanureral.neurostage.domain.patient.memorymatch.moderate.ModerateMemoryMatchCatalog
 
 enum class MemoryMatchPairMode {
     Identical,
     ImageAndWord,
+}
+
+enum class MemoryMatchLevelProfile {
+    Standard,
+    HighContrastBasic,
+    PrimaryColorsSpacious,
+    ModerateGridCompact,
+    OpenClosedAnchors,
+}
+
+enum class MemoryMatchLayoutMode {
+    StandardGrid,
+    OpenClosed,
+}
+
+enum class MemoryMatchUiStyle {
+    Full,
+    Minimal,
+}
+
+enum class MemoryMatchHighlight {
+    None,
+    Success,
+    Failure,
+}
+
+fun MemoryMatchLevelProfile.mismatchHideMs(): Long = when (this) {
+    MemoryMatchLevelProfile.Standard -> 1_500L
+    MemoryMatchLevelProfile.HighContrastBasic -> 2_500L
+    MemoryMatchLevelProfile.PrimaryColorsSpacious -> 2_000L
+    MemoryMatchLevelProfile.ModerateGridCompact -> 2_000L
+    MemoryMatchLevelProfile.OpenClosedAnchors -> 2_500L
 }
 
 data class MemoryMatchPair(
@@ -20,6 +54,14 @@ data class MemoryMatchLevel(
     val gridColumns: Int,
     val pairs: List<MemoryMatchPair>,
     val pairMode: MemoryMatchPairMode = MemoryMatchPairMode.Identical,
+    val profile: MemoryMatchLevelProfile = MemoryMatchLevelProfile.Standard,
+    val layoutMode: MemoryMatchLayoutMode = MemoryMatchLayoutMode.StandardGrid,
+    val uiStyle: MemoryMatchUiStyle = MemoryMatchUiStyle.Full,
+)
+
+data class OpenClosedMatchBoard(
+    val openAnchors: List<MemoryMatchCard>,
+    val closedPool: List<MemoryMatchCard>,
 )
 
 sealed interface MemoryMatchCardFace {
@@ -33,6 +75,22 @@ data class MemoryMatchCard(
     val face: MemoryMatchCardFace,
     @get:StringRes val labelRes: Int,
 )
+
+fun buildOpenClosedBoard(level: MemoryMatchLevel): OpenClosedMatchBoard {
+    val openAnchors = level.pairs.mapIndexed { index, pair ->
+        card(index, pair, MemoryMatchCardFace.Emoji(pair.emojiRes))
+    }
+    val closedPool = level.pairs
+        .flatMapIndexed { pairIndex, pair ->
+            val baseId = level.pairs.size + pairIndex * 2
+            listOf(
+                card(baseId, pair, MemoryMatchCardFace.Emoji(pair.emojiRes)),
+                card(baseId + 1, pair, MemoryMatchCardFace.Emoji(pair.emojiRes)),
+            )
+        }
+        .shuffled()
+    return OpenClosedMatchBoard(openAnchors = openAnchors, closedPool = closedPool)
+}
 
 fun buildShuffledDeck(level: MemoryMatchLevel): List<MemoryMatchCard> {
     return level.pairs
@@ -126,3 +184,13 @@ val memoryMatchAllLevels: List<MemoryMatchLevel> = listOf(
     memoryMatchLevel3,
     memoryMatchLevel4,
 )
+
+fun memoryMatchLevelsForStage(stageIndex: Int?): List<MemoryMatchLevel> = when (stageIndex) {
+    PatientStage.MODERATE_DEMENTIA -> ModerateMemoryMatchCatalog.levels
+    else -> memoryMatchAllLevels
+}
+
+fun memoryMatchMaxLevelIndex(stageIndex: Int?): Int = when (stageIndex) {
+    PatientStage.MODERATE_DEMENTIA -> ModerateMemoryMatchCatalog.MAX_LEVEL_INDEX
+    else -> memoryMatchAllLevels.lastIndex
+}

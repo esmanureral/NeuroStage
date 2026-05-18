@@ -35,6 +35,11 @@ android {
             "GROK_API_KEY",
             "\"${localProps.getProperty("GROK_API_KEY", "")}\""
         )
+        buildConfigField(
+            "String",
+            "GRAD_CAM_API_BASE_URL",
+            "\"${localProps.getProperty("GRAD_CAM_API_BASE_URL", "http://10.0.2.2:8000/")}\""
+        )
     }
 
     buildTypes {
@@ -100,5 +105,10 @@ dependencies {
     implementation(libs.kotlinx.coroutines.play.services)
 
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+// İnternet istekleri için Retrofit ve JSON çevirici
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
+// Gelen Base64 ısı haritası görselini ImageView'a çizdirmek için Coil
+    implementation("io.coil-kt:coil:2.4.0")
 }

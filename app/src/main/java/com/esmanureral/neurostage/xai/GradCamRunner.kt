@@ -89,6 +89,7 @@ class GradCamRunner(private val context: Context) {
         return GradCamResult(
             heatmapBitmap = heatmapBitmap,
             activeRegion = activeRegion,
+            peakActivation = blurred.maxOrNull() ?: 0f,
             rawCam = blurred,
         )
     }

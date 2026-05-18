@@ -15,8 +15,8 @@
     <color name="patient_text_primary">#FF111827</color>
     <color name="patient_text_secondary">#FF6B7280</color>
     <color name="patient_divider">#FFE5E7EB</color>
-    <color name="patient_primary">#FF1E40AF</color>
-    <color name="patient_primary_light">#FFEFF6FF</color>
+    <color name="patient_primary">#FF7C5CFC</color>
+    <color name="patient_primary_light">#FFF3F0FF</color>
 
     <!-- Patient — mild home / notices -->
     <color name="patient_mild_accent">#FFE65100</color>
@@ -45,14 +45,26 @@
     <color name="patient_alarm_divider">#FF3A3A3C</color>
     <color name="patient_alarm_switch_track_off">#FF39393D</color>
 
-    <!-- Patient — program hub -->
-    <color name="patient_hub_gradient_top">#FFF5F8FF</color>
-    <color name="patient_hub_gradient_bottom">#FFFAF8F5</color>
+    <!-- Patient — program hub (sıcak krem + mor vurgu) -->
+    <color name="patient_result_primary">#FF7C5CFC</color>
+    <color name="patient_result_disclaimer_muted">#FF9CA3AF</color>
+    <color name="patient_hub_gradient_top">#FFF9F7F2</color>
+    <color name="patient_hub_gradient_bottom">#FFF5F0E8</color>
     <color name="patient_hub_quote_surface">#FFFFFFFF</color>
-    <color name="patient_hub_quote_gradient_start">#FFE8EEF9</color>
-    <color name="patient_hub_quote_gradient_end">#FFFFF8F2</color>
-    <color name="patient_hub_quote_accent">#FF6B7FD7</color>
-    <color name="patient_hub_quote_label">#FF5C6B8A</color>
+    <color name="patient_hub_quote_gradient_start">#FFF8D8D0</color>
+    <color name="patient_hub_quote_gradient_end">#FFF5E4B8</color>
+    <color name="patient_hub_quote_accent">#FF7A5C3E</color>
+    <color name="patient_hub_quote_label">#FF7A5C3E</color>
+    <color name="patient_hub_scrapbook_ink">#FF1E1A14</color>
+    <color name="patient_hub_tile_exercise_bg">#FFFCE4EC</color>
+    <color name="patient_hub_tile_exercise_icon_bg">#FFFFCDD2</color>
+    <color name="patient_hub_tile_exercise_icon">#FFC2185B</color>
+    <color name="patient_hub_tile_reminder_bg">#FFEDE8F8</color>
+    <color name="patient_hub_tile_reminder_icon_bg">#FFE4D9F7</color>
+    <color name="patient_hub_tile_reminder_icon">#FF7C5CFC</color>
+    <color name="patient_hub_tile_scan_bg">#FFE3F2FD</color>
+    <color name="patient_hub_tile_scan_icon_bg">#FFBBDEFB</color>
+    <color name="patient_hub_tile_scan_icon">#FF1565C0</color>
 
     <!-- Patient — playful exercise hub (pastel cards) -->
     <color name="patient_hub_routine_card_bg">#FFEDE8F8</color>

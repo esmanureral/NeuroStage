@@ -47,15 +47,15 @@
     <dimen name="patient_home_action_icon_size">24dp</dimen>
     <dimen name="patient_home_action_row_padding">16dp</dimen>
     <dimen name="patient_home_action_text_gap">14dp</dimen>
-    <dimen name="patient_home_action_title_size">15sp</dimen>
-    <dimen name="patient_home_action_subtitle_size">13sp</dimen>
+    <dimen name="patient_home_action_title_size">17sp</dimen>
+    <dimen name="patient_home_action_subtitle_size">14sp</dimen>
     <dimen name="patient_home_action_chevron_size">18dp</dimen>
     <dimen name="patient_home_exercise_section_gap">8dp</dimen>
     <dimen name="patient_home_intro_bottom_gap">16dp</dimen>
     <dimen name="patient_home_mild_title_size">20sp</dimen>
     <dimen name="patient_home_mild_body_line_height">21sp</dimen>
     <dimen name="patient_home_notice_body_line_height">20sp</dimen>
-    <dimen name="patient_home_exercise_section_title_size">15sp</dimen>
+    <dimen name="patient_home_exercise_section_title_size">16sp</dimen>
     <dimen name="patient_home_exercise_highlight_border">2dp</dimen>
     <dimen name="patient_home_action_card_elevation">2dp</dimen>
     <dimen name="patient_home_mild_banner_elevation">3dp</dimen>
@@ -206,6 +206,14 @@
     <dimen name="puzzle_slot_stroke_normal">3dp</dimen>
     <dimen name="puzzle_slot_stroke_magnet">5dp</dimen>
     <dimen name="puzzle_piece_border_width">2.5dp</dimen>
+
+    <!-- Patient MRI result + unchanged sheet -->
+    <dimen name="patient_result_card_corner">16dp</dimen>
+    <dimen name="patient_result_section_gap">14dp</dimen>
+    <dimen name="patient_result_card_padding">16dp</dimen>
+    <dimen name="patient_result_button_corner">14dp</dimen>
+    <dimen name="patient_unchanged_sheet_h_padding">16dp</dimen>
+    <dimen name="patient_unchanged_sheet_bottom_padding">24dp</dimen>
 
     <!-- MR scan (HomeScreen / MainScreen) -->
     <dimen name="scan_wave_depth">20dp</dimen>

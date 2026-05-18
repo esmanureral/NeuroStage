@@ -73,17 +73,15 @@
     <string name="patient_stage_healthy">Demans Bulgusu Yok</string>
     <string name="patient_stage_very_mild">Çok Hafif Evre Demans</string>
     <string name="patient_game_hub_pick">Bir egzersiz seçin</string>
-    <string name="patient_hub_greeting">Merhaba</string>
+    <string name="patient_hub_quote_daily_title">Günlük İlham</string>
+    <string name="patient_hub_journey_subtitle">Kişisel Zindelik Yolculuğunuz</string>
     <string name="patient_hub_quote_mark">“</string>
-    <string name="patient_hub_quote_label_morning">Güne başlarken</string>
-    <string name="patient_hub_quote_label_afternoon">Bugün için</string>
-    <string name="patient_hub_quote_label_evening">Akşam mesajı</string>
     <string name="patient_hub_actions_section">Bugün ne yapmak istersiniz?</string>
-    <string name="patient_hub_action_scan_title">MR yükle</string>
+    <string name="patient_hub_action_scan_title">MR Yükle</string>
     <string name="patient_hub_action_scan_sub">Yeni bir beyin taraması yükleyin</string>
     <string name="patient_hub_start">Başla</string>
     <string name="patient_hub_stage_section_title">Evre bilgilendirmesi</string>
-    <string name="patient_hub_exercises_section_title">Egzersizleriniz</string>
+    <string name="patient_hub_exercises_section_title">Zihin Egzersizleri</string>
     <string name="patient_hub_bottom_new_scan">Yeni MR</string>
     <string name="patient_hub_bottom_records">Kayıtlarım</string>
     <string name="patient_hub_bottom_records_count">Kayıtlarım (%1$d)</string>
@@ -93,10 +91,11 @@
     <string name="patient_hub_scan_unchanged_scores_title">Diğer olasılıklar</string>
     <string name="patient_hub_scan_return">Egzersiz sayfasına dön</string>
     <string name="patient_hub_scan_try_another">Başka MR yükle</string>
-    <string name="patient_hub_action_exercises_title">Egzersizlere git</string>
-    <string name="patient_hub_action_exercises_sub">Zihin egzersizlerinizi seçin ve başlayın</string>
-    <string name="patient_hub_action_reminder_title">Hatırlatıcı oluştur</string>
-    <string name="patient_hub_action_reminder_sub">Günlük egzersiz veya ilaç için hatırlatma kurun</string>
+    <string name="patient_hub_action_exercises_title">Zihin Egzersizleri</string>
+    <string name="patient_hub_action_exercises_sub">Hafıza, dikkat ve kelime oyunlarınızı seçin</string>
+    <string name="patient_hub_action_reminder_title">Günlük Hatırlatıcılar</string>
+    <string name="patient_hub_action_reminder_sub">Egzersiz saatlerinizi kontrol edin</string>
+    <string name="patient_exercise_list_section">Bir egzersiz seçin</string>
 
     <string-array name="patient_hub_motivation_quotes_morning">
         <item>Her yeni gün, zihnin için taze ve güzel bir başlangıçtır.</item>
@@ -237,7 +236,7 @@
     <string name="guidance_moderate_title">Sizin için özel program</string>
     <string name="guidance_moderate_body">Bu evre için sakin tempolu egzersizler hazırladık. Doktorunuzla görüşmeyi unutmayın; birlikte en uygun planı oluşturabilirsiniz.</string>
     <string name="guidance_moderate_button">Egzersiz sayfasına git</string>
-    <string name="guidance_mild_title">Size uygun egzersizler</string>
+    <string name="guidance_mild_title">Size uygun program</string>
     <string name="guidance_mild_body">Hafif destek programı sizin için açıldı. Kendi hızınızda egzersiz yapabilir; doktor randevunuzu da planlayabilirsiniz.</string>
     <string name="guidance_mild_button">Egzersizlere git</string>
     <string name="guidance_mild_icon">🌿</string>
@@ -430,13 +429,27 @@
     <string name="home_screen_preview_change">Değiştir</string>
     <string name="home_screen_preview_analyze">Analizi Başlat</string>
     <string name="home_screen_preview_disclaimer">Yapay zeka analizleri tıbbi tanı niteliği taşımaz; kesin teşhis için lütfen bir hekime danışın.</string>
+    <string name="home_screen_analyze_scanning_badge">TARANIYOR</string>
     <string name="home_screen_analyze_brain_img">Beyin görüntüsü inceleniyor…</string>
     <string name="home_screen_analyze_calculating">Sonuç hesaplanıyor…</string>
     <string name="home_screen_result_title">Analiz Sonucu</string>
     <string name="home_screen_result_mri_label">MRI Görüntüsü</string>
     <string name="home_screen_result_confidence">%1$d%% güven</string>
+    <string name="home_screen_xai_model_loading_title">Model açıklaması hazırlanıyor…</string>
+    <string name="home_screen_xai_model_loading_subtitle">Sunucu Grad-CAM ve MC Dropout analizi</string>
     <string name="home_screen_xai_loading_title">Yapay Zeka Klinik Raporu Hazırlanıyor…</string>
     <string name="home_screen_xai_loading_subtitle">XAI Analizi &amp; Grok Vision</string>
+    <string name="home_screen_gradcam_title">Grad-CAM Isı Haritası</string>
+    <string name="home_screen_gradcam_subtitle">Modelin karara odaklandığı bölgeler</string>
+    <string name="home_screen_gradcam_error">Grad-CAM hatası: %1$s</string>
+    <string name="home_screen_mc_error">MC Dropout hatası: %1$s</string>
+    <string name="home_screen_model_decision_title">Model Karar Açıklaması</string>
+    <string name="home_screen_model_decision_prediction">Tahmin: %1$s (%2$d%% güven)</string>
+    <string name="home_screen_model_decision_region">Odak bölge: %1$s</string>
+    <string name="home_screen_model_decision_uncertainty">Belirsizlik (MC Dropout): ±%1$.1f%%</string>
+    <string name="home_screen_model_decision_peak">Aktivasyon yoğunluğu: %1$d%%</string>
+    <string name="home_screen_model_decision_footer">Bu açıklama modelin hangi görüntü örüntülerine dayandığını gösterir; kesin tanı değildir.</string>
+    <string name="home_screen_ask_ai">Yapay zekaya sor</string>
     <string name="home_screen_xai_summary_fallback">Yapay Zeka Klinik Özeti</string>
     <string name="home_screen_xai_summary_keyword">Özet</string>
     <string name="home_screen_xai_clinic_fallback">KLİNİK BİLGİ</string>
@@ -523,7 +536,7 @@ Klinisyen için somut ve önceliklendirilmiş öneriler sun (örn. MMSE, nörops
 
     <!-- Hasta MR sonuç ekranı — yumuşak, destekleyici açıklamalar -->
     <string-array name="patient_scan_result_descriptions">
-        <item>Size özel hafif destek programı önerildi. Küçük adımlarla ilerleyebilir; doktorunuzla da görüşmeyi planlayabilirsiniz.</item>
+        <item>Küçük adımlarla ilerleyebilir, doktorunuzla görüşebilirsiniz.</item>
         <item>Size özel orta destek programı önerildi. Sakin tempoda egzersizler ve doktor takibi birlikte en iyi sonucu verir.</item>
         <item>Tarama sonucu sakin bir profil gösteriyor. Günlük rutininize devam etmeniz yeterli; sorularınız için doktorunuza danışabilirsiniz.</item>
         <item>Çok hafif düzeyde destek önerilebilir. Erken egzersizler ve düzenli takip size yardımcı olabilir.</item>
@@ -531,6 +544,46 @@ Klinisyen için somut ve önceliklendirilmiş öneriler sun (örn. MMSE, nörops
 
     <string name="patient_scan_result_support_note">Bu sonuç bir ön değerlendirmedir; kesin tanı için doktorunuz yönlendirecektir.</string>
     <string name="patient_scan_result_confidence_label">Model güveni: %1$d%%</string>
+    <string name="patient_scan_probability_title">Olasılık dağılımı</string>
+    <string name="patient_scan_model_confidence">Model güveni</string>
+    <string name="patient_scan_confidence_percent">%1$d%%</string>
+    <string name="patient_scan_not_diagnosis_badge">Tıbbi tanı değildir</string>
+    <string name="patient_scan_result_screen_title">MRI Görüntüsü</string>
+    <string name="patient_scan_scanned_badge">Tarandı</string>
+    <string name="patient_scan_confidence_line">Model güveni %1$d%%</string>
+    <string name="patient_scan_detected_class">Tespit edilen sınıf: %1$s</string>
+    <string name="patient_scan_stage_info_title">Bu evre hakkında</string>
+    <string name="patient_scan_zoom_image">Görüntüyü büyüt</string>
+
+    <!-- Hasta için kısa bilgilendirme (MR sonuç özeti altında) -->
+    <string-array name="patient_stage_patient_messages">
+        <item>MR görüntünüzde hafif düzeyde bilişsel değişikliğe işaret eden örüntüler görüldü. Günlük yaşamınızı sürdürebilirsiniz; doktorunuzla görüşmek ve hafif egzersizler faydalı olabilir.</item>
+        <item>Görüntüde orta düzeyde bilişsel etkilenmeye uygun bulgular saptandı. Düzenli tıbbi takip ve size önerilen egzersiz programı önemlidir.</item>
+        <item>Bu taramada belirgin demans bulgusu görülmedi. Rutin sağlık kontrollerinize devam edebilirsiniz; sorularınız için doktorunuza danışın.</item>
+        <item>Çok hafif düzeyde değişiklikler izlenebilir; her zaman belirgin şikâyete yol açmayabilir. Erken destek ve takip yararlı olabilir.</item>
+    </string-array>
+
+    <!-- Evre hakkında bilgilendirme (grafik altı) -->
+    <string-array name="patient_stage_education">
+        <item>Hafif evre demansta hafıza, dikkat veya günlük planlama alanlarında yavaşlama görülebilir. Tedavi ve yaşam tarzı düzenlemeleriyle süreç yönetilebilir; düzenli kontrol önerilir.</item>
+        <item>Orta evre demansta günlük işlerde (alışveriş, para yönetimi, yemek hazırlama) destek ihtiyacı artabilir. Yapılandırılmış rutinler ve bilişsel egzersizler kaliteyi korumaya yardımcı olabilir.</item>
+        <item>Demans bulgusu olmayan bir profil, bu tarama için olumlu bir sonuçtur. Beyin sağlığını korumak için uyku, hareket ve sosyal etkileşim önemlidir.</item>
+        <item>Çok hafif evre, erken dönem değişiklikleri ifade edebilir. Belirtiler her hastada aynı değildir; MMSE gibi testler ve doktor değerlendirmesi kesin yorum için gereklidir.</item>
+    </string-array>
+
+    <string-array name="patient_stage_short_labels">
+        <item>Hafif evre</item>
+        <item>Orta evre</item>
+        <item>Bulgu yok</item>
+        <item>Çok hafif evre</item>
+    </string-array>
+
+    <string-array name="patient_stage_headlines">
+        <item>Hafif evre demans bulgusu</item>
+        <item>Orta evre demans bulgusu</item>
+        <item>Demans bulgusu yok</item>
+        <item>Çok hafif evre bulgusu</item>
+    </string-array>
 
     <string name="error_invalid_mri">Lütfen geçerli bir beyin MR görüntüsü yükleyin.</string>
     <string name="error_select_mri_first">Önce geçerli bir beyin MR görüntüsü seçin.</string>

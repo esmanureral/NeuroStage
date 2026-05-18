@@ -48,7 +48,7 @@ class UserRepository @Inject constructor(
             (0 until arr.length()).map { i ->
                 val obj = arr.getJSONObject(i)
                 val scores = obj.optJSONArray("scores")?.let { sArr ->
-                    FloatArray(sArr.length()) { idx -> sArr.optDouble(idx, 0.0).toFloat() }
+                    List(sArr.length()) { idx -> sArr.optDouble(idx, 0.0).toFloat() }
                 }
                 MrScanRecord(
                     timestamp = obj.getLong("ts"),

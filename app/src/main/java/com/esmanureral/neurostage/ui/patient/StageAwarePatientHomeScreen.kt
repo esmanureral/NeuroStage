@@ -42,8 +42,9 @@ fun StageAwarePatientHomeScreen(
 
     PatientHomeExitDialog(
         visible = showExitDialog,
-        onDismiss = { },
+        onDismiss = { showExitDialog = false },
         onConfirm = {
+            showExitDialog = false
             viewModel.clearSession()
             onBackToRolePick()
         },

@@ -37,4 +37,8 @@ object RouteArgs {
 object HubScanNav {
     const val RETURN_TO_HUB = "return_to_hub"
     const val STAGE_BEFORE_SCAN = "stage_before_scan"
+    const val SHOW_UNCHANGED_SHEET = "show_unchanged_sheet"
+    const val UNCHANGED_STAGE_INDEX = "unchanged_stage_index"
+    const val UNCHANGED_CONFIDENCE = "unchanged_confidence"
+    const val UNCHANGED_SCORES = "unchanged_scores"
 }

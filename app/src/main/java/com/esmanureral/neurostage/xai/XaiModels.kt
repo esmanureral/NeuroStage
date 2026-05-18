@@ -34,7 +34,8 @@ data class McDropoutResult(
 data class GradCamResult(
     val heatmapBitmap: Bitmap,
     val activeRegion: String,
-    val rawCam: FloatArray,
+    val peakActivation: Float = 0f,
+    val rawCam: FloatArray = floatArrayOf(),
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -44,6 +45,7 @@ data class GradCamResult(
 
         if (heatmapBitmap != other.heatmapBitmap) return false
         if (activeRegion != other.activeRegion) return false
+        if (peakActivation != other.peakActivation) return false
         if (!rawCam.contentEquals(other.rawCam)) return false
 
         return true
@@ -52,6 +54,7 @@ data class GradCamResult(
     override fun hashCode(): Int {
         var result = heatmapBitmap.hashCode()
         result = 31 * result + activeRegion.hashCode()
+        result = 31 * result + peakActivation.hashCode()
         result = 31 * result + rawCam.contentHashCode()
         return result
     }

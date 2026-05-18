@@ -10,13 +10,14 @@ fun BrainExerciseRouteGuard(
     onBlocked: () -> Unit,
     content: @Composable () -> Unit,
 ) {
-    val allowed = PatientStage.canAccessPatientExerciseHub(stageIndex)
-    LaunchedEffect(stageIndex) {
-        if (stageIndex != null && !allowed) {
+    val hubAllowed = PatientStage.canAccessPatientExerciseHub(stageIndex)
+    val showContent = stageIndex == null || hubAllowed
+    LaunchedEffect(stageIndex, hubAllowed) {
+        if (stageIndex != null && !hubAllowed) {
             onBlocked()
         }
     }
-    if (allowed) {
+    if (showContent) {
         content()
     }
 }

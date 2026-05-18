@@ -30,6 +30,35 @@ class AppPreferences @Inject constructor(
         const val KEY_MODERATE_MEMORY_MATCH_ALL_COMPLETE = "moderate_memory_match_all_complete"
         const val KEY_COLOR_MATCH_LEVEL = "color_match_level"
         const val KEY_COLOR_MATCH_ALL_COMPLETE = "color_match_all_complete"
+        const val KEY_HUB_MOTIVATION_QUOTE = "hub_motivation_quote"
+        const val KEY_HUB_MOTIVATION_PERIOD = "hub_motivation_period"
+        const val KEY_HUB_MOTIVATION_SAVED_AT = "hub_motivation_saved_at"
+        const val HUB_MOTIVATION_QUOTE_TTL_MS = 2L * 60L * 60L * 1000L
+    }
+
+    data class CachedHubMotivationQuote(
+        val text: String,
+        val periodOrdinal: Int,
+    )
+
+    fun readCachedHubMotivationQuote(): CachedHubMotivationQuote? {
+        val savedAt = prefs.getLong(KEY_HUB_MOTIVATION_SAVED_AT, 0L)
+        if (savedAt == 0L) return null
+        if (System.currentTimeMillis() - savedAt >= HUB_MOTIVATION_QUOTE_TTL_MS) return null
+        val text = prefs.getString(KEY_HUB_MOTIVATION_QUOTE, null).orEmpty()
+        if (text.isBlank()) return null
+        return CachedHubMotivationQuote(
+            text = text,
+            periodOrdinal = prefs.getInt(KEY_HUB_MOTIVATION_PERIOD, 0),
+        )
+    }
+
+    fun writeCachedHubMotivationQuote(text: String, periodOrdinal: Int) {
+        prefs.edit {
+            putString(KEY_HUB_MOTIVATION_QUOTE, text)
+            putInt(KEY_HUB_MOTIVATION_PERIOD, periodOrdinal)
+            putLong(KEY_HUB_MOTIVATION_SAVED_AT, System.currentTimeMillis())
+        }
     }
 
     private val _userWorld = MutableStateFlow(loadWorld())
@@ -175,17 +204,6 @@ class AppPreferences @Inject constructor(
     fun setColorMatchLevelIndex(levelIndex: Int) {
         prefs.edit {
             putInt(KEY_COLOR_MATCH_LEVEL, levelIndex.coerceAtLeast(0))
-            putBoolean(KEY_COLOR_MATCH_ALL_COMPLETE, false)
-        }
-    }
-
-    fun setColorMatchAllComplete() {
-        prefs.edit { putBoolean(KEY_COLOR_MATCH_ALL_COMPLETE, true) }
-    }
-
-    fun resetColorMatchProgress() {
-        prefs.edit {
-            putInt(KEY_COLOR_MATCH_LEVEL, 0)
             putBoolean(KEY_COLOR_MATCH_ALL_COMPLETE, false)
         }
     }

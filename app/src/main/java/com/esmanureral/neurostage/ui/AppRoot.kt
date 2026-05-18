@@ -1,16 +1,21 @@
 package com.esmanureral.neurostage.ui
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.esmanureral.neurostage.navigation.clearUnchangedScanResult
 import com.esmanureral.neurostage.navigation.HubScanNav
+import com.esmanureral.neurostage.navigation.publishUnchangedScanResult
 import com.esmanureral.neurostage.navigation.RouteArgs
 import com.esmanureral.neurostage.navigation.Routes
 import com.esmanureral.neurostage.ui.doctor.DoctorHistoryScreen
@@ -23,9 +28,14 @@ import com.esmanureral.neurostage.ui.doctor.PatientListScreen
 import com.esmanureral.neurostage.ui.onboarding.RoleGateViewModel
 import com.esmanureral.neurostage.ui.onboarding.RolePickScreen
 import com.esmanureral.neurostage.ui.onboarding.RolePickViewModel
+import com.esmanureral.neurostage.ui.patient.PatientHomeViewModel
 import com.esmanureral.neurostage.ui.patient.StageAwarePatientHomeScreen
 import com.esmanureral.neurostage.ui.patient.games.ExerciseListScreen
+import com.esmanureral.neurostage.ui.patient.hub.HubUnchangedScanResultSheetHost
 import com.esmanureral.neurostage.ui.patient.hub.PatientProgramHubScreen
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
 import com.esmanureral.neurostage.ui.patient.reminders.PatientRemindersScreen
 import com.esmanureral.neurostage.ui.patient.scan.PatientScanDetailScreen
 import com.esmanureral.neurostage.ui.patient.scan.PatientScanHistoryScreen
@@ -43,9 +53,6 @@ import com.esmanureral.neurostage.ui.patient.navigation.MriModeratePuzzleRouteGu
 import com.esmanureral.neurostage.ui.patient.games.puzzle.PuzzleGameScreen
 import com.esmanureral.neurostage.ui.patient.puzzle.core.PuzzleProgressTrack
 import com.esmanureral.neurostage.ui.theme.NeuroStagePatientTheme
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.ui.Modifier
 
 @Composable
 fun AppRoot() {
@@ -78,16 +85,10 @@ fun AppRoot() {
 
     fun exitToRolePick() {
         nav.navigate(Routes.ROLE_PICK) {
-            popUpTo(0) { inclusive = true }
+            popUpTo(nav.graph.findStartDestination().id) {
+                inclusive = true
+            }
             launchSingleTop = true
-        }
-    }
-
-    fun exerciseHubBack(stage: Int?) {
-        if (PatientStage.usesExerciseHubAsHome(stage)) {
-            exitToRolePick()
-        } else if (!nav.popBackStack()) {
-            popBackToPatientHome()
         }
     }
 
@@ -101,13 +102,15 @@ fun AppRoot() {
 
     fun programHubBack(stage: Int?) {
         if (PatientStage.usesExerciseHubAsHome(stage)) {
-            nav.navigate(Routes.ROLE_PICK) {
-                popUpTo(Routes.PATIENT_GAMES) { inclusive = true }
-                launchSingleTop = true
-            }
+            exitToRolePick()
         } else if (!nav.popBackStack()) {
             popBackToPatientHome()
         }
+    }
+
+    fun exitPatientHubToRolePick(clearSession: () -> Unit) {
+        exitToRolePick()
+        clearSession()
     }
 
     fun navigateIfBrainExerciseEligible(stage: Int?, block: () -> Unit) {
@@ -172,10 +175,7 @@ fun AppRoot() {
                 onStartNewScan = { nav.navigate(Routes.DOCTOR_PATIENT_INTAKE) },
                 onOpenPatients = { nav.navigate(Routes.DOCTOR_PATIENTS) },
                 onSignedOut = {
-                    nav.navigate(Routes.ROLE_PICK) {
-                        popUpTo(0) { inclusive = true }
-                        launchSingleTop = true
-                    }
+                    exitToRolePick()
                 },
             )
         }
@@ -242,10 +242,7 @@ fun AppRoot() {
                 val stage by stageVm.patientStage.collectAsStateWithLifecycle()
 
                 val backToRolePick: () -> Unit = {
-                    nav.navigate(Routes.ROLE_PICK) {
-                        popUpTo(0) { inclusive = true }
-                        launchSingleTop = true
-                    }
+                    exitToRolePick()
                 }
 
                 val startScan: () -> Unit = {
@@ -328,32 +325,44 @@ fun AppRoot() {
             }
         }
 
-        composable(Routes.PATIENT_SCAN) {
+        composable(
+            route = Routes.PATIENT_SCAN,
+            popExitTransition = { ExitTransition.None },
+        ) {
             val vm: RolePickViewModel = hiltViewModel()
             val stage by vm.patientStage.collectAsStateWithLifecycle()
             val hubEntry = nav.previousBackStackEntry
-            val returnToHub = hubEntry?.destination?.route == Routes.PATIENT_GAMES &&
-                    hubEntry.savedStateHandle.get<Boolean>(HubScanNav.RETURN_TO_HUB) == true
+                ?.takeIf { entry ->
+                    entry.destination.route == Routes.PATIENT_GAMES &&
+                        entry.savedStateHandle.get<Boolean>(HubScanNav.RETURN_TO_HUB) == true
+                }
+            val returnToHub = hubEntry != null
             val stageBeforeScan = hubEntry?.savedStateHandle?.get<Int>(HubScanNav.STAGE_BEFORE_SCAN)
+
+            fun clearHubScanFlags() {
+                hubEntry?.savedStateHandle?.remove<Boolean>(HubScanNav.RETURN_TO_HUB)
+                hubEntry?.savedStateHandle?.remove<Int>(HubScanNav.STAGE_BEFORE_SCAN)
+            }
 
             MainScreen(
                 patientId = null,
                 isPatient = true,
                 returnToHub = returnToHub,
                 stageBeforeScan = stageBeforeScan,
-                onHubScanUnchanged = if (returnToHub) {
-                    {
-                        hubEntry?.savedStateHandle?.remove<Boolean>(HubScanNav.RETURN_TO_HUB)
-                        hubEntry?.savedStateHandle?.remove<Int>(HubScanNav.STAGE_BEFORE_SCAN)
+                onHubUnchangedResult = hubEntry?.let { hub ->
+                    { stageIndex, confidence, scores ->
+                        hub.savedStateHandle.publishUnchangedScanResult(
+                            stageIndex = stageIndex,
+                            confidence = confidence,
+                            scores = scores,
+                        )
+                        clearHubScanFlags()
                         nav.popBackStack()
                     }
-                } else {
-                    null
                 },
                 onBack = {
-                    if (returnToHub) {
-                        hubEntry?.savedStateHandle?.remove<Boolean>(HubScanNav.RETURN_TO_HUB)
-                        hubEntry?.savedStateHandle?.remove<Int>(HubScanNav.STAGE_BEFORE_SCAN)
+                    if (hubEntry != null) {
+                        clearHubScanFlags()
                         nav.popBackStack()
                     } else if (!nav.popBackStack()) {
                         nav.navigate(Routes.ROLE_PICK) {
@@ -368,9 +377,8 @@ fun AppRoot() {
                         PatientStage.VERY_MILD_DEMENTIA,
                         PatientStage.MODERATE_DEMENTIA,
                             -> {
-                            if (returnToHub) {
-                                hubEntry?.savedStateHandle?.remove<Boolean>(HubScanNav.RETURN_TO_HUB)
-                                hubEntry?.savedStateHandle?.remove<Int>(HubScanNav.STAGE_BEFORE_SCAN)
+                            if (hubEntry != null) {
+                                clearHubScanFlags()
                                 nav.popBackStack()
                             } else {
                                 nav.navigate(Routes.PATIENT_GAMES) {
@@ -381,9 +389,8 @@ fun AppRoot() {
                         }
 
                         else -> {
-                            if (returnToHub) {
-                                hubEntry?.savedStateHandle?.remove<Boolean>(HubScanNav.RETURN_TO_HUB)
-                                hubEntry?.savedStateHandle?.remove<Int>(HubScanNav.STAGE_BEFORE_SCAN)
+                            if (hubEntry != null) {
+                                clearHubScanFlags()
                                 nav.popBackStack()
                             }
                         }
@@ -392,30 +399,48 @@ fun AppRoot() {
             )
         }
 
-        composable(Routes.PATIENT_GAMES) {
+        composable(
+            route = Routes.PATIENT_GAMES,
+            popEnterTransition = { EnterTransition.None },
+        ) { hubEntry ->
             NeuroStagePatientTheme {
-                val vm: RolePickViewModel = hiltViewModel()
-                val stage by vm.patientStage.collectAsStateWithLifecycle()
+                val roleVm: RolePickViewModel = hiltViewModel()
+                val homeVm: PatientHomeViewModel = hiltViewModel()
+                val stage by roleVm.patientStage.collectAsStateWithLifecycle()
+                val startHubScan: () -> Unit = {
+                    hubEntry.savedStateHandle.apply {
+                        set(HubScanNav.RETURN_TO_HUB, true)
+                        set(HubScanNav.STAGE_BEFORE_SCAN, stage)
+                    }
+                    nav.navigate(Routes.PATIENT_SCAN) { launchSingleTop = true }
+                }
                 BrainExerciseRouteGuard(
                     stageIndex = stage,
                     onBlocked = { nav.popBackStack() },
                 ) {
-                    PatientProgramHubScreen(
-                        onOpenExercises = {
-                            nav.navigate(Routes.PATIENT_EXERCISE_LIST) { launchSingleTop = true }
-                        },
-                        onOpenReminders = {
-                            nav.navigate(Routes.PATIENT_REMINDERS) { launchSingleTop = true }
-                        },
-                        onStartNewScan = {
-                            nav.getBackStackEntry(Routes.PATIENT_GAMES).savedStateHandle.apply {
-                                set(HubScanNav.RETURN_TO_HUB, true)
-                                set(HubScanNav.STAGE_BEFORE_SCAN, stage)
-                            }
-                            nav.navigate(Routes.PATIENT_SCAN) { launchSingleTop = true }
-                        },
-                        onBack = { programHubBack(stage) },
-                    )
+                    Box(Modifier.fillMaxSize()) {
+                        PatientProgramHubScreen(
+                            onOpenExercises = {
+                                nav.navigate(Routes.PATIENT_EXERCISE_LIST) { launchSingleTop = true }
+                            },
+                            onOpenReminders = {
+                                nav.navigate(Routes.PATIENT_REMINDERS) { launchSingleTop = true }
+                            },
+                            onStartNewScan = startHubScan,
+                            onBack = { programHubBack(stage) },
+                            onExitToRolePick = {
+                                hubEntry.savedStateHandle.clearUnchangedScanResult()
+                                exitPatientHubToRolePick(homeVm::clearSession)
+                            },
+                            onDismissOverlay = {
+                                hubEntry.savedStateHandle.clearUnchangedScanResult()
+                            },
+                        )
+                        HubUnchangedScanResultSheetHost(
+                            hubBackStackEntry = hubEntry,
+                            onStartNewScan = startHubScan,
+                        )
+                    }
                 }
             }
         }

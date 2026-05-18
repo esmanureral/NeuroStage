@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -27,7 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -64,7 +63,7 @@ fun DoctorResultDetailScreen(
             ) {
                 IconButton(onClick = onBack) {
                     Icon(
-                        Icons.Outlined.ArrowBack,
+                        Icons.AutoMirrored.Outlined.ArrowBack,
                         contentDescription = stringResource(R.string.doctor_history_cd_back),
                     )
                 }
@@ -166,7 +165,7 @@ private fun DetailContent(record: MrScanRecord) {
 }
 
 @Composable
-private fun ScoreBars(scores: FloatArray) {
+private fun ScoreBars(scores: List<Float>) {
     val labels = stringArrayResource(R.array.dementia_stage_labels)
     val max = (scores.maxOrNull() ?: 1f).coerceAtLeast(0.0001f)
     val trackColor = MaterialTheme.colorScheme.surfaceVariant
@@ -215,7 +214,7 @@ private fun ScoreBars(scores: FloatArray) {
 }
 
 @Composable
-private fun TinyLineChart(values: FloatArray) {
+private fun TinyLineChart(values: List<Float>) {
     val points = remember(values) { values.map { it.coerceIn(0f, 1f) } }
     val stroke = MaterialTheme.colorScheme.primary
     val grid = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)

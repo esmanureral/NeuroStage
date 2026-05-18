@@ -28,7 +28,7 @@ class GeminiReportGenerator(private val context: android.content.Context) {
         stageLabel: String,
         topMean: Float,
         topStd: Float,
-        allScores: FloatArray,
+        allScores: List<Float>,
         allStdScores: FloatArray?,
         patientAge: Int?,
         patientGender: String?,

@@ -8,6 +8,8 @@ import com.esmanureral.neurostage.data.AppPreferences
 import com.esmanureral.neurostage.data.MrScanRecord
 import com.esmanureral.neurostage.data.UserRepository
 import com.esmanureral.neurostage.domain.patient.DementiaStageLabels
+import com.esmanureral.neurostage.ui.patient.hub.HubMotivationQuote
+import com.esmanureral.neurostage.ui.patient.hub.HubMotivationQuotes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.SharingStarted
@@ -27,9 +29,9 @@ data class GameHubUiState(
 
 @HiltViewModel
 class GameHubViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val prefs: AppPreferences,
-    private val userRepository: UserRepository,
+    userRepository: UserRepository,
 ) : ViewModel() {
 
     val uiState: StateFlow<GameHubUiState> = combine(
@@ -69,6 +71,19 @@ class GameHubViewModel @Inject constructor(
 
     private fun stageChipLabel(stageIndex: Int): String? =
         DementiaStageLabels.labelAt(context, stageIndex).takeIf { it.isNotEmpty() }
+
+    fun resolveMotivationQuote(): HubMotivationQuote {
+        val morning = context.resources.getStringArray(R.array.patient_hub_motivation_quotes_morning)
+        val afternoon = context.resources.getStringArray(R.array.patient_hub_motivation_quotes_afternoon)
+        return HubMotivationQuotes.resolve(
+            morning = morning,
+            afternoon = afternoon,
+            cached = prefs.readCachedHubMotivationQuote(),
+            onPersist = { quote ->
+                prefs.writeCachedHubMotivationQuote(quote.text, quote.period.ordinal)
+            },
+        )
+    }
 
     private companion object {
         const val STOP_TIMEOUT_MS = 5_000L

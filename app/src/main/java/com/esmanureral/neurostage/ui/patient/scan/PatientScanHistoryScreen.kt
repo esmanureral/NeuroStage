@@ -67,7 +67,7 @@ fun PatientScanHistoryScreen(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = stringResource(R.string.patient_scan_history_back),
-                        tint = PatientColors.textPrimary,
+                        tint = PatientColors.primary,
                     )
                 }
                 Text(

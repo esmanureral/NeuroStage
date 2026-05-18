@@ -7,9 +7,9 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import com.esmanureral.neurostage.ui.patient.PatientAlertDialog
+import com.esmanureral.neurostage.ui.patient.PatientDialogTextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -267,19 +267,22 @@ private fun ReminderDeleteConfirmDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
 ) {
-    AlertDialog(
+    PatientAlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.patient_reminder_delete_dialog_title)) },
         text = { Text(stringResource(R.string.patient_reminder_delete_dialog_message)) },
         confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text(stringResource(R.string.patient_reminder_delete_dialog_confirm))
-            }
+            PatientDialogTextButton(
+                text = stringResource(R.string.patient_reminder_delete_dialog_confirm),
+                onClick = onConfirm,
+                emphasized = true,
+            )
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.patient_reminder_cancel))
-            }
+            PatientDialogTextButton(
+                text = stringResource(R.string.patient_reminder_cancel),
+                onClick = onDismiss,
+            )
         },
     )
 }

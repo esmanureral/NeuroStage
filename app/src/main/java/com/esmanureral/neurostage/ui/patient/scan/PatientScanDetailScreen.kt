@@ -25,9 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -69,7 +67,7 @@ fun PatientScanDetailScreen(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = stringResource(R.string.patient_scan_history_back),
-                        tint = PatientColors.textPrimary,
+                        tint = PatientColors.primary,
                     )
                 }
                 Text(
@@ -188,7 +186,7 @@ private fun PatientScanDetailContent(
 }
 
 @Composable
-private fun PatientScoreBars(scores: FloatArray) {
+private fun PatientScoreBars(scores: List<Float>) {
     val labels = stringArrayResource(R.array.dementia_stage_labels)
     val max = (scores.maxOrNull() ?: 1f).coerceAtLeast(0.0001f)
     val trackColor = PatientColors.primaryLight

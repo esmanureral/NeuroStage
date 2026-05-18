@@ -21,7 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.CameraAlt
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -49,19 +48,22 @@ fun PatientHomeExitDialog(
     onConfirm: () -> Unit,
 ) {
     if (!visible) return
-    AlertDialog(
+    PatientAlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.patient_exit_dialog_title)) },
         text = { Text(stringResource(R.string.patient_exit_dialog_message)) },
         confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text(stringResource(R.string.patient_exit_dialog_confirm))
-            }
+            PatientDialogTextButton(
+                text = stringResource(R.string.patient_exit_dialog_confirm),
+                onClick = onConfirm,
+                emphasized = true,
+            )
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.patient_exit_dialog_cancel))
-            }
+            PatientDialogTextButton(
+                text = stringResource(R.string.patient_exit_dialog_cancel),
+                onClick = onDismiss,
+            )
         },
     )
 }

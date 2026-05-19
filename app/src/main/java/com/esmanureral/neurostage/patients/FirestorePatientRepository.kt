@@ -84,4 +84,32 @@ class FirestorePatientRepository @Inject constructor() : PatientRepository {
             }
         }
     }
+
+    override suspend fun delete(doctorUid: String, patientId: String): Result<Unit> {
+        val firestore =
+            db ?: return Result.failure(IllegalStateException("Firestore başlatılamadı."))
+        return runCatching {
+            val patientRef = firestore.collection(Constants.Firestore.COLLECTION_USERS)
+                .document(doctorUid)
+                .collection(Constants.Firestore.COLLECTION_PATIENTS)
+                .document(patientId)
+
+            val scanSnaps = patientRef.collection(Constants.Firestore.COLLECTION_SCANS)
+                .get()
+                .await()
+
+            val batch = firestore.batch()
+            scanSnaps.documents.forEach { batch.delete(it.reference) }
+            batch.delete(patientRef)
+            batch.commit().await()
+        }
+    }
+
+    override suspend fun deleteMany(doctorUid: String, patientIds: List<String>): Result<Unit> {
+        if (patientIds.isEmpty()) return Result.success(Unit)
+        patientIds.forEach { patientId ->
+            delete(doctorUid, patientId).getOrElse { return Result.failure(it) }
+        }
+        return Result.success(Unit)
+    }
 }

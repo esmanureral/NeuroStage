@@ -1,5 +1,6 @@
 package com.esmanureral.neurostage.ui.patient.games
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,6 +40,8 @@ fun ExerciseListScreen(
     onStartColorMatchGame: () -> Unit,
     onBack: () -> Unit,
 ) {
+    BackHandler(onBack = onBack)
+
     val showMemoryMatch = PatientStage.isBrainExerciseEligible(stageIndex) ||
         stageIndex == PatientStage.MODERATE_DEMENTIA
     val showColorMatch = PatientStage.canAccessPatientExerciseHub(stageIndex)

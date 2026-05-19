@@ -4,6 +4,8 @@ import android.graphics.Bitmap
 import android.util.Base64
 import android.util.Log
 import com.esmanureral.neurostage.BuildConfig
+import kotlin.math.max
+import kotlin.math.roundToInt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
@@ -18,9 +20,10 @@ import java.util.concurrent.TimeUnit
 class GeminiReportGenerator(private val context: android.content.Context) {
 
     private val client = OkHttpClient.Builder()
-        .connectTimeout(30, TimeUnit.SECONDS)
-        .readTimeout(60, TimeUnit.SECONDS)
-        .writeTimeout(30, TimeUnit.SECONDS)
+        .connectTimeout(20, TimeUnit.SECONDS)
+        .readTimeout(45, TimeUnit.SECONDS)
+        .writeTimeout(20, TimeUnit.SECONDS)
+        .callTimeout(60, TimeUnit.SECONDS)
         .build()
 
     suspend fun generate(
@@ -40,17 +43,17 @@ class GeminiReportGenerator(private val context: android.content.Context) {
             patientGender != null && patientAge != null -> context.getString(
                 com.esmanureral.neurostage.R.string.xai_patient_desc_both,
                 patientGender,
-                patientAge
+                patientAge,
             )
 
             patientGender != null -> context.getString(
                 com.esmanureral.neurostage.R.string.xai_patient_desc_gender,
-                patientGender
+                patientGender,
             )
 
             patientAge != null -> context.getString(
                 com.esmanureral.neurostage.R.string.xai_patient_desc_age,
-                patientAge
+                patientAge,
             )
 
             else -> context.getString(com.esmanureral.neurostage.R.string.xai_patient_desc_none)
@@ -70,12 +73,12 @@ class GeminiReportGenerator(private val context: android.content.Context) {
                 context.getString(
                     com.esmanureral.neurostage.R.string.xai_saliency_success_peak,
                     activeRegion,
-                    (saliencyPeakScore * 100).toInt()
+                    (saliencyPeakScore * 100).toInt(),
                 )
             } else {
                 context.getString(
                     com.esmanureral.neurostage.R.string.xai_saliency_success,
-                    activeRegion
+                    activeRegion,
                 )
             }
         } else {
@@ -89,32 +92,32 @@ class GeminiReportGenerator(private val context: android.content.Context) {
             (topMean * 100).toInt(),
             topStd * 100,
             allProbs,
-            saliencyLine
+            saliencyLine,
         )
 
-
-        val imageBase64 = run {
-            val out = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, out)
+        val uploadBitmap = bitmap.scaleForAiUpload()
+        val imageBase64 = ByteArrayOutputStream().use { out ->
+            uploadBitmap.compress(Bitmap.CompressFormat.JPEG, 72, out)
             Base64.encodeToString(out.toByteArray(), Base64.NO_WRAP)
+        }
+        if (uploadBitmap !== bitmap && !uploadBitmap.isRecycled) {
+            uploadBitmap.recycle()
         }
 
         val body = JSONObject().apply {
-            put("model", "meta-llama/llama-4-scout-17b-16e-instruct")
-            put("temperature", 0.4)
-            put("max_tokens", 1024)
+            put("model", GROQ_VISION_MODEL)
+            put("temperature", 0.35)
+            put("max_tokens", 1600)
             put("messages", JSONArray().apply {
                 put(JSONObject().apply {
                     put("role", "user")
                     put("content", JSONArray().apply {
-
                         put(JSONObject().apply {
                             put("type", "image_url")
                             put("image_url", JSONObject().apply {
                                 put("url", "data:image/jpeg;base64,$imageBase64")
                             })
                         })
-
                         put(JSONObject().apply {
                             put("type", "text")
                             put("text", prompt)
@@ -124,9 +127,19 @@ class GeminiReportGenerator(private val context: android.content.Context) {
             })
         }.toString()
 
+        val apiKey = BuildConfig.GROK_API_KEY.trim()
+        if (apiKey.isEmpty()) {
+            return@withContext buildFallbackReport(
+                patientDesc = patientDesc,
+                stageLabel = stageLabel,
+                topMean = topMean,
+                activeRegion = activeRegion,
+            )
+        }
+
         val request = Request.Builder()
-            .url("https://api.groq.com/openai/v1/chat/completions")
-            .addHeader("Authorization", "Bearer ${BuildConfig.GROK_API_KEY}")
+            .url(GROQ_CHAT_URL)
+            .addHeader("Authorization", "Bearer $apiKey")
             .addHeader("Content-Type", "application/json")
             .post(body.toRequestBody("application/json".toMediaType()))
             .build()
@@ -134,37 +147,73 @@ class GeminiReportGenerator(private val context: android.content.Context) {
         val responseText = runCatching {
             client.newCall(request).execute().use { response ->
                 val rawBody = response.body?.string() ?: ""
-                Log.d("GroqReport", "HTTP ${response.code} — body: ${rawBody.take(300)}")
+                Log.d(TAG, "HTTP ${response.code} — ${rawBody.take(200)}")
                 if (!response.isSuccessful) {
                     error("HTTP ${response.code}: $rawBody")
                 }
-                val json = JSONObject(rawBody)
-                json.getJSONArray("choices")
+                JSONObject(rawBody)
+                    .getJSONArray("choices")
                     .getJSONObject(0)
                     .getJSONObject("message")
                     .getString("content")
                     .trim()
             }
         }.onFailure {
-            Log.e("GroqReport", "❌ API hatası [${it.javaClass.simpleName}]: ${it.message}", it)
+            Log.e(TAG, "API hatası: ${it.message}", it)
         }.getOrNull()
 
         if (responseText.isNullOrBlank()) {
-            val regionInfo = if (activeRegion != null) context.getString(
-                com.esmanureral.neurostage.R.string.xai_fallback_region_info,
-                activeRegion
-            ) else ""
-            GeminiReport(
-                text = context.getString(
-                    com.esmanureral.neurostage.R.string.xai_fallback_report,
-                    patientDesc,
-                    stageLabel,
-                    (topMean * 100).toInt(),
-                    regionInfo
-                )
+            buildFallbackReport(
+                patientDesc = patientDesc,
+                stageLabel = stageLabel,
+                topMean = topMean,
+                activeRegion = activeRegion,
             )
         } else {
             GeminiReport(text = responseText)
         }
+    }
+
+    private fun buildFallbackReport(
+        patientDesc: String,
+        stageLabel: String,
+        topMean: Float,
+        activeRegion: String?,
+    ): GeminiReport {
+        val regionInfo = if (activeRegion != null) {
+            context.getString(
+                com.esmanureral.neurostage.R.string.xai_fallback_region_info,
+                activeRegion,
+            )
+        } else {
+            ""
+        }
+        return GeminiReport(
+            text = context.getString(
+                com.esmanureral.neurostage.R.string.xai_fallback_report,
+                patientDesc,
+                stageLabel,
+                (topMean * 100).toInt(),
+                regionInfo,
+            ),
+        )
+    }
+
+    private fun Bitmap.scaleForAiUpload(maxSide: Int = AI_UPLOAD_MAX_SIDE): Bitmap {
+        val longest = max(width, height)
+        if (longest <= maxSide) return this
+        val scale = maxSide.toFloat() / longest
+        val targetW = (width * scale).roundToInt().coerceAtLeast(1)
+        val targetH = (height * scale).roundToInt().coerceAtLeast(1)
+        return Bitmap.createScaledBitmap(this, targetW, targetH, true)
+    }
+
+    companion object {
+        private const val TAG = "GroqClinicalReport"
+        private const val GROQ_CHAT_URL = "https://api.groq.com/openai/v1/chat/completions"
+        /** Groq vision — llama-3.2-11b-vision-preview kaldırıldı (Nisan 2025) */
+        private const val GROQ_VISION_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct"
+        /** Groq base64 görüntü üst sınırı 4 MB */
+        private const val AI_UPLOAD_MAX_SIDE = 384
     }
 }

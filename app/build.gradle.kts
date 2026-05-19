@@ -38,7 +38,12 @@ android {
         buildConfigField(
             "String",
             "GRAD_CAM_API_BASE_URL",
-            "\"${localProps.getProperty("GRAD_CAM_API_BASE_URL", "http://10.0.2.2:8000/")}\""
+            "\"${localProps.getProperty("GRAD_CAM_API_BASE_URL", "https://esmanurerl-neurostage-gradcam-api.hf.space/")}\""
+        )
+        buildConfigField(
+            "String",
+            "HF_TOKEN",
+            "\"${localProps.getProperty("HF_TOKEN", "")}\""
         )
     }
 

@@ -2,6 +2,7 @@ package com.esmanureral.neurostage.ui.patient
 
 import com.esmanureral.neurostage.ui.theme.PatientColors
 import com.esmanureral.neurostage.ui.theme.PatientDimens
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -26,6 +27,8 @@ fun PatientExerciseTopBar(
     onBack: () -> Unit,
     backLabel: String = stringResource(R.string.patient_home_cd_back),
 ) {
+    BackHandler(onBack = onBack)
+
     Column {
         CenterAlignedTopAppBar(
             title = {

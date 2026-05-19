@@ -168,8 +168,12 @@ fun PatientRemindersScreen(
         closeEditor()
     }
 
-    BackHandler(enabled = uiMode == ReminderUiMode.EDITOR) {
-        closeEditor()
+    BackHandler {
+        when {
+            deleteRequest != null -> dismissDeleteDialog()
+            uiMode == ReminderUiMode.EDITOR -> closeEditor()
+            else -> onBack()
+        }
     }
 
     LaunchedEffect(Unit) {

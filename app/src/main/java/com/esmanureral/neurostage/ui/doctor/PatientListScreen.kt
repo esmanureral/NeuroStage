@@ -1,7 +1,9 @@
 package com.esmanureral.neurostage.ui.doctor
 
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,17 +22,26 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.ChevronRight
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.PersonOutline
+import androidx.compose.material.icons.outlined.SelectAll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -107,12 +118,43 @@ fun PatientListScreen(
     viewModel: PatientListViewModel = hiltViewModel(),
 ) {
     val ui by viewModel.ui.collectAsStateWithLifecycle()
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var deleteConfirmPending by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.refresh()
     }
 
-    Surface(modifier = Modifier.fillMaxSize(), color = NsDoctorScaffoldBg) {
+    LaunchedEffect(ui.isDeleting, ui.deleteError) {
+        if (!deleteConfirmPending || ui.isDeleting) return@LaunchedEffect
+        deleteConfirmPending = false
+        showDeleteDialog = false
+    }
+
+    BackHandler {
+        when {
+            showDeleteDialog && !ui.isDeleting -> showDeleteDialog = false
+            ui.selectionMode -> viewModel.setSelectionMode(false)
+            else -> onBack()
+        }
+    }
+
+    if (showDeleteDialog) {
+        PatientDeleteConfirmDialog(
+            count = ui.selectedPatientIds.size,
+            isDeleting = ui.isDeleting,
+            onDismiss = {
+                if (!ui.isDeleting) showDeleteDialog = false
+            },
+            onConfirm = {
+                deleteConfirmPending = true
+                viewModel.deleteSelected()
+            },
+        )
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Surface(modifier = Modifier.fillMaxSize(), color = NsDoctorScaffoldBg) {
         Column(modifier = Modifier.fillMaxSize()) {
             Box(
                 modifier = Modifier
@@ -122,26 +164,97 @@ fun PatientListScreen(
                     .statusBarsPadding()
                     .padding(horizontal = 8.dp, vertical = 20.dp),
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = onBack) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    IconButton(
+                        onClick = {
+                            if (ui.selectionMode) {
+                                viewModel.setSelectionMode(false)
+                            } else {
+                                onBack()
+                            }
+                        },
+                    ) {
                         Icon(
                             Icons.AutoMirrored.Outlined.ArrowBack,
                             contentDescription = stringResource(R.string.doctor_history_cd_back),
                             tint = NsWhite,
                         )
                     }
-                    Column(modifier = Modifier.padding(start = 4.dp)) {
+
+                    Column(modifier = Modifier.weight(1f).padding(start = 4.dp)) {
                         Text(
-                            text = stringResource(R.string.patient_list_title),
+                            text = if (ui.selectionMode) {
+                                stringResource(
+                                    R.string.patient_list_selected_count,
+                                    ui.selectedPatientIds.size,
+                                )
+                            } else {
+                                stringResource(R.string.patient_list_title)
+                            },
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                             color = NsWhite,
                         )
-                        Text(
-                            text = stringResource(R.string.patient_list_registered_count, ui.patients.size),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = NsWhite.copy(alpha = 0.75f),
-                        )
+                        if (!ui.selectionMode) {
+                            Text(
+                                text = stringResource(
+                                    R.string.patient_list_registered_count,
+                                    ui.patients.size,
+                                ),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = NsWhite.copy(alpha = 0.75f),
+                            )
+                        }
+                    }
+
+                    if (ui.patients.isNotEmpty()) {
+                        if (ui.selectionMode) {
+                            IconButton(
+                                onClick = { viewModel.selectAllPatients() },
+                                enabled = !ui.isDeleting,
+                            ) {
+                                Icon(
+                                    Icons.Outlined.SelectAll,
+                                    contentDescription = stringResource(R.string.patient_list_cd_select_all),
+                                    tint = NsWhite,
+                                )
+                            }
+                            IconButton(
+                                onClick = { showDeleteDialog = true },
+                                enabled = ui.selectedPatientIds.isNotEmpty() && !ui.isDeleting,
+                            ) {
+                                Icon(
+                                    Icons.Outlined.Delete,
+                                    contentDescription = stringResource(R.string.patient_list_cd_delete_selected),
+                                    tint = if (ui.selectedPatientIds.isNotEmpty()) {
+                                        NsWhite
+                                    } else {
+                                        NsWhite.copy(alpha = 0.4f)
+                                    },
+                                )
+                            }
+                            TextButton(
+                                onClick = { viewModel.setSelectionMode(false) },
+                                enabled = !ui.isDeleting,
+                            ) {
+                                Text(
+                                    stringResource(R.string.patient_list_cancel_selection),
+                                    color = NsWhite,
+                                    fontWeight = FontWeight.SemiBold,
+                                )
+                            }
+                        } else {
+                            TextButton(onClick = { viewModel.setSelectionMode(true) }) {
+                                Text(
+                                    stringResource(R.string.patient_list_select),
+                                    color = NsWhite,
+                                    fontWeight = FontWeight.SemiBold,
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -155,7 +268,31 @@ fun PatientListScreen(
                 )
             }
 
-            if (ui.patients.isEmpty() && !ui.isLoading) {
+            ui.deleteError?.let {
+                Text(
+                    it,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+
+            if (ui.isRefreshing && ui.patients.isNotEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 6.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(22.dp),
+                        color = NeurostageBrandBlue,
+                        strokeWidth = 2.dp,
+                    )
+                }
+            }
+
+            if (ui.patients.isEmpty() && !ui.isLoading && !ui.isRefreshing) {
                 Spacer(Modifier.weight(1f))
                 Column(
                     modifier = Modifier
@@ -197,16 +334,83 @@ fun PatientListScreen(
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
                     items(ui.patients, key = { it.patient.id }) { summary ->
-                        PatientCard(summary) { onPickPatient(summary.patient.id) }
+                        val patientId = summary.patient.id
+                        val isSelected = patientId in ui.selectedPatientIds
+                        PatientCard(
+                            summary = summary,
+                            selectionMode = ui.selectionMode,
+                            isSelected = isSelected,
+                            onClick = {
+                                if (ui.selectionMode) {
+                                    viewModel.togglePatientSelection(patientId)
+                                } else {
+                                    onPickPatient(patientId)
+                                }
+                            },
+                            onLongClick = {
+                                if (!ui.selectionMode) {
+                                    viewModel.setSelectionMode(true)
+                                }
+                                viewModel.togglePatientSelection(patientId)
+                            },
+                        )
                     }
                 }
             }
         }
+        }
+
+        DoctorLoadingOverlay(visible = ui.isLoading && ui.patients.isEmpty())
     }
 }
 
 @Composable
-private fun PatientCard(summary: PatientSummary, onClick: () -> Unit) {
+private fun PatientDeleteConfirmDialog(
+    count: Int,
+    isDeleting: Boolean,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                stringResource(R.string.patient_list_delete_dialog_title),
+                fontWeight = FontWeight.Bold,
+            )
+        },
+        text = {
+            Text(stringResource(R.string.patient_list_delete_dialog_message, count))
+        },
+        confirmButton = {
+            TextButton(
+                onClick = onConfirm,
+                enabled = !isDeleting,
+            ) {
+                Text(
+                    stringResource(R.string.patient_list_delete_dialog_confirm),
+                    color = MaterialTheme.colorScheme.error,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss, enabled = !isDeleting) {
+                Text(stringResource(R.string.patient_list_delete_dialog_cancel))
+            }
+        },
+    )
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun PatientCard(
+    summary: PatientSummary,
+    selectionMode: Boolean,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit,
+) {
     val patient = summary.patient
     val unknownInitial = stringResource(R.string.doctor_ui_initials_unknown)
     val initials = patient.fullName
@@ -223,10 +427,17 @@ private fun PatientCard(summary: PatientSummary, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick),
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick,
+            ),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = NsWhite),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isSelected && selectionMode) NsChipIndigoBg else NsWhite,
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = if (isSelected && selectionMode) 0.dp else 2.dp,
+        ),
     ) {
         Row(
             modifier = Modifier
@@ -235,6 +446,13 @@ private fun PatientCard(summary: PatientSummary, onClick: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(14.dp),
         ) {
+            if (selectionMode) {
+                Checkbox(
+                    checked = isSelected,
+                    onCheckedChange = { onClick() },
+                )
+            }
+
             Box(
                 modifier = Modifier
                     .size(48.dp)
@@ -289,11 +507,13 @@ private fun PatientCard(summary: PatientSummary, onClick: () -> Unit) {
                 }
             }
 
-            Icon(
-                Icons.Outlined.ChevronRight,
-                contentDescription = stringResource(R.string.patient_list_cd_open_patient),
-                tint = NsGray300,
-            )
+            if (!selectionMode) {
+                Icon(
+                    Icons.Outlined.ChevronRight,
+                    contentDescription = stringResource(R.string.patient_list_cd_open_patient),
+                    tint = NsGray300,
+                )
+            }
         }
     }
 }

@@ -55,8 +55,22 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.esmanureral.neurostage.R
+import com.esmanureral.neurostage.ui.theme.NeurostageBrandBlue
+import com.esmanureral.neurostage.ui.theme.NsGray400
+import com.esmanureral.neurostage.ui.theme.NsGray900
+import com.esmanureral.neurostage.ui.theme.NsSlate100
+import com.esmanureral.neurostage.ui.theme.NsWhite
 import com.esmanureral.neurostage.ui.theme.PatientResultColors
 import com.esmanureral.neurostage.ui.theme.PatientResultDimens
+
+private data class ProbabilitySectionColors(
+    val primary: Color,
+    val primaryLight: Color,
+    val textPrimary: Color,
+    val mutedText: Color,
+    val mutedBar: Color,
+    val cardBg: Color,
+)
 @Composable
 fun PatientMriResultContent(
     bitmap: Bitmap?,
@@ -411,21 +425,42 @@ private fun PatientUnchangedNoticeCard(
 fun PatientProbabilitySection(
     scores: List<Float>,
     selectedStageIndex: Int,
+    useDoctorTheme: Boolean = false,
 ) {
+    val colors = if (useDoctorTheme) {
+        ProbabilitySectionColors(
+            primary = NeurostageBrandBlue,
+            primaryLight = NeurostageBrandBlue.copy(alpha = 0.12f),
+            textPrimary = NsGray900,
+            mutedText = NsGray400,
+            mutedBar = NsSlate100,
+            cardBg = NsWhite,
+        )
+    } else {
+        ProbabilitySectionColors(
+            primary = PatientResultColors.primary,
+            primaryLight = PatientResultColors.primaryLight,
+            textPrimary = PatientResultColors.textPrimary,
+            mutedText = PatientResultColors.mutedText,
+            mutedBar = PatientResultColors.mutedBar,
+            cardBg = PatientResultColors.cardBg,
+        )
+    }
+
     val shortLabels = stringArrayResource(R.array.patient_stage_short_labels)
     val entries = listOf(
-        Triple(0, shortLabels[0], PatientResultColors.primary),
-        Triple(1, shortLabels[1], PatientResultColors.primary.copy(alpha = 0.55f)),
-        Triple(2, shortLabels[2], PatientResultColors.mutedBar),
-        Triple(3, shortLabels[3], PatientResultColors.primary.copy(alpha = 0.7f)),
+        Triple(0, shortLabels[0], colors.primary),
+        Triple(1, shortLabels[1], colors.primary.copy(alpha = 0.55f)),
+        Triple(2, shortLabels[2], colors.mutedBar),
+        Triple(3, shortLabels[3], colors.primary.copy(alpha = 0.7f)),
     ).sortedByDescending { scores.getOrElse(it.first) { 0f } }
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .background(PatientResultColors.cardBg)
-            .border(1.dp, PatientResultColors.primaryLight, RoundedCornerShape(16.dp))
+            .background(colors.cardBg)
+            .border(1.dp, colors.primaryLight, RoundedCornerShape(16.dp))
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
@@ -433,12 +468,13 @@ fun PatientProbabilitySection(
             text = stringResource(R.string.patient_scan_probability_title),
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.SemiBold,
-            color = PatientResultColors.textPrimary,
+            color = colors.textPrimary,
         )
 
         PatientScoreLineChart(
             scores = scores,
             selectedStageIndex = selectedStageIndex,
+            colors = colors,
         )
 
         entries.forEach { (idx, label, baseColor) ->
@@ -449,13 +485,13 @@ fun PatientProbabilitySection(
                 animationSpec = tween(700, easing = FastOutSlowInEasing),
                 label = "patientProb$idx",
             )
-            val dotColor = if (isMuted) PatientResultColors.mutedBar else baseColor
-            val barColor = if (isMuted) PatientResultColors.mutedBar else baseColor
-            val labelColor = if (isMuted) PatientResultColors.mutedText else PatientResultColors.textPrimary
+            val dotColor = if (isMuted) colors.mutedBar else baseColor
+            val barColor = if (isMuted) colors.mutedBar else baseColor
+            val labelColor = if (isMuted) colors.mutedText else colors.textPrimary
             val percentColor = when {
-                isMuted -> PatientResultColors.mutedText
-                idx == selectedStageIndex -> PatientResultColors.primary
-                else -> PatientResultColors.textPrimary
+                isMuted -> colors.mutedText
+                idx == selectedStageIndex -> colors.primary
+                else -> colors.textPrimary
             }
 
             Column(
@@ -496,7 +532,7 @@ fun PatientProbabilitySection(
                         .fillMaxWidth()
                         .height(8.dp)
                         .clip(RoundedCornerShape(4.dp))
-                        .background(PatientResultColors.mutedBar),
+                        .background(colors.mutedBar),
                 ) {
                     Box(
                         modifier = Modifier
@@ -515,10 +551,11 @@ fun PatientProbabilitySection(
 private fun PatientScoreLineChart(
     scores: List<Float>,
     selectedStageIndex: Int,
+    colors: ProbabilitySectionColors,
 ) {
     val stageOrder = listOf(0, 1, 2, 3)
-    val primary = PatientResultColors.primary
-    val mutedBar = PatientResultColors.mutedBar
+    val primary = colors.primary
+    val mutedBar = colors.mutedBar
     val pointColors = listOf(
         primary,
         primary.copy(alpha = 0.55f),

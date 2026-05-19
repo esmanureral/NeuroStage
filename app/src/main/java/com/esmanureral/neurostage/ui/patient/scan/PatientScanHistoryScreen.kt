@@ -1,5 +1,6 @@
 package com.esmanureral.neurostage.ui.patient.scan
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -53,6 +54,8 @@ fun PatientScanHistoryScreen(
     viewModel: DoctorHistoryViewModel = hiltViewModel(),
 ) {
     val history by viewModel.history.collectAsStateWithLifecycle()
+
+    BackHandler(onBack = onBack)
 
     Scaffold(
         containerColor = PatientColors.gameBackgroundCream,

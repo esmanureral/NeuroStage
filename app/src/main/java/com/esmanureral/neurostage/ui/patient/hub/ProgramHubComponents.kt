@@ -1,5 +1,6 @@
 package com.esmanureral.neurostage.ui.patient.hub
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -61,6 +62,8 @@ fun ProgramHubTopBar(
     backContentDescription: String,
     modifier: Modifier = Modifier,
 ) {
+    BackHandler(onBack = onBack)
+
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,

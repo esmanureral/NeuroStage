@@ -1,5 +1,6 @@
 package com.esmanureral.neurostage.ui.patient.games.puzzle
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.CircularProgressIndicator
@@ -128,6 +129,14 @@ fun PuzzleGameScreen(
         clickSound = clickSound,
         onShowSuccess = ::setShowSuccess,
     )
+
+    BackHandler {
+        if (showSuccessScreen) {
+            onBackToHome()
+        } else {
+            onBack()
+        }
+    }
 
     Scaffold(
         containerColor = PatientColors.puzzleBackground,

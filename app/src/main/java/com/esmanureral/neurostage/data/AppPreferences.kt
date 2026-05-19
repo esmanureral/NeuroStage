@@ -34,6 +34,64 @@ class AppPreferences @Inject constructor(
         const val KEY_HUB_MOTIVATION_PERIOD = "hub_motivation_period"
         const val KEY_HUB_MOTIVATION_SAVED_AT = "hub_motivation_saved_at"
         const val HUB_MOTIVATION_QUOTE_TTL_MS = 2L * 60L * 60L * 1000L
+        const val KEY_DOCTOR_DASHBOARD_UID = "doctor_dashboard_uid"
+        const val KEY_DOCTOR_DASHBOARD_PATIENTS = "doctor_dashboard_patients"
+        const val KEY_DOCTOR_DASHBOARD_SCANS = "doctor_dashboard_scans"
+        const val KEY_DOCTOR_DASHBOARD_SCANS_WEEK = "doctor_dashboard_scans_week"
+        const val KEY_DOCTOR_PROFILE_UID = "doctor_profile_uid"
+        const val KEY_DOCTOR_PROFILE_NAME = "doctor_profile_name"
+    }
+
+    data class DoctorDashboardCache(
+        val patientCount: Int,
+        val scanCount: Int,
+        val scansThisWeek: Int,
+    )
+
+    fun readDoctorDashboardCache(doctorUid: String): DoctorDashboardCache? {
+        if (prefs.getString(KEY_DOCTOR_DASHBOARD_UID, null) != doctorUid) return null
+        return DoctorDashboardCache(
+            patientCount = prefs.getInt(KEY_DOCTOR_DASHBOARD_PATIENTS, 0),
+            scanCount = prefs.getInt(KEY_DOCTOR_DASHBOARD_SCANS, 0),
+            scansThisWeek = prefs.getInt(KEY_DOCTOR_DASHBOARD_SCANS_WEEK, 0),
+        )
+    }
+
+    fun writeDoctorDashboardCache(
+        doctorUid: String,
+        patientCount: Int,
+        scanCount: Int,
+        scansThisWeek: Int,
+    ) {
+        prefs.edit {
+            putString(KEY_DOCTOR_DASHBOARD_UID, doctorUid)
+            putInt(KEY_DOCTOR_DASHBOARD_PATIENTS, patientCount)
+            putInt(KEY_DOCTOR_DASHBOARD_SCANS, scanCount)
+            putInt(KEY_DOCTOR_DASHBOARD_SCANS_WEEK, scansThisWeek)
+        }
+    }
+
+    fun readCachedDoctorDisplayName(doctorUid: String): String? {
+        if (prefs.getString(KEY_DOCTOR_PROFILE_UID, null) != doctorUid) return null
+        return prefs.getString(KEY_DOCTOR_PROFILE_NAME, null)?.takeIf { it.isNotBlank() }
+    }
+
+    fun writeCachedDoctorDisplayName(doctorUid: String, displayName: String) {
+        prefs.edit {
+            putString(KEY_DOCTOR_PROFILE_UID, doctorUid)
+            putString(KEY_DOCTOR_PROFILE_NAME, displayName.trim())
+        }
+    }
+
+    fun clearDoctorHomeCache() {
+        prefs.edit {
+            remove(KEY_DOCTOR_DASHBOARD_UID)
+            remove(KEY_DOCTOR_DASHBOARD_PATIENTS)
+            remove(KEY_DOCTOR_DASHBOARD_SCANS)
+            remove(KEY_DOCTOR_DASHBOARD_SCANS_WEEK)
+            remove(KEY_DOCTOR_PROFILE_UID)
+            remove(KEY_DOCTOR_PROFILE_NAME)
+        }
     }
 
     data class CachedHubMotivationQuote(

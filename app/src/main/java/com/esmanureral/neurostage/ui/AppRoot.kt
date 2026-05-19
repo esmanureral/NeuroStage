@@ -92,11 +92,17 @@ fun AppRoot() {
         }
     }
 
+    fun doctorPopBack() {
+        if (!nav.popBackStack()) {
+            nav.navigate(Routes.DOCTOR_HOME) {
+                launchSingleTop = true
+            }
+        }
+    }
+
     fun gameScreenBack() {
-        when {
-            popBackToExerciseList() -> Unit
-            popBackToExerciseHub() -> Unit
-            else -> navigateToExerciseHub()
+        if (!nav.popBackStack()) {
+            navigateToExerciseHub()
         }
     }
 
@@ -182,7 +188,7 @@ fun AppRoot() {
 
         composable(Routes.DOCTOR_PATIENTS) {
             PatientListScreen(
-                onBack = { nav.popBackStack() },
+                onBack = { doctorPopBack() },
                 onPickPatient = { patientId ->
                     nav.navigate("${Routes.DOCTOR_PATIENT_HISTORY}/$patientId")
                 },
@@ -194,7 +200,7 @@ fun AppRoot() {
             arguments = listOf(navArgument(RouteArgs.PATIENT_ID) { type = NavType.StringType }),
         ) {
             PatientHistoryScreen(
-                onBack = { nav.popBackStack() },
+                onBack = { doctorPopBack() },
                 onStartScan = { patientId ->
                     nav.navigate("${Routes.DOCTOR_SCAN}/$patientId")
                 },
@@ -203,6 +209,7 @@ fun AppRoot() {
 
         composable(Routes.DOCTOR_PATIENT_INTAKE) {
             PatientIntakeScreen(
+                onBack = { doctorPopBack() },
                 onSaved = { patientId ->
                     nav.navigate("${Routes.DOCTOR_SCAN}/$patientId") {
                         popUpTo(Routes.DOCTOR_PATIENT_INTAKE) { inclusive = true }
@@ -217,12 +224,12 @@ fun AppRoot() {
             arguments = listOf(navArgument(RouteArgs.PATIENT_ID) { type = NavType.StringType }),
         ) { backStack ->
             val patientId = backStack.arguments?.getString(RouteArgs.PATIENT_ID)
-            MainScreen(patientId = patientId, onBack = { nav.popBackStack() })
+            MainScreen(patientId = patientId, onBack = { doctorPopBack() })
         }
 
         composable(Routes.DOCTOR_HISTORY) {
             DoctorHistoryScreen(
-                onBack = { nav.popBackStack() },
+                onBack = { doctorPopBack() },
                 onOpenDetail = { ts ->
                     nav.navigate("${Routes.DOCTOR_RESULT_DETAIL}/$ts")
                 },
@@ -233,7 +240,7 @@ fun AppRoot() {
             route = "${Routes.DOCTOR_RESULT_DETAIL}/{${RouteArgs.SCAN_TS}}",
             arguments = listOf(navArgument(RouteArgs.SCAN_TS) { type = NavType.LongType }),
         ) {
-            DoctorResultDetailScreen(onBack = { nav.popBackStack() })
+            DoctorResultDetailScreen(onBack = { doctorPopBack() })
         }
 
         composable(Routes.PATIENT_HOME) {

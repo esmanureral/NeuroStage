@@ -7,13 +7,13 @@ import androidx.lifecycle.viewModelScope
 import com.esmanureral.neurostage.data.MrScanRecord
 import com.esmanureral.neurostage.data.AppPreferences
 import com.esmanureral.neurostage.data.UserRepository
+import com.esmanureral.neurostage.patients.Patient
 import com.esmanureral.neurostage.patients.PatientRepository
 import com.esmanureral.neurostage.scans.ScanRecord
 import com.esmanureral.neurostage.scans.ScanRepository
 import com.esmanureral.neurostage.auth.AuthRepository
 import com.esmanureral.neurostage.auth.AuthStatus
 import com.esmanureral.neurostage.xai.GeminiReportGenerator
-import com.esmanureral.neurostage.xai.McDropoutRunner
 import com.esmanureral.neurostage.xai.api.GradCamRemoteRepository
 import com.esmanureral.neurostage.xai.XaiUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -78,6 +78,9 @@ class AnalysisViewModel @Inject constructor(
     val isMriValidated: StateFlow<Boolean> = _isMriValidated
 
     private var activePatientId: String? = null
+
+    private val _activePatient = MutableStateFlow<Patient?>(null)
+    val activePatient: StateFlow<Patient?> = _activePatient.asStateFlow()
     private var hubStageBeforeScan: Int? = null
     private var hubUnchangedHandler: ((HubUnchangedScanResult) -> Unit)? = null
 
@@ -87,7 +90,6 @@ class AnalysisViewModel @Inject constructor(
     private val _xaiState = MutableStateFlow(XaiUiState())
     val xaiState: StateFlow<XaiUiState> = _xaiState.asStateFlow()
 
-    private val mcRunner by lazy { McDropoutRunner(appContext) }
     private val geminiGenerator by lazy { GeminiReportGenerator(appContext) }
 
 
@@ -100,6 +102,14 @@ class AnalysisViewModel @Inject constructor(
 
     fun setActivePatient(patientId: String?) {
         activePatientId = patientId
+        if (patientId == null) {
+            _activePatient.value = null
+            return
+        }
+        val uid = (auth.status.value as? AuthStatus.SignedIn)?.user?.uid ?: return
+        viewModelScope.launch {
+            _activePatient.value = patients.get(uid, patientId).getOrNull()
+        }
     }
 
     fun setHubUnchangedContext(
@@ -288,31 +298,18 @@ class AnalysisViewModel @Inject constructor(
         )
         viewModelScope.launch {
             _xaiState.value = _xaiState.value.copy(
-                isMcLoading = true,
-                isGradCamLoading = false,
-                mcError = null,
+                isGradCamLoading = true,
                 gradCamError = null,
                 geminiReport = null,
                 geminiError = null,
             )
-            val mcResult = withContext(tfLiteDispatcher) {
-                runCatching { mcRunner.run(bitmap) }
-            }
-            val mc = mcResult.getOrNull()
-            _xaiState.value = _xaiState.value.copy(
-                isMcLoading = false,
-                mcResult = mc,
-                mcError = mcResult.exceptionOrNull()?.message,
-            )
 
-            _xaiState.value = _xaiState.value.copy(isGradCamLoading = true)
             val gradCamResult = withContext(Dispatchers.IO) {
                 runCatching { gradCamRepository.fetch(bitmap) }
             }
-            val gradCam = gradCamResult.getOrNull()
             _xaiState.value = _xaiState.value.copy(
                 isGradCamLoading = false,
-                gradCamResult = gradCam,
+                gradCamResult = gradCamResult.getOrNull(),
                 gradCamError = gradCamResult.exceptionOrNull()?.message,
             )
         }
@@ -321,11 +318,14 @@ class AnalysisViewModel @Inject constructor(
     fun requestGeminiReport() {
         val pending = pendingGeminiRequest ?: return
         val xai = _xaiState.value
-        if (xai.isGeminiLoading || xai.geminiReport != null) return
+        if (xai.isGeminiLoading) return
 
         viewModelScope.launch {
-            _xaiState.value = _xaiState.value.copy(isGeminiLoading = true, geminiError = null)
-            val mc = _xaiState.value.mcResult
+            _xaiState.value = _xaiState.value.copy(
+                isGeminiLoading = true,
+                geminiError = null,
+                geminiReport = null,
+            )
             val gradCam = _xaiState.value.gradCamResult
             val classLabels = appContext.resources.getStringArray(R.array.dementia_stage_labels)
             val stageLabel = classLabels.getOrNull(pending.stageIndex) ?: ""
@@ -334,9 +334,9 @@ class AnalysisViewModel @Inject constructor(
                     bitmap = pending.bitmap,
                     stageLabel = stageLabel,
                     topMean = pending.scores[pending.stageIndex],
-                    topStd = mc?.topStd ?: 0f,
+                    topStd = 0f,
                     allScores = pending.scores,
-                    allStdScores = mc?.stdScores,
+                    allStdScores = null,
                     patientAge = pending.patientAge,
                     patientGender = pending.patientGender,
                     activeRegion = gradCam?.activeRegion,
@@ -372,7 +372,6 @@ class AnalysisViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        runCatching { mcRunner.close() }
         tfLiteDispatcher.close()
     }
 

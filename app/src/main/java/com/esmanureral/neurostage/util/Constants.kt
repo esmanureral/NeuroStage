@@ -58,7 +58,7 @@ object Constants {
     }
 
     object Model {
-        const val ALZHEIMER_FILE_NAME = "alzheimer_preprocessed.tflite"
+        const val ALZHEIMER_FILE_NAME = "alzheimer_preprocessed_int8_floatio.tflite"
         const val ALZHEIMER_INPUT_SIZE = 260
 
         const val MRI_FILTER_FILE_NAME = "mri_filter_v2_noquant.tflite"

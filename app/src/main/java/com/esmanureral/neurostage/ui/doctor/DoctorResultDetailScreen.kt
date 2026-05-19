@@ -1,5 +1,6 @@
 package com.esmanureral.neurostage.ui.doctor
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -52,6 +53,8 @@ fun DoctorResultDetailScreen(
     viewModel: DoctorResultDetailViewModel = hiltViewModel(),
 ) {
     val record by viewModel.selected.collectAsStateWithLifecycle()
+
+    BackHandler(onBack = onBack)
 
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {

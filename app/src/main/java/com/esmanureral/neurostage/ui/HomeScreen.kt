@@ -169,6 +169,7 @@ fun MainScreen(
     val isMriValidated by viewModel.isMriValidated.collectAsStateWithLifecycle()
     val saveError by viewModel.saveError.collectAsStateWithLifecycle()
     val xaiState by viewModel.xaiState.collectAsStateWithLifecycle()
+    val activePatient by viewModel.activePatient.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val bitmapState = remember { mutableStateOf<Bitmap?>(null) }
 
@@ -221,7 +222,10 @@ fun MainScreen(
 
     BackHandler {
         when (step) {
-            Step.ANALYZE -> Unit
+            Step.ANALYZE -> {
+                viewModel.reset()
+                bitmapState.value = null
+            }
             Step.PREVIEW -> {
                 bitmapState.value = null
                 viewModel.reset()
@@ -261,6 +265,8 @@ fun MainScreen(
                 xaiState = xaiState,
                 saveError = saveError,
                 isPatient = isPatient,
+                patientAge = activePatient?.age,
+                patientGender = activePatient?.gender,
                 onBack = onBack,
                 onNewScan = { bitmapState.value = null; viewModel.reset() },
                 onOpenGames = onOpenGames,
@@ -665,6 +671,8 @@ private fun ResultStep(
     xaiState: XaiUiState,
     saveError: String?,
     isPatient: Boolean = false,
+    patientAge: Int? = null,
+    patientGender: String? = null,
     onBack: (() -> Unit)?,
     onNewScan: () -> Unit,
     onOpenGames: (() -> Unit)? = null,
@@ -685,58 +693,63 @@ private fun ResultStep(
         return
     }
 
-    val waveDepth = ScanDimens.waveDepth
+    var showFullscreenImage by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(ScanColors.resultBackground)
+            .background(NsDoctorScaffoldBg)
             .systemBarsPadding()
             .verticalScroll(rememberScrollState()),
     ) {
-        Box(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(waveBottomShape(waveDepth))
-                .background(neurostageBrandBlue)
-                .padding(
-                    horizontal = ScanDimens.resultHeaderHorizontalPadding,
-                    vertical = ScanDimens.resultHeaderVerticalPadding,
-                ),
+                .padding(horizontal = 8.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             if (onBack != null) {
-                IconButton(onClick = onBack, modifier = Modifier.align(Alignment.CenterStart)) {
-                    Icon(Icons.AutoMirrored.Outlined.ArrowBack, null, tint = NsWhite)
+                IconButton(onClick = onBack) {
+                    Icon(
+                        Icons.AutoMirrored.Outlined.ArrowBack,
+                        contentDescription = null,
+                        tint = NeurostageBrandBlue,
+                    )
                 }
+            } else {
+                Spacer(Modifier.width(48.dp))
             }
             Text(
-                stringResource(R.string.home_screen_result_title),
+                text = stringResource(R.string.home_screen_result_title),
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = NsWhite,
-                modifier = Modifier.align(Alignment.Center),
+                fontWeight = FontWeight.SemiBold,
+                color = NsGray900,
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Center,
             )
+            Spacer(Modifier.width(48.dp))
         }
 
         Column(
-            modifier = Modifier.padding(
-                horizontal = ScanDimens.resultContentHorizontalPadding,
-                vertical = ScanDimens.resultContentVerticalPadding,
-            ),
-            verticalArrangement = Arrangement.spacedBy(ScanDimens.resultBlockGap),
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
-            var showFullscreenImage by remember { mutableStateOf(false) }
+            DoctorXaiResultsSection(
+                xaiState = xaiState,
+                bitmap = result.bitmap,
+                stageLabel = t.label,
+                confidencePct = confidencePct,
+                selectedStageIndex = result.stageIndex,
+                classScores = result.allScores,
+                patientAge = patientAge,
+                patientGender = patientGender,
+                onRequestAiReport = onRequestAiReport,
+                onImageClick = result.bitmap?.let { { showFullscreenImage = true } },
+            )
 
             result.bitmap?.let { bmp ->
-                MriImageBox(
-                    bitmap = bmp,
-                    label = stringResource(R.string.home_screen_result_mri_label),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1f)
-                        .clickable { showFullscreenImage = true }
-                )
-
                 if (showFullscreenImage) {
                     FullscreenMriDialog(
                         bitmap = bmp,
@@ -744,26 +757,6 @@ private fun ResultStep(
                     )
                 }
             }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(ScanDimens.resultCardCorner))
-                    .background(NsWhite)
-                    .padding(ScanDimens.resultScoresPadding),
-            ) {
-                StageScoreBreakdown(
-                    scores = result.allScores,
-                    selectedStageIndex = result.stageIndex,
-                )
-            }
-
-            DoctorXaiResultsSection(
-                xaiState = xaiState,
-                stageLabel = t.label,
-                confidencePct = confidencePct,
-                onRequestAiReport = onRequestAiReport,
-            )
 
             saveError?.let { err ->
                 Text(

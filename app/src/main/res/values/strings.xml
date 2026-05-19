@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">NeuroStage</string>
+    <string name="common_loading">Yükleniyor…</string>
     <string name="error_firebase_config">Firebase yapılandırması bulunamadı. google-services.json ekleyin.</string>
     <string name="error_auth_no_current_user">Oturum açık kullanıcı bulunamadı.</string>
 
@@ -302,7 +303,16 @@
 
     <!-- Doctor shell -->
     <string name="doctor_shell_welcome">Hoşgeldiniz</string>
+    <string name="doctor_shell_greeting_morning">Günaydın</string>
+    <string name="doctor_shell_greeting_afternoon">İyi günler</string>
+    <string name="doctor_shell_greeting_evening">İyi akşamlar</string>
     <string name="doctor_shell_product_line">Alzheimer evre analiz sistemi</string>
+    <string name="doctor_shell_stat_patients">Kayıtlı hasta</string>
+    <string name="doctor_shell_stat_scans">Toplam analiz</string>
+    <string name="doctor_shell_stat_week">Bu hafta</string>
+    <string name="doctor_shell_profile_title">Hesabım</string>
+    <string name="doctor_shell_profile_subtitle">Profil ve oturum</string>
+    <string name="doctor_shell_get_started_hint">İlk hastanızı kaydedip MR yükleyerek başlayın.</string>
     <string name="doctor_shell_quick_access">Hızlı erişim</string>
     <string name="doctor_shell_action_mri_title">MR yükle ve analiz et</string>
     <string name="doctor_shell_action_mri_subtitle">Yeni bir beyin MR görüntüsü yükle</string>
@@ -324,6 +334,8 @@
     <!-- Patient intake -->
     <string name="patient_intake_title">Yeni hasta kaydı</string>
     <string name="patient_intake_subtitle">MR yüklemeden önce hasta bilgilerini kaydedelim. Analiz bu hastaya bağlanacak.</string>
+    <string name="patient_intake_section">Kimlik bilgileri</string>
+    <string name="patient_intake_hint">Kayıt tamamlandığında MR yükleme ekranına geçilir.</string>
     <string name="patient_intake_name_label">Hasta ad soyad</string>
     <string name="patient_intake_age_label">Yaş (opsiyonel)</string>
     <string name="patient_intake_gender_label">Cinsiyet</string>
@@ -345,12 +357,25 @@
     <string name="patient_trend_improving">İlerliyor</string>
     <string name="patient_trend_stable">Stabil</string>
     <string name="patient_list_load_failed">Hastalar yüklenemedi.</string>
+    <string name="patient_list_select">Seç</string>
+    <string name="patient_list_cancel_selection">İptal</string>
+    <string name="patient_list_selected_count">%1$d seçildi</string>
+    <string name="patient_list_select_all">Tümünü seç</string>
+    <string name="patient_list_cd_select_all">Tüm hastaları seç</string>
+    <string name="patient_list_cd_delete_selected">Seçilenleri sil</string>
+    <string name="patient_list_delete_dialog_title">Hastaları sil</string>
+    <string name="patient_list_delete_dialog_message">%1$d hastayı ve tüm MR kayıtlarını kalıcı olarak silmek istediğinize emin misiniz?</string>
+    <string name="patient_list_delete_dialog_confirm">Sil</string>
+    <string name="patient_list_delete_dialog_cancel">Vazgeç</string>
+    <string name="patient_list_delete_failed">Hastalar silinemedi.</string>
 
     <!-- Patient history -->
     <string name="patient_history_fallback_name">Hasta</string>
     <string name="patient_history_cd_refresh">Yenile</string>
     <string name="patient_history_cd_compare">Karşılaştırma modu</string>
     <string name="patient_history_cd_new_mr">Yeni MR yükle</string>
+    <string name="patient_history_delete_dialog_title">Analizleri sil</string>
+    <string name="patient_history_delete_dialog_message">%1$d analizi kalıcı olarak silmek istediğinize emin misiniz? Bu işlem geri alınamaz.</string>
     <string name="patient_history_compare">Karşılaştır</string>
     <string name="patient_history_compare_select_two">Karşılaştırmak için 2 analiz seçin (%1$d/2)</string>
     <string name="patient_history_compare_ready">2 analiz seçildi — Karşılaştır butonuna basın</string>
@@ -366,13 +391,8 @@
     <string name="patient_history_compare_next">Sonraki</string>
     <string name="patient_history_sheet_title">Klinik analiz raporu</string>
     <string name="patient_history_sheet_ai_fallback">Yapay zeka klinik özeti</string>
-    <string name="patient_history_sheet_clinic_comment">Klinik yorum</string>
     <string name="patient_history_sheet_model_title">Model çıktı dağılımı</string>
-    <string name="patient_history_sheet_model_subtitle">TFLite sınıflandırıcısının 4 kategori için ürettiği olasılık değerleri</string>
     <string name="patient_history_sheet_block_fallback">Klinik bilgi</string>
-    <string name="patient_history_sheet_neuropath_title">Nöropatolojik bulgular</string>
-    <string name="patient_history_sheet_follow_tag">Takip</string>
-    <string name="patient_history_sheet_clinic_advice">Klinik öneri</string>
     <string name="patient_history_sheet_footer_disclaimer">Bu rapor yapay zeka destekli görüntü analizi sonucudur. Kesin tanı için nöroloji uzmanı değerlendirmesi gereklidir.</string>
     <string name="patient_history_model_class_fallback">Sınıf %1$d</string>
     <string name="patient_history_score_decimal">%.1f%%</string>
@@ -435,12 +455,40 @@
     <string name="home_screen_result_title">Analiz Sonucu</string>
     <string name="home_screen_result_mri_label">MRI Görüntüsü</string>
     <string name="home_screen_result_confidence">%1$d%% güven</string>
-    <string name="home_screen_xai_model_loading_title">Model açıklaması hazırlanıyor…</string>
-    <string name="home_screen_xai_model_loading_subtitle">Sunucu Grad-CAM ve MC Dropout analizi</string>
-    <string name="home_screen_xai_loading_title">Yapay Zeka Klinik Raporu Hazırlanıyor…</string>
-    <string name="home_screen_xai_loading_subtitle">XAI Analizi &amp; Grok Vision</string>
+    <string name="home_screen_xai_model_loading_title">Açıklanabilirlik analizi</string>
+    <string name="home_screen_xai_model_loading_subtitle">Grad-CAM hesaplanıyor…</string>
+    <string name="home_screen_xai_loading_title">Klinik rapor hazırlanıyor</string>
+    <string name="home_screen_xai_loading_subtitle">Yapay zeka özetini oluşturuyoruz…</string>
+    <string name="home_screen_explain_section_title">Açıklanabilirlik</string>
+    <string name="home_screen_explain_section_subtitle">Model kararını üç kanıtla özetliyoruz</string>
+    <string name="home_screen_explain_prediction_label">Model tahmini</string>
+    <string name="doctor_primary_cnn_prediction_label">Tarama sonrası ilk tahmin (CNN)</string>
+    <string name="doctor_scan_result_badge">Analiz sonucu</string>
+    <string name="doctor_ai_generating">Klinik özet hazırlanıyor…</string>
+    <string name="doctor_ai_refresh">Yeniden sor</string>
+    <string name="doctor_ai_report_title">Yapay zeka klinik özeti</string>
+    <string name="doctor_gradcam_loading_hint">Maskeli Grad-CAM görseli hazırlanıyor…</string>
+    <string name="home_screen_explain_scores_title">Sınıf olasılıkları</string>
+    <string name="home_screen_explain_scores_hint">CNN çıktısı — en yüksek skor seçilen evredir</string>
+    <string name="home_screen_explain_mc_title">Belirsizlik (MC Dropout)</string>
+    <string name="home_screen_explain_mc_hint">Yüksek ± değer, modelin o sınıfta daha az emin olduğunu gösterir</string>
+    <string name="home_screen_explain_region_title">Odak bölgesi (Grad-CAM)</string>
+    <string name="home_screen_explain_region_hint">Isı haritası — kararda en çok kullanılan beyin bölgesi</string>
+    <string name="home_screen_explain_peak">Aktivasyon: %1$d%%</string>
+    <string name="home_screen_explain_uncertainty_value">Tahmin belirsizliği: ±%1$.1f%%</string>
+    <string name="home_screen_ai_section_title">Yapay zeka klinik özeti</string>
+    <string name="home_screen_ai_section_subtitle">MR ve model çıktılarına dayalı ön değerlendirme</string>
+    <string name="home_screen_ask_ai_subtitle">Klinik özet ve öneriler için dokunun</string>
     <string name="home_screen_gradcam_title">Grad-CAM Isı Haritası</string>
-    <string name="home_screen_gradcam_subtitle">Modelin karara odaklandığı bölgeler</string>
+    <string name="home_screen_gradcam_subtitle">Kırmızı-sarı alanlar modelin kararda en çok baktığı bölgeleri gösterir</string>
+    <string name="gradcam_masked_region_hint">Maskeli Grad-CAM: kırmızı ve sarı bölgeler kararda daha etkili alanlardır</string>
+    <string name="gradcam_doctor_explanation">Bu görsel, modelin tahmin yaparken MRI üzerinde en çok dikkat ettiği bölgeleri göstermektedir. Kırmızı ve sarı alanlar model kararında daha etkili olan beyin bölgelerini ifade eder. Siyah arka plan açıklamaya dahil edilmemiştir.\n\nBu çıktı doktor değerlendirmesinin yerine geçmez; yalnızca yapay zekâ modelinin kararını açıklamak için kullanılır.</string>
+    <string name="doctor_ai_sheet_title">Yapay zeka klinik analizi</string>
+    <string name="doctor_patient_age_chip">%1$d yaş</string>
+    <string name="doctor_patient_gender_chip">%1$s</string>
+    <string name="doctor_gradcam_focus_label">Odaklanan bölge</string>
+    <string name="doctor_ai_view_report">Raporu görüntüle</string>
+    <string name="gradcam_hf_stage_label">Grad-CAM sunucu tahmini: %1$s</string>
     <string name="home_screen_gradcam_error">Grad-CAM hatası: %1$s</string>
     <string name="home_screen_mc_error">MC Dropout hatası: %1$s</string>
     <string name="home_screen_model_decision_title">Model Karar Açıklaması</string>
@@ -482,7 +530,20 @@
     <string name="xai_saliency_success">RISE Saliency Analizi: Model kararında en belirleyici anatomik bölge %1$s olarak tespit edilmiştir.</string>
     <string name="xai_saliency_fail">RISE Saliency Analizi: Bölge tespiti tamamlanamadı.</string>
     <string name="xai_fallback_region_info"> Model, %1$s bölgesindeki örüntülere odaklanmıştır.</string>
-    <string name="xai_fallback_report">%1$s Model, %2$s bulgularıyla uyumlu örüntüler tespit etmiştir (güven %%%3$d).%4$s Kesin değerlendirme için klinik muayene ve uzman görüşü önerilmektedir.</string>
+    <string name="xai_fallback_report"><![CDATA[### Klinik Özet
+%1$s Yapay zeka modeli %2$s ile uyumlu örüntüler bildirmektedir (güven %%%3$d).%4$s Bu ön değerlendirme kesin tanı değildir.
+
+### Model Karar Açıklaması
+Modelin odaklandığı bölge ve olasılık dağılımı klinik bağlamda yorumlanmalıdır. Grad-CAM / saliency çıktısı karar gerekçesini destekler.
+
+### MRI Bulguları
+Görüntüde hipokampal bölge, temporal ve parietal korteks ile ventrikül yapıları uzman tarafından doğrudan değerlendirilmelidir.
+
+### Önerilen Sonraki Adımlar
+• Nöroloji / geriatri konsültasyonu
+• MMSE veya kapsamlı nöropsikolojik test
+• Gerekirse takip MRI veya ileri görüntüleme (PET vb.)
+• Aile bilgilendirmesi ve bilişsel takip planı]]></string>
 
     <string name="xai_prompt"><![CDATA[Sen deneyimli bir nöroloji uzmanısın. Aşağıdaki yapay zeka analiz sonuçlarını ve ekli aksiyel beyin MRI görüntüsünü değerlendir.
 Lütfen her bir MRI görüntüsünün kendine has dokusal ve yapısal detaylarına (atrofi şiddeti, asimetri, spesifik kortikal durumlar vb.) özgün bir şekilde odaklan. Tıbbi ve profesyonel bir üslup kullan.
@@ -501,10 +562,12 @@ Hastanın genel durumunu ve modelin tahminini, her defasında farklı bir nörol
 RISE saliency analizi modelin hangi beyin bölgesine odaklandığını ortaya koymaktadır. Bu bölgede Alzheimer patolojisiyle ilişkili hangi yapısal değişikliklerin bekleneceğini ve MRI görüntüsünde gözlemlenebilir olup olmadığını açıkla. Modelin bu kararı neden verdiğini klinik literatürle ilişkilendir.
 
 ### MRI Bulguları
-Ekli MRI görüntüsünü doğrudan incele. Hipokampus hacmi, temporal ve frontal lob atrofisi, ventriküller, beyaz cevher değişiklikleri ve sulkus genişlemesi gibi spesifik bulgulara odaklan.
+Ekli MRI görüntüsünü doğrudan incele. Bu bölümde bu MR\'ye özel en az 2 somut bulgu yaz (ör. belirli bir lobda atrofi, ventrikül genişlemesi, asimetri). Şablon veya genel cümle tekrarından kaçın. Hipokampus, temporal/frontal korteks, ventrikül ve beyaz cevher gibi yapıları yalnızca görüntüde destek varsa belirt.
 
 ### Önerilen Sonraki Adımlar
-Klinisyen için somut ve önceliklendirilmiş öneriler sun (örn. MMSE, nöropsikolojik test, PET, takip MRI, nöroloji konsültasyonu).
+Klinisyen için somut ve önceliklendirilmiş öneriler sun (madde madde: MMSE, nöropsikolojik test, PET, takip MRI, nöroloji konsültasyonu, aile bilgilendirmesi).
+
+Zorunlu: Yukarıdaki dört bölümün tamamını yaz; her bölümü mutlaka ### başlığı ile ayır. Tek paragrafta birleştirme.
 
 Önemli Not: Bu rapor bir yapay zeka destekli ön değerlendirmedir. Kesin tanı koymaz.]]></string>
 
@@ -523,8 +586,12 @@ Klinisyen için somut ve önceliklendirilmiş öneriler sun (örn. MMSE, nörops
         <item>KLİNİK ÖZET</item>
         <item>MODEL KARAR AÇIKLAMASI</item>
         <item>MRI BULGULARI</item>
-        <item>SONRAKİ ADIMLAR</item>
         <item>ÖNERİLEN SONRAKİ ADIMLAR</item>
+        <item>SONRAKİ ADIMLAR</item>
+        <item>Klinik Özet</item>
+        <item>Model Karar Açıklaması</item>
+        <item>MRI Bulguları</item>
+        <item>Önerilen Sonraki Adımlar</item>
     </string-array>
 
     <string-array name="home_screen_class_descriptions">

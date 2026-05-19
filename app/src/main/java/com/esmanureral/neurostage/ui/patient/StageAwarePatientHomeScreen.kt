@@ -2,6 +2,7 @@ package com.esmanureral.neurostage.ui.patient
 
 import com.esmanureral.neurostage.ui.theme.PatientColors
 import com.esmanureral.neurostage.ui.theme.PatientDimens
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,6 +40,14 @@ fun StageAwarePatientHomeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showExitDialog by remember { mutableStateOf(false) }
+
+    BackHandler {
+        if (showExitDialog) {
+            showExitDialog = false
+        } else {
+            showExitDialog = true
+        }
+    }
 
     PatientHomeExitDialog(
         visible = showExitDialog,

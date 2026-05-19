@@ -29,7 +29,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.History
-import androidx.compose.material.icons.outlined.Logout
+import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.Upload
 import androidx.compose.material3.AlertDialog
@@ -51,7 +51,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -96,7 +96,7 @@ private val waveBottomShape: Shape = object : Shape {
             moveTo(0f, 0f)
             lineTo(size.width, 0f)
             lineTo(size.width, size.height - waveDepth)
-            quadraticBezierTo(size.width / 2f, size.height + waveDepth, 0f, size.height - waveDepth)
+            quadraticTo(size.width / 2f, size.height + waveDepth, 0f, size.height - waveDepth)
             close()
         }
         return Outline.Generic(path)
@@ -601,7 +601,7 @@ private fun ProfileDrawer(
                 modifier = Modifier.padding(horizontal = 16.dp),
             )
             DrawerMenuItem(
-                icon = Icons.Outlined.Logout,
+                icon = Icons.AutoMirrored.Outlined.Logout,
                 title = stringResource(R.string.doctor_drawer_sign_out),
                 isSelected = false,
                 tint = NsStatusError,

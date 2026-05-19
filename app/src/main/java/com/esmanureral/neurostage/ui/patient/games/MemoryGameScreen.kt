@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
@@ -37,11 +38,13 @@ import com.esmanureral.neurostage.R
 
 private enum class MemoryPhase { SHOW, RECALL, RESULT }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MemoryGameScreen(
     stageIndex: Int?,
     onBack: () -> Unit,
 ) {
+    val screenTitle = stringResource(R.string.patient_game_memory_short)
     val targetCount = itemCountForStage(stageIndex)
     val distractorCount = 2
 
@@ -66,9 +69,7 @@ fun MemoryGameScreen(
 
     Scaffold(
         containerColor = PatientColors.gameBackgroundCream,
-        bottomBar = {
-            GameBackBottomBar(onBack = onBack)
-        },
+        topBar = { GameScreenTopBar(title = screenTitle, onBack = onBack) },
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -226,15 +227,6 @@ fun MemoryGameScreen(
                         text = stringResource(R.string.memory_btn_play_again),
                         containerColor = PatientColors.memoryAccent,
                         onClick = { resetGame() },
-                    )
-                    Spacer(Modifier.height(PatientDimens.gameBlockGapS))
-                    PrimaryGameButton(
-                        text = stringResource(R.string.patient_back_to_home),
-                        containerColor = PatientColors.gameTextMuted,
-                        onClick = onBack,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(PatientDimens.gameSecondaryButtonHeight),
                     )
                 }
             }

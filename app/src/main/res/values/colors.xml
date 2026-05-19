@@ -15,16 +15,92 @@
     <color name="patient_text_primary">#FF111827</color>
     <color name="patient_text_secondary">#FF6B7280</color>
     <color name="patient_divider">#FFE5E7EB</color>
-    <color name="patient_primary">#FF1E40AF</color>
-    <color name="patient_primary_light">#FFEFF6FF</color>
+    <color name="patient_primary">#FF7C5CFC</color>
+    <color name="patient_primary_light">#FFF3F0FF</color>
 
     <!-- Patient — mild home / notices -->
     <color name="patient_mild_accent">#FFE65100</color>
     <color name="patient_mild_background">#FFFFF3E0</color>
     <color name="patient_mild_body_text">#FF5D4037</color>
-    <color name="patient_moderate_notice_background">#FFFFEBEE</color>
-    <color name="patient_moderate_notice_title_color">#FFC62828</color>
-    <color name="patient_moderate_notice_body_color">#FF5C1010</color>
+    <color name="patient_moderate_notice_background">#FFF0F2FA</color>
+    <color name="patient_moderate_notice_title_color">#FF5C6BC0</color>
+    <color name="patient_moderate_notice_body_color">#FF4A5568</color>
+
+    <!-- Patient — reminders -->
+    <color name="patient_reminder_screen_bg">#FFFAF8F5</color>
+    <color name="patient_reminder_navy">#FF1A3E8F</color>
+    <color name="patient_reminder_navy_light">#FF2D5BBF</color>
+    <color name="patient_reminder_card_coral">#FFE87DA8</color>
+    <color name="patient_reminder_day_selected">#FF1A3E8F</color>
+    <color name="patient_reminder_day_unselected">#FF5B7FD4</color>
+    <!-- Samsung tarzı alarm / hatırlatıcı -->
+    <color name="patient_alarm_bg">#FF000000</color>
+    <color name="patient_alarm_surface">#FF1C1C1E</color>
+    <color name="patient_alarm_surface_elevated">#FF2C2C2E</color>
+    <color name="patient_alarm_accent">#FF8B7CFF</color>
+    <color name="patient_alarm_text_primary">#FFFFFFFF</color>
+    <color name="patient_alarm_text_secondary">#FF8E8E93</color>
+    <color name="patient_alarm_text_faded">#FF48484A</color>
+    <color name="patient_alarm_saturday">#FFFF6B6B</color>
+    <color name="patient_alarm_divider">#FF3A3A3C</color>
+    <color name="patient_alarm_switch_track_off">#FF39393D</color>
+
+    <!-- Patient — program hub (sıcak krem + mor vurgu) -->
+    <color name="patient_result_primary">#FF7C5CFC</color>
+    <color name="patient_result_disclaimer_muted">#FF9CA3AF</color>
+    <color name="patient_hub_gradient_top">#FFF9F7F2</color>
+    <color name="patient_hub_gradient_bottom">#FFF5F0E8</color>
+    <color name="patient_hub_quote_surface">#FFFFFFFF</color>
+    <color name="patient_hub_quote_gradient_start">#FFF8D8D0</color>
+    <color name="patient_hub_quote_gradient_end">#FFF5E4B8</color>
+    <color name="patient_hub_quote_accent">#FF7A5C3E</color>
+    <color name="patient_hub_quote_label">#FF7A5C3E</color>
+    <color name="patient_hub_scrapbook_ink">#FF1E1A14</color>
+    <color name="patient_hub_tile_exercise_bg">#FFFCE4EC</color>
+    <color name="patient_hub_tile_exercise_icon_bg">#FFFFCDD2</color>
+    <color name="patient_hub_tile_exercise_icon">#FFC2185B</color>
+    <color name="patient_hub_tile_reminder_bg">#FFEDE8F8</color>
+    <color name="patient_hub_tile_reminder_icon_bg">#FFE4D9F7</color>
+    <color name="patient_hub_tile_reminder_icon">#FF7C5CFC</color>
+    <color name="patient_hub_tile_scan_bg">#FFE3F2FD</color>
+    <color name="patient_hub_tile_scan_icon_bg">#FFBBDEFB</color>
+    <color name="patient_hub_tile_scan_icon">#FF1565C0</color>
+
+    <!-- Patient — playful exercise hub (pastel cards) -->
+    <color name="patient_hub_routine_card_bg">#FFEDE8F8</color>
+    <color name="patient_hub_routine_title">#FF5B3A8C</color>
+    <color name="patient_hub_routine_button">#FF7C4DFF</color>
+    <color name="patient_hub_routine_button_text">#FFFFFFFF</color>
+    <color name="patient_hub_memory_card_bg">#FFFFE8F0</color>
+    <color name="patient_hub_memory_title">#FF9D174D</color>
+    <color name="patient_hub_memory_button">#FFFF8A65</color>
+    <color name="patient_hub_memory_button_text">#FF1C1C1E</color>
+    <color name="patient_hub_match_card_bg">#FFFFF3E8</color>
+    <color name="patient_hub_match_title">#FFC2410C</color>
+    <color name="patient_hub_match_button">#FF8B5CF6</color>
+    <color name="patient_hub_match_button_text">#FFFFFFFF</color>
+    <color name="patient_hub_color_match_card_bg">#FFE8F4FC</color>
+    <color name="patient_hub_color_match_title">#FF1565C0</color>
+    <color name="patient_hub_color_match_button">#FF26A69A</color>
+    <color name="patient_hub_color_match_button_text">#FFFFFFFF</color>
+
+    <!-- Renk eşleştirme oyunu -->
+    <color name="color_match_red">#FFE53935</color>
+    <color name="color_match_yellow">#FFFDD835</color>
+    <color name="color_match_green">#FF43A047</color>
+    <color name="color_match_blue">#FF1E88E5</color>
+    <color name="color_match_board_wood">#FFF3E5D0</color>
+    <color name="color_match_board_label">#FF5D4E37</color>
+    <color name="color_match_template_card">#FFFFFBF5</color>
+    <color name="color_match_slot_empty">#FFE8DFD0</color>
+    <color name="color_match_slot_border">#FFC4B5A0</color>
+    <color name="color_match_pool_track">#FFDDD0BC</color>
+    <color name="color_match_instruction_bg">#FFE3F2FD</color>
+    <color name="color_match_accent">#FF1565C0</color>
+    <color name="patient_hub_puzzle_card_bg">#FFFFF8E7</color>
+    <color name="patient_hub_puzzle_title">#FFB45309</color>
+    <color name="patient_hub_puzzle_button">#FFF59E0B</color>
+    <color name="patient_hub_puzzle_button_text">#FF1C1C1E</color>
 
     <!-- Patient — exercise cards -->
     <color name="patient_puzzle_card_background">#FFFFFBEB</color>
@@ -33,25 +109,37 @@
     <color name="patient_routine_card_text">#FF7C3AED</color>
     <color name="patient_memory_card_background">#FFF0FDFA</color>
     <color name="patient_memory_card_text">#FF0D9488</color>
+    <color name="patient_match_card_background">#FFFFF7ED</color>
+    <color name="patient_match_card_text">#FFEA580C</color>
+    <color name="patient_match_accent">#FFEA580C</color>
+    <color name="patient_match_accent_light">#FFFFEDD5</color>
+    <color name="patient_match_board_background">#FF121212</color>
+    <color name="patient_match_card_face">#FFFFFFFF</color>
+    <color name="patient_match_card_back">#FF2563EB</color>
+    <color name="patient_match_card_back_border">#FF1D4ED8</color>
+    <color name="patient_match_matched_background">#FFDCFCE7</color>
+    <color name="patient_match_matched_border">#FF22C55E</color>
+    <color name="patient_match_mismatch_background">#FFFEE2E2</color>
+    <color name="patient_match_mismatch_border">#FFEF4444</color>
 
     <!-- Patient — stage chips -->
-    <color name="patient_stage_mild">#FFEA580C</color>
-    <color name="patient_stage_moderate">#FFDC2626</color>
-    <color name="patient_stage_healthy">#FF16A34A</color>
-    <color name="patient_stage_very_mild">#FFD97706</color>
+    <color name="patient_stage_mild">#FFB8956E</color>
+    <color name="patient_stage_moderate">#FF8B9FD4</color>
+    <color name="patient_stage_healthy">#FF6BA88A</color>
+    <color name="patient_stage_very_mild">#FF7A9CC9</color>
 
     <!-- Patient — scan guidance -->
     <color name="patient_guidance_text_title">#FF1C1C1E</color>
     <color name="patient_guidance_text_body">#FF3C3C3E</color>
-    <color name="patient_guidance_moderate_bg">#FFFFEBEE</color>
-    <color name="patient_guidance_moderate_border">#FFEF9A9A</color>
-    <color name="patient_guidance_moderate_button">#FFC62828</color>
-    <color name="patient_guidance_mild_bg">#FFFFF3E0</color>
-    <color name="patient_guidance_mild_border">#FFFFCC80</color>
-    <color name="patient_guidance_mild_button">#FFE65100</color>
-    <color name="patient_guidance_very_mild_bg">#FFFFFDE7</color>
-    <color name="patient_guidance_very_mild_border">#FFFFF176</color>
-    <color name="patient_guidance_very_mild_button">#FFF57F17</color>
+    <color name="patient_guidance_moderate_bg">#FFF0F2FA</color>
+    <color name="patient_guidance_moderate_border">#FFC5CAE9</color>
+    <color name="patient_guidance_moderate_button">#FF6B7FD4</color>
+    <color name="patient_guidance_mild_bg">#FFF7F2EB</color>
+    <color name="patient_guidance_mild_border">#FFE8D4BC</color>
+    <color name="patient_guidance_mild_button">#FF9A7B4F</color>
+    <color name="patient_guidance_very_mild_bg">#FFEEF4FA</color>
+    <color name="patient_guidance_very_mild_border">#FFB8D4EB</color>
+    <color name="patient_guidance_very_mild_button">#FF5B8FBF</color>
     <color name="patient_guidance_healthy_bg">#FFE8F5E9</color>
     <color name="patient_guidance_healthy_border">#FFA5D6A7</color>
     <color name="patient_guidance_healthy_button">#FF2E7D32</color>

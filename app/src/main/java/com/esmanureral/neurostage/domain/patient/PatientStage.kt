@@ -12,6 +12,11 @@ object PatientStage {
     fun canAccessPatientExerciseHub(stageIndex: Int?): Boolean =
         isBrainExerciseEligible(stageIndex) || stageIndex == MODERATE_DEMENTIA
 
+    fun canUseReminders(stageIndex: Int?): Boolean = canAccessPatientExerciseHub(stageIndex)
+
+    fun usesExerciseHubAsHome(stageIndex: Int?): Boolean =
+        canAccessPatientExerciseHub(stageIndex)
+
     fun memoryItemCount(stageIndex: Int?): Int = when (stageIndex) {
         MODERATE_DEMENTIA -> 2
         MILD_DEMENTIA, VERY_MILD_DEMENTIA -> 3

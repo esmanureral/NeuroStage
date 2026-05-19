@@ -1,6 +1,5 @@
 package com.esmanureral.neurostage.ui.patient.games.puzzle
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -19,8 +18,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.esmanureral.neurostage.R
@@ -30,9 +29,8 @@ import com.esmanureral.neurostage.ui.theme.PatientDimens
 @Composable
 fun PuzzleSuccessView(
     modifier: Modifier = Modifier,
-    @DrawableRes imageRes: Int,
+    puzzleBitmap: ImageBitmap,
     boardAspectRatio: Float,
-    imageContentScale: ContentScale = ContentScale.Crop,
     contentWidthFraction: Float,
     hasNextLevel: Boolean,
     onNextLevel: () -> Unit,
@@ -47,14 +45,13 @@ fun PuzzleSuccessView(
         verticalArrangement = Arrangement.Center,
     ) {
         PuzzleSuccessImage(
-            imageRes = imageRes,
+            puzzleBitmap = puzzleBitmap,
             boardAspectRatio = boardAspectRatio,
-            imageContentScale = imageContentScale,
             contentWidthFraction = contentWidthFraction,
         )
         Spacer(Modifier.height(PatientDimens.puzzleSuccessTitleGap))
         Text(
-            stringResource(R.string.puzzle_success_title),
+            text = stringResource(R.string.puzzle_success_title),
             fontSize = PatientDimens.puzzleSuccessTitleSize,
             fontWeight = FontWeight.Bold,
             color = PatientColors.puzzleSuccess,
@@ -72,15 +69,14 @@ fun PuzzleSuccessView(
 
 @Composable
 private fun PuzzleSuccessImage(
-    @DrawableRes imageRes: Int,
+    puzzleBitmap: ImageBitmap,
     boardAspectRatio: Float,
-    imageContentScale: ContentScale,
     contentWidthFraction: Float,
 ) {
     Image(
-        painter = painterResource(imageRes),
+        bitmap = puzzleBitmap,
         contentDescription = null,
-        contentScale = imageContentScale,
+        contentScale = ContentScale.FillBounds,
         modifier = Modifier
             .fillMaxWidth(contentWidthFraction)
             .aspectRatio(boardAspectRatio)
@@ -136,7 +132,7 @@ private fun PuzzleSuccessPrimaryButton(
             .height(PatientDimens.puzzleSuccessButtonHeight),
     ) {
         Text(
-            stringResource(textRes),
+            text = stringResource(textRes),
             fontSize = PatientDimens.puzzleSuccessPrimaryButtonTextSize,
             fontWeight = FontWeight.Black,
             color = PatientColors.surface,

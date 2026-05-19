@@ -61,6 +61,44 @@ object ScanColors {
         @Composable @ReadOnlyComposable get() = colorResource(R.color.scan_mri_label_scrim)
 }
 
+object PatientResultColors {
+    val primary: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_result_primary)
+    val primaryLight: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_primary_light)
+    val textPrimary: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_game_text_primary)
+    val textSecondary: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_text_secondary)
+    val mutedText: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_text_secondary)
+    val mutedBar: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_divider)
+    val cardBg: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_surface)
+    val pageBg: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.scan_result_background)
+    val mriPanelBg: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_match_board_background)
+    val disclaimerMuted: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_result_disclaimer_muted)
+}
+
+object PatientResultDimens {
+    val cardCorner: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_result_card_corner)
+    val sectionGap: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_result_section_gap)
+    val cardPadding: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_result_card_padding)
+    val buttonCorner: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_result_button_corner)
+    val unchangedSheetHorizontalPadding: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_unchanged_sheet_h_padding)
+    val unchangedSheetBottomPadding: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_unchanged_sheet_bottom_padding)
+}
+
 object ScanDimens {
     val waveDepth: Dp
         @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.scan_wave_depth)
@@ -108,6 +146,8 @@ object ScanDimens {
         @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.scan_disclaimer_top)
     val disclaimerBottom: Dp
         @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.scan_disclaimer_bottom)
+    val disclaimerHorizontal: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.scan_disclaimer_horizontal)
     val toolbarHorizontalPadding: Dp
         @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.scan_toolbar_h_padding)
     val toolbarVerticalPadding: Dp

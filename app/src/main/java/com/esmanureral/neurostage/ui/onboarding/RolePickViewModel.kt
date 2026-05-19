@@ -15,4 +15,10 @@ class RolePickViewModel @Inject constructor(
     fun pickDoctor() = prefs.setWorld(UserWorld.DOCTOR)
     fun pickPatient() = prefs.setWorld(UserWorld.PATIENT)
     fun clear() = prefs.clearWorld()
+
+    fun clearIfHadSession() {
+        if (prefs.userWorld.value != null) {
+            clear()
+        }
+    }
 }

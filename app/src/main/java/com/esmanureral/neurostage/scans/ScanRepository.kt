@@ -13,4 +13,10 @@ interface ScanRepository {
         id: String,
         report: String
     ): Result<Unit>
+
+    suspend fun delete(
+        doctorUid: String,
+        patientId: String,
+        scanId: String,
+    ): Result<Unit>
 }

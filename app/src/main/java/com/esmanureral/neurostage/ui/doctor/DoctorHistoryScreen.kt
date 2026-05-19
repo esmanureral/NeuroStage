@@ -1,5 +1,6 @@
 package com.esmanureral.neurostage.ui.doctor
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -7,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -17,7 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -65,7 +65,7 @@ private val WaveBottomShape: Shape = object : Shape {
             moveTo(0f, 0f)
             lineTo(size.width, 0f)
             lineTo(size.width, size.height - waveDepth)
-            quadraticBezierTo(size.width / 2f, size.height + waveDepth, 0f, size.height - waveDepth)
+            quadraticTo(size.width / 2f, size.height + waveDepth, 0f, size.height - waveDepth)
             close()
         }
         return Outline.Generic(path)
@@ -85,6 +85,8 @@ fun DoctorHistoryScreen(
 ) {
     val history by viewModel.history.collectAsStateWithLifecycle()
 
+    BackHandler(onBack = onBack)
+
     Surface(modifier = Modifier.fillMaxSize(), color = NsDoctorScaffoldBg) {
         Column(modifier = Modifier.fillMaxSize()) {
             Box(
@@ -101,7 +103,7 @@ fun DoctorHistoryScreen(
                 ) {
                     IconButton(onClick = onBack) {
                         Icon(
-                            imageVector = Icons.Outlined.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
                             contentDescription = stringResource(R.string.doctor_history_cd_back),
                             tint = Color.White,
                         )

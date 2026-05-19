@@ -3,6 +3,7 @@ package com.esmanureral.neurostage.ui.doctor
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -71,6 +72,8 @@ fun DoctorLoginScreen(
     val ui by viewModel.ui.collectAsStateWithLifecycle()
     val status by viewModel.authStatus.collectAsStateWithLifecycle()
     val loadingContentDescription = stringResource(R.string.doctor_login_loading_cd)
+
+    BackHandler(onBack = onBackToRolePick)
 
     LaunchedEffect(Unit) {
         viewModel.pickWorldDoctor()

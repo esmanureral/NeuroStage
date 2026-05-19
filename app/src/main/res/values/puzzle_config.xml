@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Layout fractions (non-dp) -->
+    <string name="puzzle_snap_radius_fraction" translatable="false">0.8</string>
+    <string name="puzzle_ghost_image_alpha" translatable="false">0.32</string>
+    <string name="puzzle_jigsaw_knob_fraction" translatable="false">0.14</string>
+    <string name="puzzle_tray_scale_of_slot" translatable="false">0.94</string>
+    <string name="puzzle_tray_hit_scale" translatable="false">1.06</string>
+    <string name="puzzle_tray_background_alpha" translatable="false">0.55</string>
+
+    <!-- Audio -->
+    <string name="puzzle_sound_pickup_volume" translatable="false">0.45</string>
+    <string name="puzzle_sound_full_volume" translatable="false">1.0</string>
+    <integer name="puzzle_sound_max_streams">4</integer>
+
+    <!-- Layout logic -->
+    <integer name="puzzle_border_anim_duration_ms">300</integer>
+    <integer name="puzzle_tray_columns_threshold">3</integer>
+    <integer name="puzzle_tray_columns_default">2</integer>
+    <integer name="puzzle_tray_columns_wide">3</integer>
+    <integer name="puzzle_tray_piece_count_four">4</integer>
+    <integer name="puzzle_tray_piece_count_six">6</integer>
+    <integer name="puzzle_success_content_width_percent">75</integer>
+    <integer name="puzzle_drag_overlay_z_index">20</integer>
+    <integer name="puzzle_board_piece_z_index">2</integer>
+    <integer name="puzzle_no_drag_piece_id">-1</integer>
+</resources>

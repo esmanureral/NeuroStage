@@ -17,13 +17,28 @@ object Routes {
     const val PATIENT_SCAN = "patient_scan"
 
     const val PATIENT_GAMES = "patient_games"
+    const val PATIENT_EXERCISE_LIST = "patient_exercise_list"
+    const val PATIENT_REMINDERS = "patient_reminders"
+    const val PATIENT_SCAN_HISTORY = "patient_scan_history"
+    const val PATIENT_SCAN_DETAIL = "patient_scan_detail"
     const val PATIENT_GAME_ROUTINE = "patient_game_routine"
     const val PATIENT_GAME_MEMORY = "patient_game_memory"
+    const val PATIENT_GAME_MEMORY_MATCH = "patient_game_memory_match"
     const val PATIENT_GAME_PUZZLE = "patient_game_puzzle"
     const val PATIENT_GAME_PUZZLE_MRI_MODERATE = "patient_game_puzzle_mri_moderate"
+    const val PATIENT_GAME_COLOR_MATCH = "patient_game_color_match"
 }
 
 object RouteArgs {
     const val SCAN_TS = "scanTs"
     const val PATIENT_ID = "patientId"
+}
+
+object HubScanNav {
+    const val RETURN_TO_HUB = "return_to_hub"
+    const val STAGE_BEFORE_SCAN = "stage_before_scan"
+    const val SHOW_UNCHANGED_SHEET = "show_unchanged_sheet"
+    const val UNCHANGED_STAGE_INDEX = "unchanged_stage_index"
+    const val UNCHANGED_CONFIDENCE = "unchanged_confidence"
+    const val UNCHANGED_SCORES = "unchanged_scores"
 }

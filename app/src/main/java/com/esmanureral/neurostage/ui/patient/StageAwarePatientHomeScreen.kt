@@ -2,6 +2,7 @@ package com.esmanureral.neurostage.ui.patient
 
 import com.esmanureral.neurostage.ui.theme.PatientColors
 import com.esmanureral.neurostage.ui.theme.PatientDimens
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,12 +33,21 @@ fun StageAwarePatientHomeScreen(
     onOpenGames: () -> Unit,
     onStartRoutineGame: () -> Unit,
     onStartMemoryGame: () -> Unit,
+    onStartMemoryMatchGame: () -> Unit,
     onStartPuzzleGame: () -> Unit,
     onBackToRolePick: () -> Unit,
     viewModel: PatientHomeViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showExitDialog by remember { mutableStateOf(false) }
+
+    BackHandler {
+        if (showExitDialog) {
+            showExitDialog = false
+        } else {
+            showExitDialog = true
+        }
+    }
 
     PatientHomeExitDialog(
         visible = showExitDialog,
@@ -54,7 +64,7 @@ fun StageAwarePatientHomeScreen(
         topBar = {
             PatientHomeTopBar(
                 uiState = uiState,
-                onLogoutClick = { showExitDialog = true },
+                onLogoutClick = { },
             )
         },
     ) { innerPadding ->
@@ -64,6 +74,7 @@ fun StageAwarePatientHomeScreen(
             onOpenGames = onOpenGames,
             onStartRoutineGame = onStartRoutineGame,
             onStartMemoryGame = onStartMemoryGame,
+            onStartMemoryMatchGame = onStartMemoryMatchGame,
             onStartPuzzleGame = onStartPuzzleGame,
             modifier = Modifier
                 .fillMaxSize()
@@ -84,6 +95,7 @@ private fun PatientHomeBody(
     onOpenGames: () -> Unit,
     onStartRoutineGame: () -> Unit,
     onStartMemoryGame: () -> Unit,
+    onStartMemoryMatchGame: () -> Unit,
     onStartPuzzleGame: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -95,6 +107,7 @@ private fun PatientHomeBody(
             onStartPuzzleGame = onStartPuzzleGame,
             onStartRoutineGame = onStartRoutineGame,
             onStartMemoryGame = onStartMemoryGame,
+            onStartMemoryMatchGame = onStartMemoryMatchGame,
             onOpenGames = onOpenGames,
         )
 
@@ -133,6 +146,7 @@ private fun PatientHomeMainSection(
     onStartPuzzleGame: () -> Unit,
     onStartRoutineGame: () -> Unit,
     onStartMemoryGame: () -> Unit,
+    onStartMemoryMatchGame: () -> Unit,
     onOpenGames: () -> Unit,
 ) {
     when {
@@ -141,6 +155,7 @@ private fun PatientHomeMainSection(
             onStartPuzzleGame = onStartPuzzleGame,
             onStartRoutineGame = onStartRoutineGame,
             onStartMemoryGame = onStartMemoryGame,
+            onStartMemoryMatchGame = onStartMemoryMatchGame,
             onOpenGames = onOpenGames,
         )
 

@@ -17,8 +17,8 @@ android {
         applicationId = "com.esmanureral.neurostage"
         minSdk = 24
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -35,6 +35,16 @@ android {
             "GROK_API_KEY",
             "\"${localProps.getProperty("GROK_API_KEY", "")}\""
         )
+        buildConfigField(
+            "String",
+            "GRAD_CAM_API_BASE_URL",
+            "\"${localProps.getProperty("GRAD_CAM_API_BASE_URL", "https://esmanurerl-neurostage-gradcam-api.hf.space/")}\""
+        )
+        buildConfigField(
+            "String",
+            "HF_TOKEN",
+            "\"${localProps.getProperty("HF_TOKEN", "")}\""
+        )
     }
 
     buildTypes {
@@ -46,7 +56,7 @@ android {
             )
         }
     }
-    aaptOptions {
+    androidResources {
         noCompress += "tflite"
     }
 
@@ -74,9 +84,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.compose.remote.creation.core)
-    implementation(libs.androidx.compose.runtime)
-    implementation(libs.androidx.ui)
+    implementation(libs.androidx.compose.foundation.layout)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -101,6 +109,8 @@ dependencies {
     implementation(libs.firebase.firestore.ktx)
     implementation(libs.kotlinx.coroutines.play.services)
 
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
-
+    implementation(libs.okhttp)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.coil)
 }

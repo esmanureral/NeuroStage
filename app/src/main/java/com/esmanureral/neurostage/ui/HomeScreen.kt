@@ -2,12 +2,14 @@ package com.esmanureral.neurostage.ui
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.*
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -24,9 +26,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -37,10 +37,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.esmanureral.neurostage.AnalysisState
 import com.esmanureral.neurostage.AnalysisViewModel
-import com.esmanureral.neurostage.ui.patient.PatientScanGuidanceCard
+import com.esmanureral.neurostage.domain.patient.PatientStage
+import com.esmanureral.neurostage.ui.patient.PatientMriResultContent
+import com.esmanureral.neurostage.ui.patient.PatientResultPageBackground
 import com.esmanureral.neurostage.ui.theme.*
+import com.esmanureral.neurostage.ui.doctor.DoctorXaiResultsSection
 import com.esmanureral.neurostage.xai.XaiUiState
-import com.esmanureral.neurostage.xai.parseAiReportBlocks
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.res.stringResource
@@ -53,6 +55,8 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 private val neurostageBrandBlue = NeurostageBrandBlue
 
@@ -79,14 +83,73 @@ private enum class Step { UPLOAD, PREVIEW, ANALYZE, RESULT }
 private data class StageTone(val label: String, val dot: Color, val bg: Color, val scale: Int)
 
 @Composable
-private fun stageTone(i: Int): StageTone {
-    val labels = stringArrayResource(R.array.home_screen_stage_tones)
+private fun stageTone(i: Int, forPatient: Boolean = false): StageTone {
+    val labels = stringArrayResource(R.array.dementia_stage_labels)
+    if (forPatient) {
+        return when (i) {
+            PatientStage.MILD_DEMENTIA -> StageTone(
+                labels[PatientStage.MILD_DEMENTIA],
+                PatientResultStageColors.Mild,
+                PatientResultStageColors.MildBg,
+                2,
+            )
+            PatientStage.MODERATE_DEMENTIA -> StageTone(
+                labels[PatientStage.MODERATE_DEMENTIA],
+                PatientResultStageColors.Moderate,
+                PatientResultStageColors.ModerateBg,
+                3,
+            )
+            PatientStage.HEALTHY -> StageTone(
+                labels[PatientStage.HEALTHY],
+                PatientResultStageColors.Healthy,
+                PatientResultStageColors.HealthyBg,
+                0,
+            )
+            PatientStage.VERY_MILD_DEMENTIA -> StageTone(
+                labels[PatientStage.VERY_MILD_DEMENTIA],
+                PatientResultStageColors.VeryMild,
+                PatientResultStageColors.VeryMildBg,
+                1,
+            )
+            else -> StageTone(
+                labels.getOrElse(0) { "" },
+                PatientResultStageColors.Moderate,
+                PatientResultStageColors.ModerateBg,
+                4,
+            )
+        }
+    }
     return when (i) {
-        2 -> StageTone(labels[0], StageColors.Healthy, StageColors.HealthyBg, 0)
-        3 -> StageTone(labels[1], StageColors.VeryMild, StageColors.VeryMildBg, 1)
-        0 -> StageTone(labels[2], StageColors.Mild, StageColors.MildBg, 2)
-        1 -> StageTone(labels[3], StageColors.Moderate, StageColors.ModerateBg, 3)
-        else -> StageTone(labels[4], StageColors.Severe, StageColors.SevereBg, 4)
+        PatientStage.MILD_DEMENTIA -> StageTone(
+            labels[PatientStage.MILD_DEMENTIA],
+            StageColors.Mild,
+            StageColors.MildBg,
+            2,
+        )
+        PatientStage.MODERATE_DEMENTIA -> StageTone(
+            labels[PatientStage.MODERATE_DEMENTIA],
+            StageColors.Moderate,
+            StageColors.ModerateBg,
+            3,
+        )
+        PatientStage.HEALTHY -> StageTone(
+            labels[PatientStage.HEALTHY],
+            StageColors.Healthy,
+            StageColors.HealthyBg,
+            0,
+        )
+        PatientStage.VERY_MILD_DEMENTIA -> StageTone(
+            labels[PatientStage.VERY_MILD_DEMENTIA],
+            StageColors.VeryMild,
+            StageColors.VeryMildBg,
+            1,
+        )
+        else -> StageTone(
+            labels.getOrElse(0) { "" },
+            StageColors.Severe,
+            StageColors.SevereBg,
+            4,
+        )
     }
 }
 
@@ -95,15 +158,18 @@ fun MainScreen(
     viewModel: AnalysisViewModel = hiltViewModel(),
     patientId: String? = null,
     isPatient: Boolean = false,
+    returnToHub: Boolean = false,
+    stageBeforeScan: Int? = null,
+    onHubUnchangedResult: ((stageIndex: Int, confidence: Float, scores: List<Float>) -> Unit)? = null,
     onBack: (() -> Unit)? = null,
     onOpenGames: (() -> Unit)? = null,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val analysisSteps by viewModel.analysisProgressSteps.collectAsStateWithLifecycle()
     val validationError by viewModel.validationError.collectAsStateWithLifecycle()
     val isMriValidated by viewModel.isMriValidated.collectAsStateWithLifecycle()
     val saveError by viewModel.saveError.collectAsStateWithLifecycle()
     val xaiState by viewModel.xaiState.collectAsStateWithLifecycle()
+    val activePatient by viewModel.activePatient.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val bitmapState = remember { mutableStateOf<Bitmap?>(null) }
 
@@ -111,8 +177,34 @@ fun MainScreen(
         viewModel.setActivePatient(patientId)
     }
 
+    val successState = state as? AnalysisState.Success
+    var exitingForHubUnchanged by remember { mutableStateOf(false) }
+    val onHubUnchangedResultState = rememberUpdatedState(onHubUnchangedResult)
+
+    DisposableEffect(returnToHub, stageBeforeScan) {
+        viewModel.setHubUnchangedContext(
+            stageBeforeScan = if (returnToHub) stageBeforeScan else null,
+            handler = if (returnToHub) {
+                { result ->
+                    exitingForHubUnchanged = true
+                    bitmapState.value = null
+                    onHubUnchangedResultState.value?.invoke(
+                        result.stageIndex,
+                        result.confidence,
+                        result.scores,
+                    )
+                }
+            } else {
+                null
+            },
+        )
+        onDispose {
+            viewModel.setHubUnchangedContext(stageBeforeScan = null, handler = null)
+        }
+    }
+
     val step = when {
-        state is AnalysisState.Success -> Step.RESULT
+        successState != null -> Step.RESULT
         state is AnalysisState.Loading -> Step.ANALYZE
         bitmapState.value != null -> Step.PREVIEW
         else -> Step.UPLOAD
@@ -128,24 +220,34 @@ fun MainScreen(
         }
     }
 
-    val camera =
-        rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bmp ->
-            if (bmp != null) {
-                bitmapState.value = bmp
-                viewModel.validateAndSetBitmap(bmp)
+    BackHandler {
+        when (step) {
+            Step.ANALYZE -> {
+                viewModel.reset()
+                bitmapState.value = null
             }
+            Step.PREVIEW -> {
+                bitmapState.value = null
+                viewModel.reset()
+            }
+            Step.RESULT, Step.UPLOAD -> onBack?.invoke()
         }
+    }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = NsDoctorScaffoldBg,
     ) {
+        if (exitingForHubUnchanged) {
+            Box(Modifier.fillMaxSize())
+            return@Surface
+        }
+
         when (step) {
             Step.UPLOAD -> UploadStep(
                 error = validationError,
                 onBack = onBack,
                 onPickGallery = { gallery.launch("image/*") },
-                onPickCamera = { camera.launch(null) },
             )
 
             Step.PREVIEW -> PreviewStep(
@@ -157,16 +259,80 @@ fun MainScreen(
                 onReset = { bitmapState.value = null; viewModel.reset() }
             )
 
-            Step.ANALYZE -> AnalyzeStep(completedSteps = analysisSteps.coerceIn(0, 4))
+            Step.ANALYZE -> AnalyzeStep(bitmap = bitmapState.value)
             Step.RESULT -> ResultStep(
                 result = state as AnalysisState.Success,
                 xaiState = xaiState,
                 saveError = saveError,
                 isPatient = isPatient,
+                patientAge = activePatient?.age,
+                patientGender = activePatient?.gender,
                 onBack = onBack,
                 onNewScan = { bitmapState.value = null; viewModel.reset() },
                 onOpenGames = onOpenGames,
+                onRequestAiReport = viewModel::requestGeminiReport,
             )
+
+        }
+    }
+}
+
+@Composable
+private fun StageScoreBreakdown(
+    scores: List<Float>,
+    selectedStageIndex: Int,
+) {
+    val classLabels = stringArrayResource(R.array.dementia_stage_labels)
+    val allClasses = listOf(
+        Triple(0, classLabels[0], StageColors.Mild),
+        Triple(1, classLabels[1], StageColors.Moderate),
+        Triple(2, classLabels[2], StageColors.Healthy),
+        Triple(3, classLabels[3], StageColors.VeryMild),
+    ).sortedByDescending { scores.getOrElse(it.first) { 0f } }
+
+    Column(verticalArrangement = Arrangement.spacedBy(ScanDimens.resultScoresGap)) {
+        allClasses.forEach { (idx, label, color) ->
+            val scorePct = (scores.getOrElse(idx) { 0f } * 100).toInt()
+            val barAnim by animateFloatAsState(
+                targetValue = scorePct / 100f,
+                animationSpec = tween(700, easing = FastOutSlowInEasing),
+                label = "unchangedBar$idx",
+            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(ScanDimens.resultScoreRowGap),
+            ) {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (idx == selectedStageIndex) NsNavy else NsSlate,
+                    fontWeight = if (idx == selectedStageIndex) FontWeight.Bold else FontWeight.Normal,
+                    modifier = Modifier.width(ScanDimens.resultScoreLabelWidth),
+                )
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(ScanDimens.resultScoreBarHeight)
+                        .clip(RoundedCornerShape(ScanDimens.resultScoreBarCorner))
+                        .background(ScanColors.scoreBarTrack),
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .fillMaxWidth(barAnim)
+                            .clip(RoundedCornerShape(ScanDimens.resultScoreBarCorner))
+                            .background(color),
+                    )
+                }
+                Text(
+                    text = "$scorePct%",
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = NsNavy,
+                    modifier = Modifier.width(ScanDimens.resultScorePercentWidth),
+                    textAlign = TextAlign.End,
+                )
+            }
         }
     }
 }
@@ -176,7 +342,6 @@ private fun UploadStep(
     error: String?,
     onBack: (() -> Unit)?,
     onPickGallery: () -> Unit,
-    onPickCamera: () -> Unit,
 ) {
     val inf = rememberInfiniteTransition(label = "pulse")
     val pulse by inf.animateFloat(
@@ -225,7 +390,8 @@ private fun UploadStep(
                 Text(
                     stringResource(R.string.home_screen_upload_subtitle),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = NsWhite.copy(alpha = 0.8f),
+                    color = NsWhite.copy(alpha = 0.85f),
+                    lineHeight = 22.sp,
                 )
                 Spacer(Modifier.height(ScanDimens.headerContentGap))
             }
@@ -299,65 +465,32 @@ private fun UploadStep(
 
         Spacer(Modifier.height(ScanDimens.pickerSectionGap))
 
-        Row(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = ScanDimens.contentHorizontalPadding),
-            horizontalArrangement = Arrangement.spacedBy(ScanDimens.pickerRowGap),
+                .padding(horizontal = ScanDimens.contentHorizontalPadding)
+                .clip(RoundedCornerShape(ScanDimens.pickerCorner))
+                .background(neurostageBrandBlue)
+                .clickable(onClick = onPickGallery)
+                .padding(vertical = ScanDimens.pickerButtonVerticalPadding),
+            contentAlignment = Alignment.Center,
         ) {
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .clip(RoundedCornerShape(ScanDimens.pickerCorner))
-                    .background(NsWhite)
-                    .clickable(onClick = onPickCamera)
-                    .padding(vertical = ScanDimens.pickerButtonVerticalPadding),
-                contentAlignment = Alignment.Center,
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(ScanDimens.pickerIconGap),
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(ScanDimens.pickerIconGap),
-                ) {
-                    Icon(
-                        Icons.Outlined.PhotoCamera,
-                        null,
-                        tint = neurostageBrandBlue,
-                        modifier = Modifier.size(ScanDimens.pickerIconSize),
-                    )
-                    Text(
-                        stringResource(R.string.home_screen_pick_camera),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = NsGray900,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                }
-            }
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .clip(RoundedCornerShape(ScanDimens.pickerCorner))
-                    .background(neurostageBrandBlue)
-                    .clickable(onClick = onPickGallery)
-                    .padding(vertical = ScanDimens.pickerButtonVerticalPadding),
-                contentAlignment = Alignment.Center,
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(ScanDimens.pickerIconGap),
-                ) {
-                    Icon(
-                        Icons.Outlined.PhotoLibrary,
-                        null,
-                        tint = NsWhite,
-                        modifier = Modifier.size(ScanDimens.pickerIconSize),
-                    )
-                    Text(
-                        stringResource(R.string.home_screen_pick_gallery),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = NsWhite,
-                        fontWeight = FontWeight.Bold,
-                    )
-                }
+                Icon(
+                    Icons.Outlined.PhotoLibrary,
+                    contentDescription = null,
+                    tint = NsWhite,
+                    modifier = Modifier.size(ScanDimens.pickerIconSize),
+                )
+                Text(
+                    stringResource(R.string.home_screen_pick_gallery),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = NsWhite,
+                    fontWeight = FontWeight.Bold,
+                )
             }
         }
 
@@ -365,7 +498,11 @@ private fun UploadStep(
             stringResource(R.string.home_screen_disclaimer),
             style = MaterialTheme.typography.bodySmall,
             color = NsGray600,
+            textAlign = TextAlign.Center,
+            lineHeight = 20.sp,
             modifier = Modifier.padding(
+                start = ScanDimens.disclaimerHorizontal,
+                end = ScanDimens.disclaimerHorizontal,
                 top = ScanDimens.disclaimerTop,
                 bottom = ScanDimens.disclaimerBottom,
             ),
@@ -508,110 +645,22 @@ private fun PreviewStep(
 }
 
 @Composable
-private fun AnalyzeStep(completedSteps: Int) {
-    val progress = completedSteps / 4f
-    val animProg by animateFloatAsState(
-        targetValue = progress.coerceIn(0.05f, 1f),
-        animationSpec = tween(500, easing = FastOutSlowInEasing),
-        label = "p",
-    )
-    val inf = rememberInfiniteTransition(label = "a")
-    val rot by inf.animateFloat(
-        0f, 360f,
-        infiniteRepeatable(tween(3000, easing = LinearEasing)),
-        label = "r",
-    )
-
-    Column(
+private fun AnalyzeStep(bitmap: Bitmap?) {
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .systemBarsPadding(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
+            .systemBarsPadding()
+            .background(NsDoctorScaffoldBg),
+        contentAlignment = Alignment.Center,
     ) {
-        Box(
-            modifier = Modifier.size(ScanDimens.progressOuter),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator(
-                progress = { animProg },
-                modifier = Modifier.size(ScanDimens.progressOuter),
-                strokeWidth = ScanDimens.progressStroke,
-                color = neurostageBrandBlue,
-                trackColor = NsDoctorLoginFieldBorderIdle,
-                strokeCap = StrokeCap.Round,
-            )
-            Box(
+        bitmap?.let {
+            MriScanningImage(
+                bitmap = it,
                 modifier = Modifier
-                    .size(ScanDimens.progressInner)
-                    .rotate(rot)
-                    .border(
-                        ScanDimens.progressRingBorder,
-                        neurostageBrandBlue.copy(0.2f),
-                        CircleShape
-                    )
+                    .fillMaxWidth()
+                    .padding(horizontal = ScanDimens.previewImageHorizontalPadding)
+                    .aspectRatio(1f),
             )
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    "${(animProg * 100).toInt()}%",
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = NsGray900,
-                    fontWeight = FontWeight.ExtraBold,
-                )
-                Text(
-                    stringResource(R.string.home_screen_analyze_calculating),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = NsGray600
-                )
-            }
-        }
-
-        Spacer(Modifier.height(ScanDimens.analyzeTitleGap))
-
-        Text(
-            if (completedSteps < 4) stringResource(R.string.home_screen_analyze_brain_img) else stringResource(
-                R.string.home_screen_analyze_calculating
-            ),
-            style = MaterialTheme.typography.titleMedium,
-            color = NsGray900,
-            fontWeight = FontWeight.SemiBold,
-        )
-
-        Spacer(Modifier.height(ScanDimens.analyzeSubtitleGap))
-
-        val labels = stringArrayResource(R.array.home_screen_analyze_labels).toList()
-        Column(
-            modifier = Modifier.padding(horizontal = ScanDimens.analyzeLabelsHorizontalPadding),
-            verticalArrangement = Arrangement.spacedBy(ScanDimens.analyzeLabelGap),
-        ) {
-            labels.forEachIndexed { i, label ->
-                val done = i < completedSteps
-                val active = i == completedSteps && completedSteps < 4
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(ScanDimens.analyzeLabelGap),
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(ScanDimens.analyzeDotSize)
-                            .clip(CircleShape)
-                            .background(
-                                when {
-                                    done -> neurostageBrandBlue; active -> neurostageBrandBlue.copy(
-                                    0.5f
-                                ); else -> NsGray300
-                                }
-                            )
-                    )
-                    Text(
-                        label,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = when {
-                            done || active -> NsGray900; else -> NsGray400
-                        },
-                    )
-                }
-            }
         }
     }
 }
@@ -622,352 +671,103 @@ private fun ResultStep(
     xaiState: XaiUiState,
     saveError: String?,
     isPatient: Boolean = false,
+    patientAge: Int? = null,
+    patientGender: String? = null,
     onBack: (() -> Unit)?,
     onNewScan: () -> Unit,
     onOpenGames: (() -> Unit)? = null,
+    onRequestAiReport: () -> Unit = {},
 ) {
     val t = stageTone(result.stageIndex)
 
     val confidencePct = (result.confidence * 100).toInt()
 
-    val waveDepth = ScanDimens.waveDepth
+    if (isPatient) {
+        PatientResultStep(
+            result = result,
+            confidencePct = confidencePct,
+            onBack = onBack,
+            onNewScan = onNewScan,
+            onOpenGames = onOpenGames,
+        )
+        return
+    }
+
+    var showFullscreenImage by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(ScanColors.resultBackground)
+            .background(NsDoctorScaffoldBg)
             .systemBarsPadding()
             .verticalScroll(rememberScrollState()),
     ) {
-        Box(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(waveBottomShape(waveDepth))
-                .background(neurostageBrandBlue)
-                .padding(
-                    horizontal = ScanDimens.resultHeaderHorizontalPadding,
-                    vertical = ScanDimens.resultHeaderVerticalPadding,
-                ),
+                .padding(horizontal = 8.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             if (onBack != null) {
-                IconButton(onClick = onBack, modifier = Modifier.align(Alignment.CenterStart)) {
-                    Icon(Icons.AutoMirrored.Outlined.ArrowBack, null, tint = NsWhite)
+                IconButton(onClick = onBack) {
+                    Icon(
+                        Icons.AutoMirrored.Outlined.ArrowBack,
+                        contentDescription = null,
+                        tint = NeurostageBrandBlue,
+                    )
                 }
+            } else {
+                Spacer(Modifier.width(48.dp))
             }
             Text(
-                stringResource(R.string.home_screen_result_title),
+                text = stringResource(R.string.home_screen_result_title),
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = NsWhite,
-                modifier = Modifier.align(Alignment.Center),
+                fontWeight = FontWeight.SemiBold,
+                color = NsGray900,
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Center,
             )
+            Spacer(Modifier.width(48.dp))
         }
 
         Column(
-            modifier = Modifier.padding(
-                horizontal = ScanDimens.resultContentHorizontalPadding,
-                vertical = ScanDimens.resultContentVerticalPadding,
-            ),
-            verticalArrangement = Arrangement.spacedBy(ScanDimens.resultBlockGap),
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
-            var showFullscreenImage by remember { mutableStateOf(false) }
+            DoctorXaiResultsSection(
+                xaiState = xaiState,
+                bitmap = result.bitmap,
+                stageLabel = t.label,
+                confidencePct = confidencePct,
+                selectedStageIndex = result.stageIndex,
+                classScores = result.allScores,
+                patientAge = patientAge,
+                patientGender = patientGender,
+                onRequestAiReport = onRequestAiReport,
+                onImageClick = result.bitmap?.let { { showFullscreenImage = true } },
+            )
 
             result.bitmap?.let { bmp ->
-                MriImageBox(
-                    bitmap = bmp,
-                    label = stringResource(R.string.home_screen_result_mri_label),
+                if (showFullscreenImage) {
+                    FullscreenMriDialog(
+                        bitmap = bmp,
+                        onDismiss = { showFullscreenImage = false },
+                    )
+                }
+            }
+
+            saveError?.let { err ->
+                Text(
+                    err,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = NsStatusError,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(1f)
-                        .clickable { showFullscreenImage = true }
-                )
-
-                if (showFullscreenImage) {
-                    Dialog(
-                        onDismissRequest = { showFullscreenImage = false },
-                        properties = DialogProperties(usePlatformDefaultWidth = false)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(Color.Black)
-                                .clickable { showFullscreenImage = false },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            androidx.compose.foundation.Image(
-                                bitmap = bmp.asImageBitmap(),
-                                contentDescription = "Fullscreen MRI",
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.Fit
-                            )
-                        }
-                    }
-                }
-            }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(ScanDimens.resultCardCorner))
-                    .background(NsWhite)
-                    .padding(
-                        horizontal = ScanDimens.resultCardPaddingHorizontal,
-                        vertical = ScanDimens.resultCardPaddingVertical,
-                    ),
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(ScanDimens.resultStageDot)
-                            .clip(CircleShape)
-                            .background(t.dot),
-                    )
-                    Spacer(Modifier.width(ScanDimens.resultStageDotGap))
-                    Text(
-                        t.label,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = NsNavy,
-                        modifier = Modifier.weight(1f),
-                    )
-                    Text(
-                        String.format(
-                            stringResource(R.string.home_screen_result_confidence),
-                            confidencePct
-                        ),
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = t.dot,
-                    )
-                }
-            }
-            val scores = result.allScores
-            val classLabels = stringArrayResource(R.array.home_screen_class_labels)
-            val allClasses = listOf(
-                Triple(0, classLabels[0], StageColors.Mild),
-                Triple(1, classLabels[1], StageColors.Moderate),
-                Triple(2, classLabels[2], StageColors.Healthy),
-                Triple(3, classLabels[3], StageColors.VeryMild),
-            ).sortedByDescending { scores.getOrElse(it.first) { 0f } }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(ScanDimens.resultCardCorner))
-                    .background(NsWhite)
-                    .padding(ScanDimens.resultScoresPadding),
-            ) {
-                Column(verticalArrangement = Arrangement.spacedBy(ScanDimens.resultScoresGap)) {
-                    allClasses.forEach { (idx, label, color) ->
-                        val scorePct = (scores.getOrElse(idx) { 0f } * 100).toInt()
-                        val barAnim by animateFloatAsState(
-                            targetValue = scorePct / 100f,
-                            animationSpec = tween(700, easing = FastOutSlowInEasing),
-                            label = "bar$idx",
-                        )
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(ScanDimens.resultScoreRowGap),
-                        ) {
-                            Text(
-                                label,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = if (idx == result.stageIndex) NsNavy else NsSlate,
-                                fontWeight = if (idx == result.stageIndex) FontWeight.Bold else FontWeight.Normal,
-                                modifier = Modifier.width(ScanDimens.resultScoreLabelWidth),
-                            )
-                            Box(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(ScanDimens.resultScoreBarHeight)
-                                    .clip(RoundedCornerShape(ScanDimens.resultScoreBarCorner))
-                                    .background(ScanColors.scoreBarTrack),
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxHeight()
-                                        .fillMaxWidth(barAnim)
-                                        .clip(RoundedCornerShape(ScanDimens.resultScoreBarCorner))
-                                        .background(color),
-                                )
-                            }
-                            Text(
-                                "$scorePct%",
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = NsNavy,
-                                modifier = Modifier.width(ScanDimens.resultScorePercentWidth),
-                                textAlign = TextAlign.End,
-                            )
-                        }
-                    }
-                }
-            }
-
-            if (!isPatient) {
-                val isXaiLoading =
-                    xaiState.isMcLoading || xaiState.isGradCamLoading || xaiState.isGeminiLoading
-                if (isXaiLoading) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(ScanDimens.xaiLoadingCorner))
-                            .background(ScanColors.xaiLoadingBackground)
-                            .border(
-                                ScanDimens.xaiLoadingBorder,
-                                ScanColors.xaiLoadingBorder,
-                                RoundedCornerShape(ScanDimens.xaiLoadingCorner),
-                            )
-                            .padding(ScanDimens.xaiLoadingPadding),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(ScanDimens.xaiLoadingGap),
-                    ) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(ScanDimens.xaiSpinnerSize),
-                            strokeWidth = ScanDimens.xaiSpinnerStroke,
-                            color = ScanColors.xaiLoadingAccent,
-                        )
-                        Column(verticalArrangement = Arrangement.spacedBy(ScanDimens.xaiTextGap)) {
-                            Text(
-                                stringResource(R.string.home_screen_xai_loading_title),
-                                style = MaterialTheme.typography.labelMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = ScanColors.xaiLoadingTitle,
-                            )
-                            Text(
-                                stringResource(R.string.home_screen_xai_loading_subtitle),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = ScanColors.xaiLoadingSubtitle,
-                            )
-                        }
-                    }
-                }
-                xaiState.geminiReport?.let { report ->
-                    val summaryKeyword = stringResource(R.string.home_screen_xai_summary_keyword)
-                    val knownHeadings = stringArrayResource(R.array.xai_report_headings).toList()
-                    val aiBlocks = parseAiReportBlocks(report.text, knownHeadings)
-                    val summaryBlock = aiBlocks.firstOrNull {
-                        it.first?.contains(
-                            summaryKeyword,
-                            ignoreCase = true
-                        ) == true
-                    } ?: aiBlocks.firstOrNull()
-                    val otherBlocks = aiBlocks.filter { it != summaryBlock }
-
-                    val summaryFallback = stringResource(R.string.home_screen_xai_summary_fallback)
-                    val clinicFallback = stringResource(R.string.home_screen_xai_clinic_fallback)
-
-                    if (summaryBlock != null) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(ScanDimens.resultCardCorner))
-                                .background(NsWhite)
-                                .padding(ScanDimens.resultScoresPadding),
-                            verticalArrangement = Arrangement.spacedBy(ScanDimens.reportCardGap),
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(ScanDimens.reportIconGap),
-                            ) {
-                                Icon(
-                                    Icons.Outlined.AutoAwesome,
-                                    null,
-                                    tint = ScanColors.xaiSummaryAccent,
-                                    modifier = Modifier.size(ScanDimens.reportIconSize),
-                                )
-                                Text(
-                                    summaryBlock.first ?: summaryFallback,
-                                    style = MaterialTheme.typography.labelMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = ScanColors.xaiSummaryAccent,
-                                )
-                            }
-                            Text(
-                                summaryBlock.second.replace("**", ""),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = NsGray800,
-                                lineHeight = ScanDimens.reportBodyLineHeight,
-                            )
-                        }
-                    }
-
-                    if (otherBlocks.isNotEmpty()) {
-                        otherBlocks.forEach { (title, content) ->
-                            val cleanContent =
-                                content.replace("**", "").replace(Regex("(?m)^- "), "• ")
-                                    .replace(Regex("(?m)^\\* "), "• ")
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clip(RoundedCornerShape(ScanDimens.resultCardCorner))
-                                    .background(NsWhite)
-                                    .padding(ScanDimens.resultScoresPadding),
-                                verticalArrangement = Arrangement.spacedBy(ScanDimens.reportCardGap),
-                            ) {
-                                Text(
-                                    title?.uppercase() ?: clinicFallback,
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = NsIndigo500,
-                                    fontWeight = FontWeight.ExtraBold,
-                                    letterSpacing = ScanDimens.reportHeadingLetterSpacing,
-                                )
-                                if (cleanContent.isNotBlank()) {
-                                    Text(
-                                        cleanContent,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = NsGray800,
-                                        lineHeight = ScanDimens.reportSectionLineHeight,
-                                    )
-                                }
-                            }
-                        }
-                    }
-
-                    Text(
-                        stringResource(R.string.home_screen_result_disclaimer),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = NsGray400,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(
-                                top = ScanDimens.resultDisclaimerTop,
-                                bottom = ScanDimens.resultDisclaimerBottom,
-                            ),
-                    )
-                }
-
-                xaiState.geminiError?.let { err ->
-                    ErrorBanner(
-                        String.format(
-                            stringResource(R.string.home_screen_gemini_error),
-                            err
-                        )
-                    )
-                }
-
-                saveError?.let { err ->
-                    Text(
-                        err,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = NsStatusError,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(ScanDimens.errorBannerCorner))
-                            .background(NsRose50)
-                            .padding(ScanDimens.errorBannerPadding),
-                    )
-                }
-            }
-
-            if (isPatient) {
-                PatientScanGuidanceCard(
-                    stageIndex = result.stageIndex,
-                    onOpenGames = onOpenGames,
+                        .clip(RoundedCornerShape(ScanDimens.errorBannerCorner))
+                        .background(NsRose50)
+                        .padding(ScanDimens.errorBannerPadding),
                 )
             }
 
@@ -1003,17 +803,140 @@ private fun ResultStep(
 
 
 @Composable
-private fun ErrorBanner(message: String) {
-    Text(
-        message,
-        style = MaterialTheme.typography.bodySmall,
-        color = NsStatusError,
+private fun PatientResultStep(
+    result: AnalysisState.Success,
+    confidencePct: Int,
+    onBack: (() -> Unit)?,
+    onNewScan: () -> Unit,
+    onOpenGames: (() -> Unit)?,
+) {
+    var showFullscreenImage by remember { mutableStateOf(false) }
+
+    Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(ScanDimens.errorBannerCorner))
-            .background(NsRose50)
-            .padding(ScanDimens.errorBannerPadding),
-    )
+            .fillMaxSize()
+            .background(PatientResultPageBackground())
+            .systemBarsPadding()
+            .verticalScroll(rememberScrollState()),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (onBack != null) {
+                IconButton(onClick = onBack) {
+                    Icon(
+                        Icons.AutoMirrored.Outlined.ArrowBack,
+                        contentDescription = null,
+                        tint = PatientResultColors.primary,
+                    )
+                }
+            } else {
+                Spacer(Modifier.width(48.dp))
+            }
+            Text(
+                text = stringResource(R.string.patient_scan_result_screen_title),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = PatientColors.textPrimary,
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Center,
+            )
+            Spacer(Modifier.width(48.dp))
+        }
+
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .padding(bottom = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            PatientMriResultContent(
+                bitmap = result.bitmap,
+                stageIndex = result.stageIndex,
+                confidencePercent = confidencePct,
+                scores = result.allScores,
+                onOpenGames = onOpenGames,
+                onImageClick = result.bitmap?.let { { showFullscreenImage = true } },
+            )
+
+            OutlinedButton(
+                onClick = onNewScan,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(PatientResultDimens.buttonCorner),
+                border = BorderStroke(1.dp, PatientResultColors.primary.copy(alpha = 0.35f)),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = PatientResultColors.primary,
+                ),
+                contentPadding = PaddingValues(vertical = 12.dp),
+            ) {
+                Text(
+                    stringResource(R.string.home_screen_new_scan),
+                    fontWeight = FontWeight.SemiBold,
+                )
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.Top,
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Shield,
+                    contentDescription = null,
+                    tint = PatientResultColors.disclaimerMuted,
+                    modifier = Modifier.size(14.dp),
+                )
+                Spacer(Modifier.width(6.dp))
+                Text(
+                    text = stringResource(R.string.home_screen_app_disclaimer),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = PatientResultColors.disclaimerMuted,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 16.sp,
+                )
+            }
+        }
+    }
+
+    result.bitmap?.let { bmp ->
+        if (showFullscreenImage) {
+            FullscreenMriDialog(
+                bitmap = bmp,
+                onDismiss = { showFullscreenImage = false },
+            )
+        }
+    }
+}
+
+@Composable
+private fun FullscreenMriDialog(
+    bitmap: Bitmap,
+    onDismiss: () -> Unit,
+) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+                .clickable(onClick = onDismiss),
+            contentAlignment = Alignment.Center,
+        ) {
+            androidx.compose.foundation.Image(
+                bitmap = bitmap.asImageBitmap(),
+                contentDescription = stringResource(R.string.home_screen_result_mri_label),
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Fit,
+            )
+        }
+    }
 }
 
 @Composable

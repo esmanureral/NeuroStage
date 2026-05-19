@@ -7,14 +7,14 @@ import androidx.lifecycle.viewModelScope
 import com.esmanureral.neurostage.data.MrScanRecord
 import com.esmanureral.neurostage.data.AppPreferences
 import com.esmanureral.neurostage.data.UserRepository
+import com.esmanureral.neurostage.patients.Patient
 import com.esmanureral.neurostage.patients.PatientRepository
 import com.esmanureral.neurostage.scans.ScanRecord
 import com.esmanureral.neurostage.scans.ScanRepository
 import com.esmanureral.neurostage.auth.AuthRepository
 import com.esmanureral.neurostage.auth.AuthStatus
 import com.esmanureral.neurostage.xai.GeminiReportGenerator
-import com.esmanureral.neurostage.xai.GradCamRunner
-import com.esmanureral.neurostage.xai.McDropoutRunner
+import com.esmanureral.neurostage.xai.api.GradCamRemoteRepository
 import com.esmanureral.neurostage.xai.XaiUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -37,40 +37,20 @@ sealed class AnalysisState {
     data class Success(
         val label: String,
         val confidence: Float,
-        val allScores: FloatArray,
+        val allScores: List<Float>,
         val description: String,
         val stageIndex: Int,
         val bitmap: Bitmap? = null,
-    ) : AnalysisState() {
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (javaClass != other?.javaClass) return false
-
-            other as Success
-
-            if (label != other.label) return false
-            if (confidence != other.confidence) return false
-            if (!allScores.contentEquals(other.allScores)) return false
-            if (description != other.description) return false
-            if (stageIndex != other.stageIndex) return false
-            if (bitmap != other.bitmap) return false
-
-            return true
-        }
-
-        override fun hashCode(): Int {
-            var result = label.hashCode()
-            result = 31 * result + confidence.hashCode()
-            result = 31 * result + allScores.contentHashCode()
-            result = 31 * result + description.hashCode()
-            result = 31 * result + stageIndex.hashCode()
-            result = 31 * result + (bitmap?.hashCode() ?: 0)
-            return result
-        }
-    }
+    ) : AnalysisState()
 
     data class Error(val message: String) : AnalysisState()
 }
+
+data class HubUnchangedScanResult(
+    val stageIndex: Int,
+    val confidence: Float,
+    val scores: List<Float>,
+)
 
 @HiltViewModel
 class AnalysisViewModel @Inject constructor(
@@ -82,6 +62,7 @@ class AnalysisViewModel @Inject constructor(
     private val patients: PatientRepository,
     private val scans: ScanRepository,
     private val prefs: AppPreferences,
+    private val gradCamRepository: GradCamRemoteRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<AnalysisState>(AnalysisState.Idle)
@@ -98,14 +79,17 @@ class AnalysisViewModel @Inject constructor(
 
     private var activePatientId: String? = null
 
+    private val _activePatient = MutableStateFlow<Patient?>(null)
+    val activePatient: StateFlow<Patient?> = _activePatient.asStateFlow()
+    private var hubStageBeforeScan: Int? = null
+    private var hubUnchangedHandler: ((HubUnchangedScanResult) -> Unit)? = null
+
     private val _saveError = MutableStateFlow<String?>(null)
     val saveError: StateFlow<String?> = _saveError.asStateFlow()
 
     private val _xaiState = MutableStateFlow(XaiUiState())
     val xaiState: StateFlow<XaiUiState> = _xaiState.asStateFlow()
 
-    private val mcRunner by lazy { McDropoutRunner(appContext) }
-    private val gradCamRunner by lazy { GradCamRunner(appContext) }
     private val geminiGenerator by lazy { GeminiReportGenerator(appContext) }
 
 
@@ -118,6 +102,22 @@ class AnalysisViewModel @Inject constructor(
 
     fun setActivePatient(patientId: String?) {
         activePatientId = patientId
+        if (patientId == null) {
+            _activePatient.value = null
+            return
+        }
+        val uid = (auth.status.value as? AuthStatus.SignedIn)?.user?.uid ?: return
+        viewModelScope.launch {
+            _activePatient.value = patients.get(uid, patientId).getOrNull()
+        }
+    }
+
+    fun setHubUnchangedContext(
+        stageBeforeScan: Int?,
+        handler: ((HubUnchangedScanResult) -> Unit)?,
+    ) {
+        hubStageBeforeScan = stageBeforeScan
+        hubUnchangedHandler = handler
     }
 
     fun validateAndSetBitmap(bitmap: Bitmap) {
@@ -130,7 +130,6 @@ class AnalysisViewModel @Inject constructor(
             return
         }
         viewModelScope.launch {
-            _state.value = AnalysisState.Loading
             val isMri = withContext(Dispatchers.Default) {
                 val scores = mriFilter.classify(bitmap)
                 scores[0] >= MRI_FILTER_THRESHOLD
@@ -138,12 +137,11 @@ class AnalysisViewModel @Inject constructor(
             if (!isMri) {
                 _validationError.value = appContext.getString(R.string.error_invalid_mri)
                 _isMriValidated.value = false
-                _state.value = AnalysisState.Idle
             } else {
                 _validationError.value = null
                 _isMriValidated.value = true
-                _state.value = AnalysisState.Idle
             }
+            _state.value = AnalysisState.Idle
         }
     }
 
@@ -171,18 +169,13 @@ class AnalysisViewModel @Inject constructor(
                 }
                 stepTicker.join()
                 delay(STEP_HOLD_ALL_DONE_MS)
-                val labels = appContext.resources.getStringArray(R.array.home_screen_class_labels)
+                val labels = appContext.resources.getStringArray(R.array.dementia_stage_labels)
                 val descriptions =
                     appContext.resources.getStringArray(R.array.home_screen_class_descriptions)
                 val maxIndex = scores.indices.maxByOrNull { scores[it] } ?: 0
-                val result = AnalysisState.Success(
-                    label = labels[maxIndex],
-                    confidence = scores[maxIndex],
-                    allScores = scores,
-                    description = descriptions[maxIndex],
-                    stageIndex = maxIndex,
-                    bitmap = bitmap,
-                )
+                val isHubUnchanged = hubStageBeforeScan != null &&
+                    maxIndex == hubStageBeforeScan &&
+                    hubUnchangedHandler != null
 
                 prefs.setPatientStage(maxIndex)
 
@@ -193,7 +186,7 @@ class AnalysisViewModel @Inject constructor(
                         stageIndex = maxIndex,
                         label = labels[maxIndex],
                         confidence = scores[maxIndex],
-                        scores = scores,
+                        scores = scores.toList(),
                     )
                 )
 
@@ -224,19 +217,43 @@ class AnalysisViewModel @Inject constructor(
                         _saveError.value = null
                     }
                 }
+                if (isHubUnchanged) {
+                    val payload = HubUnchangedScanResult(
+                        stageIndex = maxIndex,
+                        confidence = scores[maxIndex],
+                        scores = scores.toList(),
+                    )
+                    withContext(Dispatchers.Main.immediate) {
+                        hubUnchangedHandler?.invoke(payload)
+                    }
+                    _state.value = AnalysisState.Idle
+                    _analysisProgressSteps.value = 0
+                    return@launch
+                }
+
+                val result = AnalysisState.Success(
+                    label = labels[maxIndex],
+                    confidence = scores[maxIndex],
+                    allScores = scores.toList(),
+                    description = descriptions[maxIndex],
+                    stageIndex = maxIndex,
+                    bitmap = bitmap,
+                )
                 _state.value = result
 
                 val patient = if (uid != null && patientId != null)
                     patients.get(uid, patientId).getOrNull() else null
-                launchXaiPipeline(
-                    bitmap,
-                    maxIndex,
-                    scores,
-                    patient?.age,
-                    patient?.gender,
-                    patientId,
-                    ts.toString()
-                )
+                if (patientId != null) {
+                    launchModelExplainPipeline(
+                        bitmap = bitmap,
+                        stageIndex = maxIndex,
+                        scores = scores.toList(),
+                        patientAge = patient?.age,
+                        patientGender = patient?.gender,
+                        patientId = patientId,
+                        scanId = ts.toString(),
+                    )
+                }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -249,53 +266,82 @@ class AnalysisViewModel @Inject constructor(
         }
     }
 
-    private fun launchXaiPipeline(
+    private var pendingGeminiRequest: PendingGeminiRequest? = null
+
+    private data class PendingGeminiRequest(
+        val bitmap: Bitmap,
+        val stageIndex: Int,
+        val scores: List<Float>,
+        val patientAge: Int?,
+        val patientGender: String?,
+        val patientId: String,
+        val scanId: String,
+    )
+
+    private fun launchModelExplainPipeline(
         bitmap: Bitmap,
         stageIndex: Int,
-        scores: FloatArray,
+        scores: List<Float>,
         patientAge: Int?,
         patientGender: String?,
-        patientId: String?,
-        scanId: String?,
+        patientId: String,
+        scanId: String,
     ) {
+        pendingGeminiRequest = PendingGeminiRequest(
+            bitmap = bitmap,
+            stageIndex = stageIndex,
+            scores = scores.toList(),
+            patientAge = patientAge,
+            patientGender = patientGender,
+            patientId = patientId,
+            scanId = scanId,
+        )
         viewModelScope.launch {
-            _xaiState.value = _xaiState.value.copy(isMcLoading = true)
-            val mcResult = withContext(tfLiteDispatcher) {
-                runCatching { mcRunner.run(bitmap) }
-            }
-            val mc = mcResult.getOrNull()
             _xaiState.value = _xaiState.value.copy(
-                isMcLoading = false,
-                mcResult = mc,
-                mcError = mcResult.exceptionOrNull()?.message,
+                isGradCamLoading = true,
+                gradCamError = null,
+                geminiReport = null,
+                geminiError = null,
             )
 
-            _xaiState.value = _xaiState.value.copy(isGradCamLoading = true)
-            val gradCamResult = withContext(tfLiteDispatcher) {
-                runCatching { gradCamRunner.run(bitmap, stageIndex) }
+            val gradCamResult = withContext(Dispatchers.IO) {
+                runCatching { gradCamRepository.fetch(bitmap) }
             }
-            val gradCam = gradCamResult.getOrNull()
             _xaiState.value = _xaiState.value.copy(
                 isGradCamLoading = false,
-                gradCamResult = gradCam,
+                gradCamResult = gradCamResult.getOrNull(),
                 gradCamError = gradCamResult.exceptionOrNull()?.message,
             )
+        }
+    }
 
-            _xaiState.value = _xaiState.value.copy(isGeminiLoading = true)
-            val classLabels = appContext.resources.getStringArray(R.array.home_screen_class_labels)
-            val stageLabel = classLabels.getOrNull(stageIndex) ?: ""
+    fun requestGeminiReport() {
+        val pending = pendingGeminiRequest ?: return
+        val xai = _xaiState.value
+        if (xai.isGeminiLoading) return
+
+        viewModelScope.launch {
+            _xaiState.value = _xaiState.value.copy(
+                isGeminiLoading = true,
+                geminiError = null,
+                geminiReport = null,
+            )
+            val gradCam = _xaiState.value.gradCamResult
+            val classLabels = appContext.resources.getStringArray(R.array.dementia_stage_labels)
+            val stageLabel = classLabels.getOrNull(pending.stageIndex) ?: ""
             val geminiResult = runCatching {
                 geminiGenerator.generate(
-                    bitmap = bitmap,
+                    bitmap = pending.bitmap,
                     stageLabel = stageLabel,
-                    topMean = scores[stageIndex],
-                    topStd = mc?.topStd ?: 0f,
-                    allScores = scores,
-                    allStdScores = mc?.stdScores,
-                    patientAge = patientAge,
-                    patientGender = patientGender,
+                    topMean = pending.scores[pending.stageIndex],
+                    topStd = 0f,
+                    allScores = pending.scores,
+                    allStdScores = null,
+                    patientAge = pending.patientAge,
+                    patientGender = pending.patientGender,
                     activeRegion = gradCam?.activeRegion,
-                    saliencyPeakScore = gradCam?.rawCam?.max(),
+                    saliencyPeakScore = gradCam?.peakActivation?.takeIf { it > 0f }
+                        ?: gradCam?.rawCam?.maxOrNull(),
                 )
             }
             val report = geminiResult.getOrNull()
@@ -305,10 +351,10 @@ class AnalysisViewModel @Inject constructor(
                 geminiError = geminiResult.exceptionOrNull()?.message,
             )
 
-            if (report != null && patientId != null && scanId != null) {
+            if (report != null) {
                 val uid = (auth.status.value as? AuthStatus.SignedIn)?.user?.uid
                 if (uid != null) {
-                    scans.updateAiReport(uid, patientId, scanId, report.text)
+                    scans.updateAiReport(uid, pending.patientId, pending.scanId, report.text)
                 }
             }
         }
@@ -321,12 +367,11 @@ class AnalysisViewModel @Inject constructor(
         _isMriValidated.value = false
         _analysisProgressSteps.value = 0
         _xaiState.value = XaiUiState()
+        pendingGeminiRequest = null
     }
 
     override fun onCleared() {
         super.onCleared()
-        runCatching { mcRunner.close() }
-        runCatching { gradCamRunner.close() }
         tfLiteDispatcher.close()
     }
 

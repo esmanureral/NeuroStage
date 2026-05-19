@@ -4,22 +4,13 @@ import com.esmanureral.neurostage.ui.theme.PatientColors
 import com.esmanureral.neurostage.ui.theme.PatientDimens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -27,6 +18,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.esmanureral.neurostage.R
+import com.esmanureral.neurostage.ui.patient.PatientExerciseTopBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 
 @Composable
 fun InstructionBox(
@@ -58,9 +51,7 @@ fun PrimaryGameButton(
     text: String,
     containerColor: Color,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
-        .fillMaxWidth()
-        .height(PatientDimens.gamePrimaryButtonHeight),
+    modifier: Modifier = Modifier,
 ) {
     Button(
         onClick = onClick,
@@ -77,30 +68,15 @@ fun PrimaryGameButton(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GameBackBottomBar(onBack: () -> Unit) {
-    Button(
-        onClick = onBack,
-        colors = ButtonDefaults.buttonColors(containerColor = PatientColors.gameTextMuted),
-        shape = RoundedCornerShape(PatientDimens.cornerNone),
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(PatientDimens.gameBottomBarHeight),
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = stringResource(R.string.patient_home_cd_back),
-                modifier = Modifier.size(PatientDimens.gameBackIconSize),
-                tint = PatientColors.surface,
-            )
-            Spacer(Modifier.width(PatientDimens.gameBackIconGap))
-            Text(
-                text = stringResource(R.string.game_btn_back_upper),
-                fontSize = PatientDimens.gameButtonTextSize,
-                fontWeight = FontWeight.Black,
-                color = PatientColors.surface,
-            )
-        }
-    }
+fun GameScreenTopBar(
+    title: String,
+    onBack: () -> Unit,
+) {
+    PatientExerciseTopBar(
+        title = title,
+        onBack = onBack,
+        backLabel = stringResource(R.string.patient_exercise_back_hub),
+    )
 }

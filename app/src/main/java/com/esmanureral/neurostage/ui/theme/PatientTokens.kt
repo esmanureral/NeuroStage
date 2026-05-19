@@ -47,6 +47,70 @@ object PatientColors {
         @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_memory_card_background)
     val memoryCardText: Color
         @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_memory_card_text)
+    val matchCardBackground: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_match_card_background)
+    val matchCardText: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_match_card_text)
+    val hubRoutineCardBg: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_hub_routine_card_bg)
+    val hubRoutineTitle: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_hub_routine_title)
+    val hubRoutineButton: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_hub_routine_button)
+    val hubRoutineButtonText: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_hub_routine_button_text)
+    val hubMemoryCardBg: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_hub_memory_card_bg)
+    val hubMemoryTitle: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_hub_memory_title)
+    val hubMemoryButton: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_hub_memory_button)
+    val hubMemoryButtonText: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_hub_memory_button_text)
+    val hubMatchCardBg: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_hub_match_card_bg)
+    val hubMatchTitle: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_hub_match_title)
+    val hubMatchButton: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_hub_match_button)
+    val hubMatchButtonText: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_hub_match_button_text)
+    val hubColorMatchCardBg: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_hub_color_match_card_bg)
+    val hubColorMatchTitle: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_hub_color_match_title)
+    val hubColorMatchButton: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_hub_color_match_button)
+    val hubColorMatchButtonText: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_hub_color_match_button_text)
+    val hubPuzzleCardBg: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_hub_puzzle_card_bg)
+    val hubPuzzleTitle: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_hub_puzzle_title)
+    val hubPuzzleButton: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_hub_puzzle_button)
+    val hubPuzzleButtonText: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_hub_puzzle_button_text)
+    val matchAccent: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_match_accent)
+    val matchAccentLight: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_match_accent_light)
+    val matchBoardBackground: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_match_board_background)
+    val matchCardFace: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_match_card_face)
+    val matchCardBack: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_match_card_back)
+    val matchCardBackBorder: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_match_card_back_border)
+    val matchMatchedBackground: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_match_matched_background)
+    val matchMatchedBorder: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_match_matched_border)
+    val matchMismatchBackground: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_match_mismatch_background)
+    val matchMismatchBorder: Color
+        @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_match_mismatch_border)
     val moderateNoticeBackground: Color
         @Composable @ReadOnlyComposable get() = colorResource(R.color.patient_moderate_notice_background)
     val moderateNoticeTitle: Color
@@ -209,6 +273,70 @@ object PatientDimens {
         @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_game_hub_card_emoji_gap)
     val gameHubCardSubtitleGap: Dp
         @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_game_hub_card_subtitle_gap)
+    val gameHubHeaderTitleSize: TextUnit
+        @Composable @ReadOnlyComposable get() = textDimen(R.dimen.patient_game_hub_header_title_size)
+    val gameHubHeaderSubtitleGap: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_game_hub_header_subtitle_gap)
+    val gameHubContentTopPadding: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_game_hub_content_top_padding)
+    val gameHubContentBottomPadding: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_game_hub_content_bottom_padding)
+    val gameHubIconBoxSize: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_game_hub_icon_box_size)
+    val gameHubChevronSize: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_game_hub_chevron_size)
+    val gameHubCardElevation: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_game_hub_card_elevation)
+    val gameHubCardBorder: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_game_hub_card_border)
+    val gameHubGreetingSize: TextUnit
+        @Composable @ReadOnlyComposable get() = textDimen(R.dimen.patient_game_hub_greeting_size)
+    val gameHubGreetingSubtitleSize: TextUnit
+        @Composable @ReadOnlyComposable get() = textDimen(R.dimen.patient_game_hub_greeting_subtitle_size)
+    val gameHubStageChipCorner: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_game_hub_stage_chip_corner)
+    val gameHubStageChipPaddingH: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_game_hub_stage_chip_padding_h)
+    val gameHubStageChipPaddingV: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_game_hub_stage_chip_padding_v)
+    val gameHubStageChipTextSize: TextUnit
+        @Composable @ReadOnlyComposable get() = textDimen(R.dimen.patient_game_hub_stage_chip_text_size)
+    val gameHubPlayfulCardHeight: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_game_hub_playful_card_height)
+    val gameHubGridCardHeight: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_game_hub_grid_card_height)
+    val gameHubGridEmojiSize: TextUnit
+        @Composable @ReadOnlyComposable get() = textDimen(R.dimen.patient_game_hub_grid_emoji_size)
+    val gameHubGridTitleSize: TextUnit
+        @Composable @ReadOnlyComposable get() = textDimen(R.dimen.patient_game_hub_grid_title_size)
+    val gameHubPlayfulCardCorner: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_game_hub_playful_card_corner)
+    val gameHubPlayfulCardPadding: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_game_hub_playful_card_padding)
+    val gameHubPlayfulContentGap: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_game_hub_playful_content_gap)
+    val gameHubPlayfulTitleSize: TextUnit
+        @Composable @ReadOnlyComposable get() = textDimen(R.dimen.patient_game_hub_playful_title_size)
+    val gameHubPlayfulTitleLineHeight: TextUnit
+        @Composable @ReadOnlyComposable get() = textDimen(R.dimen.patient_game_hub_playful_title_line_height)
+    val gameHubPlayfulEmojiGap: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_game_hub_playful_emoji_gap)
+    val gameHubPlayfulEmojiBox: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_game_hub_playful_emoji_box)
+    val gameHubPlayfulEmojiSize: TextUnit
+        @Composable @ReadOnlyComposable get() = textDimen(R.dimen.patient_game_hub_playful_emoji_size)
+    val gameHubStartButtonCorner: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_game_hub_start_button_corner)
+    val gameHubStartButtonHeight: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_game_hub_start_button_height)
+    val gameHubStartButtonTextSize: TextUnit
+        @Composable @ReadOnlyComposable get() = textDimen(R.dimen.patient_game_hub_start_button_text_size)
+    val gameHubBottomBarHeight: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_game_hub_bottom_bar_height)
+    val gameHubStageBannerPadding: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_game_hub_stage_banner_padding)
+    val gameHubBottomNavElevation: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_game_hub_bottom_nav_elevation)
     val guidanceCardCorner: Dp
         @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.guidance_card_corner)
     val guidanceCardPadding: Dp
@@ -279,6 +407,26 @@ object PatientDimens {
         @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_game_grid_gap)
     val gameGridGapS: Dp
         @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_game_grid_gap_s)
+    val memoryMatchBoardCorner: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_memory_match_board_corner)
+    val memoryMatchBoardPadding: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_memory_match_board_padding)
+    val memoryMatchCardCorner: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_memory_match_card_corner)
+    val memoryMatchCardEmojiSize: TextUnit
+        @Composable @ReadOnlyComposable get() = textDimen(R.dimen.patient_memory_match_card_emoji_size)
+    val memoryMatchCardEmojiSizeDense: TextUnit
+        @Composable @ReadOnlyComposable get() = textDimen(R.dimen.patient_memory_match_card_emoji_size_dense)
+    val memoryMatchCardWordSize: TextUnit
+        @Composable @ReadOnlyComposable get() = textDimen(R.dimen.patient_memory_match_card_word_size)
+    val memoryMatchCardBorder: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_memory_match_card_border)
+    val memoryMatchModerateBoardPadding: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_memory_match_moderate_board_padding)
+    val memoryMatchModerateCardEmojiSize: TextUnit
+        @Composable @ReadOnlyComposable get() = textDimen(R.dimen.patient_memory_match_moderate_card_emoji_size)
+    val memoryMatchModerateGridGap: Dp
+        @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_memory_match_moderate_grid_gap)
     val gameTryAgainCorner: Dp
         @Composable @ReadOnlyComposable get() = dimensionResource(R.dimen.patient_game_try_again_corner)
     val gameTryAgainPadding: Dp

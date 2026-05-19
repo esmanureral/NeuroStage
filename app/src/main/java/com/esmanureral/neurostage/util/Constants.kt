@@ -13,10 +13,10 @@ object Constants {
     }
 
     object MriStageLabel {
-        const val HEALTHY = "Sağlıklı"
-        const val MILD = "Hafif evre"
-        const val MODERATE = "Orta evre"
-        const val VERY_MILD = "Çok hafif evre"
+        const val MILD = "Hafif Evre Demans"
+        const val MODERATE = "Orta Evre Demans"
+        const val HEALTHY = "Demans Bulgusu Yok"
+        const val VERY_MILD = "Çok Hafif Evre Demans"
     }
 
     object Ui {
@@ -58,7 +58,7 @@ object Constants {
     }
 
     object Model {
-        const val ALZHEIMER_FILE_NAME = "alzheimer_preprocessed.tflite"
+        const val ALZHEIMER_FILE_NAME = "alzheimer_preprocessed_int8_floatio.tflite"
         const val ALZHEIMER_INPUT_SIZE = 260
 
         const val MRI_FILTER_FILE_NAME = "mri_filter_v2_noquant.tflite"

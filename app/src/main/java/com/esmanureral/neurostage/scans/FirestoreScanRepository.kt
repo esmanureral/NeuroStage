@@ -98,6 +98,23 @@ class FirestoreScanRepository @Inject constructor() : ScanRepository {
         }.map { Unit }
     }
 
+    override suspend fun delete(
+        doctorUid: String,
+        patientId: String,
+        scanId: String,
+    ): Result<Unit> {
+        val firestore =
+            db ?: return Result.failure(IllegalStateException("Firestore başlatılamadı."))
+        return runCatching {
+            firestore
+                .collection(Constants.Firestore.COLLECTION_USERS).document(doctorUid)
+                .collection(Constants.Firestore.COLLECTION_PATIENTS).document(patientId)
+                .collection(Constants.Firestore.COLLECTION_SCANS).document(scanId)
+                .delete()
+                .await()
+        }.map { Unit }
+    }
+
     private fun com.google.firebase.firestore.DocumentSnapshot.toScanRecord(): ScanRecord? {
         val doctorUid = getString(Constants.Firestore.ScanFields.DOCTOR_UID) ?: return null
         val patientId = getString(Constants.Firestore.ScanFields.PATIENT_ID) ?: return null

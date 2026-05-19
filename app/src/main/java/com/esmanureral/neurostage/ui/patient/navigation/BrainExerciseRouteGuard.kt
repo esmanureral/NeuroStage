@@ -10,13 +10,14 @@ fun BrainExerciseRouteGuard(
     onBlocked: () -> Unit,
     content: @Composable () -> Unit,
 ) {
-    val allowed = PatientStage.canAccessPatientExerciseHub(stageIndex)
-    LaunchedEffect(stageIndex) {
-        if (stageIndex != null && !allowed) {
+    val hubAllowed = PatientStage.canAccessPatientExerciseHub(stageIndex)
+    val showContent = stageIndex == null || hubAllowed
+    LaunchedEffect(stageIndex, hubAllowed) {
+        if (stageIndex != null && !hubAllowed) {
             onBlocked()
         }
     }
-    if (allowed) {
+    if (showContent) {
         content()
     }
 }
@@ -39,18 +40,73 @@ fun MildHomePuzzleRouteGuard(
 }
 
 @Composable
+fun MemoryMatchRouteGuard(
+    stageIndex: Int?,
+    onBlocked: () -> Unit,
+    content: @Composable () -> Unit,
+) {
+    val allowed = PatientStage.isBrainExerciseEligible(stageIndex) ||
+            stageIndex == PatientStage.MODERATE_DEMENTIA
+    LaunchedEffect(stageIndex) {
+        if (stageIndex != null && !allowed) {
+            onBlocked()
+        }
+    }
+    if (allowed) {
+        content()
+    }
+}
+
+@Composable
+fun ReminderRouteGuard(
+    stageIndex: Int?,
+    onBlocked: () -> Unit,
+    content: @Composable () -> Unit,
+) {
+    val allowed = PatientStage.canUseReminders(stageIndex)
+    LaunchedEffect(stageIndex, allowed) {
+        if (stageIndex != null && !allowed) {
+            onBlocked()
+        }
+    }
+    when {
+        stageIndex == null -> Unit
+        allowed -> content()
+    }
+}
+
+@Composable
+fun ColorMatchRouteGuard(
+    stageIndex: Int?,
+    onBlocked: () -> Unit,
+    content: @Composable () -> Unit,
+) {
+    val allowed = PatientStage.canAccessPatientExerciseHub(stageIndex)
+    LaunchedEffect(stageIndex, allowed) {
+        if (stageIndex != null && !allowed) {
+            onBlocked()
+        }
+    }
+    when {
+        stageIndex == null -> Unit
+        allowed -> content()
+    }
+}
+
+@Composable
 fun MriModeratePuzzleRouteGuard(
     stageIndex: Int?,
     onBlocked: () -> Unit,
     content: @Composable () -> Unit,
 ) {
     val allowed = stageIndex == PatientStage.MODERATE_DEMENTIA
-    LaunchedEffect(stageIndex) {
-        if (!allowed) {
+    LaunchedEffect(stageIndex, allowed) {
+        if (stageIndex != null && !allowed) {
             onBlocked()
         }
     }
-    if (allowed) {
-        content()
+    when {
+        stageIndex == null -> Unit
+        allowed -> content()
     }
 }

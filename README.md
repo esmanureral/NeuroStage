@@ -6,7 +6,7 @@
 
 **Akıllı MR analizi · Grad-CAM açıklanabilirlik · LLM klinik rapor · Evreye uygun bilişsel takip**
 
-Android uygulaması — Jetpack Compose · cihaz üzerinde ML · Firebase 
+Android uygulaması — Jetpack Compose · Cihaz üzerinde ML · Firebase
 
 <br/>
 
@@ -17,12 +17,13 @@ Android uygulaması — Jetpack Compose · cihaz üzerinde ML · Firebase
 [![minSdk](https://img.shields.io/badge/minSdk-24-3DDC84?style=flat-square&logo=android&logoColor=white)](https://developer.android.com/)
 [![targetSdk](https://img.shields.io/badge/targetSdk-35-3DDC84?style=flat-square&logo=android&logoColor=white)](https://developer.android.com/)
 
-<br/>
+</div>
+
 ---
 
 ## Amacımız
 
-**NeuroStage**, aksiyel beyin MRI görüntülerini **cihaz üzerinde** dört klinik evreye göre sınıflandırır; sonuçları **Firestore**’da saklar; hekim tarafında **Grad-CAM** ve **yapay zekâ destekli klinik özet** sunar. Hasta tarafında ise tarama sonucuna göre **anlaşılır bilgilendirme**, **bilişsel egzersizler** ve **hatırlatıcılar** ile günlük takibi destekler.
+**NeuroStage**, aksiyel beyin MRI görüntülerini **cihaz üzerinde** dört klinik evreye göre sınıflandırır; sonuçları **Firestore**'da saklar; hekim tarafında **Grad-CAM** ve **yapay zekâ destekli klinik özet** sunar. Hasta tarafında ise tarama sonucuna göre **anlaşılır bilgilendirme**, **bilişsel egzersizler** ve **hatırlatıcılar** ile günlük takibi destekler.
 
 | Persona | Odak |
 |---------|------|
@@ -34,8 +35,8 @@ Android uygulaması — Jetpack Compose · cihaz üzerinde ML · Firebase
 ---
 
 ## Ekranlar
----
-## 👨‍⚕️ Doktor
+
+### 👨‍⚕️ Doktor
 
 <table>
   <tr>
@@ -55,7 +56,6 @@ Android uygulaması — Jetpack Compose · cihaz üzerinde ML · Firebase
       <img src="docs/images/doctor/06-scan.png" width="220"/>
     </td>
   </tr>
-
   <tr>
     <td align="center" width="20%">
       <img src="docs/images/doctor/07-analysis.png" width="220"/>
@@ -69,12 +69,11 @@ Android uygulaması — Jetpack Compose · cihaz üzerinde ML · Firebase
     <td align="center" width="20%">
       <img src="docs/images/doctor/10-result-detail.png" width="220"/>
     </td>
+    <td align="center" width="20%"></td>
   </tr>
 </table>
 
----
-
-## 👤 Hasta
+### 👤 Hasta
 
 <table>
   <tr>
@@ -91,7 +90,6 @@ Android uygulaması — Jetpack Compose · cihaz üzerinde ML · Firebase
       <img src="docs/images/patient/04-home.png" width="250"/>
     </td>
   </tr>
-
   <tr>
     <td align="center" width="25%">
       <img src="docs/images/patient/05-program-hub.png" width="250"/>
@@ -106,7 +104,6 @@ Android uygulaması — Jetpack Compose · cihaz üzerinde ML · Firebase
       <img src="docs/images/patient/08-routine-game.png" width="250"/>
     </td>
   </tr>
-
   <tr>
     <td align="center" width="25%">
       <img src="docs/images/patient/09-memory-game.png" width="250"/>
@@ -117,8 +114,11 @@ Android uygulaması — Jetpack Compose · cihaz üzerinde ML · Firebase
     <td align="center" width="25%">
       <img src="docs/images/patient/11-color-match.png" width="250"/>
     </td>
+    <td align="center" width="25%"></td>
   </tr>
 </table>
+
+---
 
 ## Özellikler
 
@@ -212,7 +212,7 @@ flowchart TB
 
 ---
 
-## ML & analiz pipeline
+## ML & Analiz Pipeline
 
 ```mermaid
 flowchart LR
@@ -229,7 +229,7 @@ flowchart LR
 ```
 
 | Model | Dosya | Görev |
-|-------|--------|--------|
+|-------|-------|-------|
 | MRI filtresi | `mri_filter_v2_noquant.tflite` | Aksiyel olmayan / geçersiz girişleri ayıklar (224×224) |
 | Alzheimer | `alzheimer_preprocessed_int8_floatio.tflite` | 4 evre sınıflandırması (260×260, INT8) |
 
@@ -243,14 +243,14 @@ Uzak servisler (API anahtarı `local.properties`):
 
 ---
 
-## Teknoloji özeti (CV / portföy)
+## Teknoloji Özeti 
 
 | Alan | Neler yapıldı |
-|------|----------------|
+|------|---------------|
 | **Android** | Compose, MVVM, Navigation, Hilt, Material 3, çok persona |
 | **Edge ML** | LiteRT, çok modelli pipeline, MRI ön filtresi |
 | **XAI** | Grad-CAM entegrasyonu, HF Space uyandırma / retry |
-| **LLM** | Klinik rapor prompt’u, Markdown parse, hasta bağlamı |
+| **LLM** | Klinik rapor prompt'u, Markdown parse, hasta bağlamı |
 | **Backend** | Firebase Auth, Firestore güvenlik kuralları, scan geçmişi |
 | **Ürün** | Evreye duyarlı hasta UX, Play 16 KB page size, gizli anahtar ayrımı |
 
@@ -281,7 +281,7 @@ copy local.properties.example local.properties   # Windows
 | `GROK_API_KEY` | Groq API (klinik rapor) |
 | `GEMINI_API_KEY` | Google Gemini (isteğe bağlı) |
 | `GRAD_CAM_API_BASE_URL` | Grad-CAM API tabanı (varsayılan HF Space) |
-| `HF_TOKEN` | Özel HF Space için okuma token’ı |
+| `HF_TOKEN` | Özel HF Space için okuma token'ı |
 
 Firebase: `google-services.json` dosyasını `app/` altına koyun.
 
@@ -292,7 +292,7 @@ Firebase: `google-services.json` dosyasını `app/` altına koyun.
 
 ---
 
-## Proje yapısı
+## Proje Yapısı
 
 ```
 NeuroStage/
@@ -309,7 +309,7 @@ NeuroStage/
 │   │   └── res/
 │   └── build.gradle.kts
 ├── docs/images/
-│   ├── logo.png                 # README logosu (siz ekleyeceksiniz)
+│   ├── logo.png
 │   ├── doctor/                  # 01–10.png
 │   ├── patient/                 # 01–11.png
 │   └── EKRAN_GORUNTULERI.md
@@ -321,18 +321,20 @@ NeuroStage/
 
 ---
 
-## Güvenlik & gizlilik
+## Güvenlik & Gizlilik
 
-- API anahtarları yalnızca `local.properties` → `BuildConfig` (repoya commit edilmez)
-- Firestore: `users/{uid}/**` yalnızca oturum açmış kullanıcının kendi verisi
-- Hasta modu Firebase hesabı gerektirmez; evre ve tercihler yerel `SharedPreferences`
+- API anahtarları yalnızca `local.properties` → `BuildConfig` aracılığıyla kullanılır (repoya commit edilmez)
+- Firestore: `users/{uid}/**` yalnızca oturum açmış kullanıcının kendi verisine erişim sağlar
+- Hasta modu Firebase hesabı gerektirmez; evre ve tercihler yerel `SharedPreferences`'da tutulur
 
 ---
 
-## Lisans ve iletişim
+## Lisans ve İletişim
 
 Bu depo kişisel / portföy projesidir. Kullanım ve lisans için depo sahibiyle iletişime geçin.
--> esmanur2eral@gmail.com
+
+📧 esmanur2eral@gmail.com
+
 ---
 
 <div align="center">

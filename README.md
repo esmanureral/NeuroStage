@@ -3,6 +3,7 @@
 <img src="docs/images/logo.png" alt="NeuroStage" width="128" height="128"/>
 
 # NeuroStage
+  <img src="afis.png" alt="NeuroStage Poster" width="700"/>
 
 **Akıllı MR analizi · Grad-CAM açıklanabilirlik · LLM klinik rapor · Evreye uygun bilişsel takip**
 
@@ -208,7 +209,6 @@ flowchart TB
 | Backend | Firebase BOM `33.16.0` · Auth · Firestore |
 | Ağ | OkHttp `4.12` · Retrofit `2.9` · Coil `2.4` |
 
-**Paket:** `com.esmanureral.neurostage` · **Sürüm:** 1.2 (versionCode 3)
 
 ---
 
@@ -258,12 +258,6 @@ Uzak servisler (API anahtarı `local.properties`):
 
 ## Kurulum
 
-### Gereksinimler
-
-- Android Studio Ladybug veya üzeri
-- JDK 11
-- Android SDK 35
-
 ### Adımlar
 
 ```bash
@@ -283,7 +277,6 @@ copy local.properties.example local.properties   # Windows
 | `GRAD_CAM_API_BASE_URL` | Grad-CAM API tabanı (varsayılan HF Space) |
 | `HF_TOKEN` | Özel HF Space için okuma token'ı |
 
-Firebase: `google-services.json` dosyasını `app/` altına koyun.
 
 ```bash
 ./gradlew assembleDebug      # geliştirme
@@ -321,14 +314,6 @@ NeuroStage/
 
 ---
 
-## Güvenlik & Gizlilik
-
-- API anahtarları yalnızca `local.properties` → `BuildConfig` aracılığıyla kullanılır (repoya commit edilmez)
-- Firestore: `users/{uid}/**` yalnızca oturum açmış kullanıcının kendi verisine erişim sağlar
-- Hasta modu Firebase hesabı gerektirmez; evre ve tercihler yerel `SharedPreferences`'da tutulur
-
----
-
 ## Lisans ve İletişim
 
 Bu depo kişisel / portföy projesidir. Kullanım ve lisans için depo sahibiyle iletişime geçin.
@@ -343,6 +328,6 @@ Bu depo kişisel / portföy projesidir. Kullanım ve lisans için depo sahibiyle
 
 <br/>
 
-<img src="docs/images/logo.png" alt="NeuroStage" width="64" height="64"/>
+<img src="Esmanur ERAL-poster (1).png" alt="NeuroStage Poster" width="700"/>
 
 </div>

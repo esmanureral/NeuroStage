@@ -2,7 +2,6 @@
 
 <img src="docs/images/logo.png" alt="NeuroStage" width="128" height="128"/>
 
-# NeuroStage
   <img src="afis.png" alt="NeuroStage Poster" width="700"/>
 
 **Akıllı MR analizi · Grad-CAM açıklanabilirlik · LLM klinik rapor · Evreye uygun bilişsel takip**
